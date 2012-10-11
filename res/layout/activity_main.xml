@@ -1,0 +1,44 @@
+<com.therap.javafest.utext.DashboardLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f9f9f9"
+    android:layout_weight="1" >
+
+    <Button
+        android:id="@+id/bTextNote"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/b_text"
+        android:text="@string/button_text_note" />
+
+    <Button
+        android:id="@+id/bImageNote"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/b_image"
+        android:text="@string/button_image_note" />
+
+    <Button
+        android:id="@+id/bAudioNote"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/b_voice"
+        android:text="@string/button_audio_note" />
+
+    <Button
+        android:id="@+id/bVideoNote"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/b_video"
+        android:text="@string/button_video_note" />
+
+    <Button
+        android:id="@+id/bListNote"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/b_list"
+        android:text="@string/button_list_note" />
+
+    <Button
+        android:id="@+id/bReminder"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/b_reminder"
+        android:text="@string/button_reminder" />
+
+</com.therap.javafest.utext.DashboardLayout>
