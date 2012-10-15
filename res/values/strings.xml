@@ -18,5 +18,7 @@
     <string name="title_activity_reminder_note">Reminder</string>
     <string name="title_activity_search">Search</string>
     <string name="et_search_hint">Type Text to Search</string>
+    <string name="et_note_hint">Remember to</string>
+    <string name="iv_image_contentDescription">Select Image from Gallery or Take a New Snap</string>
 
 </resources>
