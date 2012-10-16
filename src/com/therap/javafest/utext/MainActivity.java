@@ -11,7 +11,6 @@ import android.widget.Button;
 
 public class MainActivity extends GDActivity implements OnClickListener {
 
-	private static final int ACTION_BAR_INFO = 0;
 	private static final int ACTION_BAR_SETTINGS = 1;
 	private static final int ACTION_BAR_SEARCH = 2;
 
@@ -23,7 +22,6 @@ public class MainActivity extends GDActivity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_main);
 
-		addActionBarItem(Type.Info, ACTION_BAR_INFO);
 		addActionBarItem(Type.Settings, ACTION_BAR_SETTINGS);
 		addActionBarItem(Type.Search, ACTION_BAR_SEARCH);
 

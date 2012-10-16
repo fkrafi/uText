@@ -54,6 +54,9 @@ public class ReminderNoteActivity extends GDActivity implements OnClickListener 
 			break;
 		case R.id.bTime:
 			break;
+		case ACTION_BAR_SAVE:
+			etNote.getText();
+			break;
 		}
 	}
 }

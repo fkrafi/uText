@@ -1,30 +1,33 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="match_parent"
+    android:background="#F5F1EE"
+    android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="223dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical" >
 
         <Button
             android:id="@+id/bDate"
+            style="@style/Button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/bTime"
+            style="@style/Button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/etNote"
+            style="@style/EditText"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="top"
-            android:hint="@string/et_note_hint"
-            android:minLines="5" />
+            android:layout_height="fill_parent"
+            android:hint="@string/et_note_hint" />
     </LinearLayout>
 
 </ScrollView>
