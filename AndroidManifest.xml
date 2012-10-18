@@ -21,8 +21,6 @@
         </activity>
         <activity android:name=".TextNoteActivity" />
         <activity android:name=".ListNoteActivity" />
-        <activity android:name=".ImageNoteActivity" />
-        <activity android:name=".VideoNoteActivity" />
         <activity android:name=".AudioNoteActivity" />
         <activity android:name=".ReminderNoteActivity" />
         <activity android:name=".SearchActivity" />

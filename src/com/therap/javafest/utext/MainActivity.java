@@ -14,8 +14,7 @@ public class MainActivity extends GDActivity implements OnClickListener {
 	private static final int ACTION_BAR_SETTINGS = 1;
 	private static final int ACTION_BAR_SEARCH = 2;
 
-	private Button bTextNote, bImageNote, bVideoNote, bReminder, bListNote,
-			bAudioNote;
+	private Button bTextNote, bGalleryNote, bReminder, bListNote, bAudioNote;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,10 +30,8 @@ public class MainActivity extends GDActivity implements OnClickListener {
 	private void Init() {
 		bTextNote = (Button) findViewById(R.id.bTextNote);
 		bTextNote.setOnClickListener(this);
-		bImageNote = (Button) findViewById(R.id.bImageNote);
-		bImageNote.setOnClickListener(this);
-		bVideoNote = (Button) findViewById(R.id.bVideoNote);
-		bVideoNote.setOnClickListener(this);
+		bGalleryNote = (Button) findViewById(R.id.bGalleryNote);
+		bGalleryNote.setOnClickListener(this);
 		bReminder = (Button) findViewById(R.id.bReminder);
 		bReminder.setOnClickListener(this);
 		bListNote = (Button) findViewById(R.id.bListNote);
@@ -58,12 +55,6 @@ public class MainActivity extends GDActivity implements OnClickListener {
 		switch (view.getId()) {
 		case R.id.bTextNote:
 			startActivity(new Intent(this, TextNoteActivity.class));
-			break;
-		case R.id.bImageNote:
-			startActivity(new Intent(this, ImageNoteActivity.class));
-			break;
-		case R.id.bVideoNote:
-			startActivity(new Intent(this, VideoNoteActivity.class));
 			break;
 		case R.id.bAudioNote:
 			startActivity(new Intent(this, AudioNoteActivity.class));

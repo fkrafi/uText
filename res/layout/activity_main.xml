@@ -8,37 +8,37 @@
     <Button
         android:id="@+id/bTextNote"
         style="@style/DashboardButton"
-        android:drawableTop="@drawable/b_text"
+        android:drawableTop="@drawable/notepad"
         android:text="@string/button_text_note" />
 
     <Button
-        android:id="@+id/bImageNote"
+        android:id="@+id/bGalleryNote"
         style="@style/DashboardButton"
-        android:drawableTop="@drawable/b_image"
-        android:text="@string/button_image_note" />
+        android:drawableTop="@drawable/camera"
+        android:text="@string/button_gallery_note" />
 
     <Button
         android:id="@+id/bAudioNote"
         style="@style/DashboardButton"
-        android:drawableTop="@drawable/b_voice"
+        android:drawableTop="@drawable/radio_microphone"
         android:text="@string/button_audio_note" />
-
-    <Button
-        android:id="@+id/bVideoNote"
-        style="@style/DashboardButton"
-        android:drawableTop="@drawable/b_video"
-        android:text="@string/button_video_note" />
 
     <Button
         android:id="@+id/bListNote"
         style="@style/DashboardButton"
-        android:drawableTop="@drawable/b_list"
+        android:drawableTop="@drawable/white_list"
         android:text="@string/button_list_note" />
 
     <Button
         android:id="@+id/bReminder"
         style="@style/DashboardButton"
-        android:drawableTop="@drawable/b_reminder"
+        android:drawableTop="@drawable/clock"
+        android:text="@string/button_reminder" />
+
+    <Button
+        android:id="@+id/bSync"
+        style="@style/DashboardButton"
+        android:drawableTop="@drawable/backup"
         android:text="@string/button_reminder" />
 
 </com.therap.javafest.utext.DashboardLayout>
