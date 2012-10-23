@@ -15,7 +15,8 @@
             style="@style/EditText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/et_note_hint" />
+            android:hint="@string/et_note_hint"
+            android:minLines="10" />
     </LinearLayout>
 
 </ScrollView>

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    android:background="#F5F1EE" >
+    android:background="#efefef" >
 
     <Button
         android:id="@+id/bTextNote"
@@ -36,9 +36,9 @@
         android:text="@string/button_reminder" />
 
     <Button
-        android:id="@+id/bSync"
+        android:id="@+id/bBackup"
         style="@style/DashboardButton"
         android:drawableTop="@drawable/backup"
-        android:text="@string/button_reminder" />
+        android:text="@string/button_backup" />
 
 </com.therap.javafest.utext.DashboardLayout>

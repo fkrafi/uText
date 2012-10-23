@@ -6,9 +6,10 @@
     <string name="title_activity_main">uText</string>
     <string name="button_text_note">Text Note</string>
     <string name="button_gallery_note">Gallery Note</string>
-    <string name="button_audio_note">Image Note</string>
+    <string name="button_audio_note">Audio Note</string>
     <string name="button_list_note">List Note</string>
     <string name="button_reminder">Reminder</string>
+    <string name="button_backup">Backup</string>
     <string name="title_activity_text_note">uText</string>
     <string name="title_activity_list_note">List Note</string>
     <string name="title_activity_gallery_note">Gallery Note</string>
@@ -18,5 +19,11 @@
     <string name="et_search_hint">Type Text to Search</string>
     <string name="et_note_hint">Remember to</string>
     <string name="iv_image_contentDescription">Select Image from Gallery or Take a New Snap</string>
+    <string name="title_activity_sign_in">SignInActivity</string>
+    <string name="tv_email_text">Email</string>
+    <string name="tv_password_text">Password</string>
+    <string name="b_sign_in">Sign In</string>
+    <string name="b_sign_up">Sign Up</string>
+    <string name="b_forget_password">Forget Password</string>
 
 </resources>

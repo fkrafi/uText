@@ -14,7 +14,8 @@ public class MainActivity extends GDActivity implements OnClickListener {
 	private static final int ACTION_BAR_SETTINGS = 1;
 	private static final int ACTION_BAR_SEARCH = 2;
 
-	private Button bTextNote, bGalleryNote, bReminder, bListNote, bAudioNote;
+	private Button bTextNote, bGalleryNote, bReminder, bListNote, bAudioNote,
+			bBackup;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,8 @@ public class MainActivity extends GDActivity implements OnClickListener {
 		bListNote.setOnClickListener(this);
 		bAudioNote = (Button) findViewById(R.id.bAudioNote);
 		bAudioNote.setOnClickListener(this);
+		bBackup = (Button) findViewById(R.id.bBackup);
+		bBackup.setOnClickListener(this);
 	}
 
 	@Override
@@ -64,6 +67,9 @@ public class MainActivity extends GDActivity implements OnClickListener {
 			break;
 		case R.id.bReminder:
 			startActivity(new Intent(this, ReminderNoteActivity.class));
+			break;
+		case R.id.bBackup:
+			startActivity(new Intent(this, SignInActivity.class));
 			break;
 		}
 
