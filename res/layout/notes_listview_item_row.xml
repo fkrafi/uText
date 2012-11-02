@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="7dp"
+    android:layout_marginTop="7dp"
+    android:background="@drawable/notes_itemview_row_item_background"
+    android:padding="1dp" >
+
+    <TextView
+        android:id="@+id/tvNote"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:textColor="#444444"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#dfdfdf"
+        android:padding="3dp" >
+
+        <TextView
+            android:id="@+id/tvDateTime"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#222222"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvNoteId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="right" >
+
+            <ImageView
+                android:id="@+id/ivList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/iv_cd_list_note"
+                android:src="@drawable/ic_listview_list" />
+
+            <ImageView
+                android:id="@+id/ivReminder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/iv_cd_reminder"
+                android:src="@drawable/ic_listview_reminder" />
+
+            <ImageView
+                android:id="@+id/ivGallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/iv_cd_gallery"
+                android:src="@drawable/ic_listview_camera" />
+
+            <ImageView
+                android:id="@+id/ivAudio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/iv_cd_audio"
+                android:src="@drawable/ic_listview_mic" />
+
+            <ImageView
+                android:id="@+id/ivLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/iv_cd_location"
+                android:src="@drawable/ic_listview_location" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

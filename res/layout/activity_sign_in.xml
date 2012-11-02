@@ -1,62 +1,72 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F1EE"
+    android:background="#efefef"
+    android:gravity="center"
     android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:contentDescription="@string/iv_cd_logo"
+        android:src="@drawable/utext_logo_color" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/tv_email_text" />
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:padding="10dp" >
 
         <EditText
             android:id="@+id/etEmail"
-            style="@style/EditText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
-
-        <TextView
-            android:id="@+id/tvPassword"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/tv_password_text" />
+            android:layout_marginBottom="5dp"
+            android:hint="@string/et_email"
+            android:inputType="textEmailAddress"
+            android:textSize="18sp" />
 
         <EditText
             android:id="@+id/etPassword"
-            style="@style/EditText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
+            android:layout_marginBottom="5dp"
+            android:hint="@string/et_password"
+            android:inputType="textPassword"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvForgetYourPassword"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:gravity="right"
+            android:text="@string/tv_forget_your_password"
+            android:textColor="#666666"
+            android:textSize="14sp" />
 
         <Button
-            android:id="@+id/bSignIn"
-            style="@style/Button"
+            android:id="@+id/bLogIn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/b_sign_in" />
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/log_in_button"
+            android:text="@string/b_log_in"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/bSignUp"
-            style="@style/Button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/b_sign_up" />
-
-        <Button
-            android:id="@+id/bForgetPassword"
-            style="@style/Button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/b_forget_password" />
+            android:background="@drawable/sign_up_button"
+            android:text="@string/b_sign_up"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
     </LinearLayout>
 
-</ScrollView>
+</LinearLayout>

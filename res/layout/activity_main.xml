@@ -1,44 +1,14 @@
-<com.therap.javafest.utext.DashboardLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="1"
     android:background="#efefef" >
 
-    <Button
-        android:id="@+id/bTextNote"
-        style="@style/DashboardButton"
-        android:drawableTop="@drawable/notepad"
-        android:text="@string/button_text_note" />
+    <ListView
+        android:id="@+id/lvNotes"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+    </ListView>
 
-    <Button
-        android:id="@+id/bGalleryNote"
-        style="@style/DashboardButton"
-        android:drawableTop="@drawable/camera"
-        android:text="@string/button_gallery_note" />
-
-    <Button
-        android:id="@+id/bAudioNote"
-        style="@style/DashboardButton"
-        android:drawableTop="@drawable/radio_microphone"
-        android:text="@string/button_audio_note" />
-
-    <Button
-        android:id="@+id/bListNote"
-        style="@style/DashboardButton"
-        android:drawableTop="@drawable/white_list"
-        android:text="@string/button_list_note" />
-
-    <Button
-        android:id="@+id/bReminder"
-        style="@style/DashboardButton"
-        android:drawableTop="@drawable/clock"
-        android:text="@string/button_reminder" />
-
-    <Button
-        android:id="@+id/bBackup"
-        style="@style/DashboardButton"
-        android:drawableTop="@drawable/backup"
-        android:text="@string/button_backup" />
-
-</com.therap.javafest.utext.DashboardLayout>
+</LinearLayout>

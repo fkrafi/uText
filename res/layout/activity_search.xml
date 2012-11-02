@@ -2,15 +2,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#efefef"
     android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/etSearch"
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#dedede"
+        android:padding="5dp" >
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/et_search_hint"
+            android:textSize="22sp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@null"
+            android:contentDescription="@string/ib_cd_mic"
+            android:paddingTop="4dp"
+            android:src="@drawable/ic_edittext_mic" />
+    </FrameLayout>
+
+    <ListView
+        android:id="@+id/lvNotes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/et_search_hint" >
-
-        <requestFocus />
-    </EditText>
+        android:padding="5dp" >
+    </ListView>
 
 </LinearLayout>

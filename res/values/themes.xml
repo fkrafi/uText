@@ -5,6 +5,7 @@
         <item name="gdActionBarTitleColor">#FFFDD0</item>
         <item name="gdActionBarBackground">@drawable/action_bar_background</item>
         <item name="gdActionBarDividerWidth">2px</item>
+        <item name="gdActionBarApplicationDrawable">@drawable/utext_logo_light</item>
     </style>
 
 </resources>

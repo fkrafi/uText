@@ -1,20 +1,22 @@
 package com.therap.javafest.utext;
 
+import greendroid.app.GDActivity;
+import greendroid.widget.ActionBarItem;
 import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
 
-public class SignInActivity extends Activity {
+public class SignInActivity extends GDActivity {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setActionBarContentView(R.layout.activity_sign_in);
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_sign_in, menu);
-        return true;
-    }
+	@Override
+	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
+		switch (item.getItemId()) {
+
+		}
+		return super.onHandleActionBarItemClick(item, position);
+	}
 }
