@@ -7,15 +7,48 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:padding="10dp" >
+        android:layout_height="fill_parent" >
 
-        <EditText
-            android:id="@+id/etNoteText"
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
-            android:minLines="6" />
+            android:orientation="vertical"
+            android:padding="10dp" >
+
+            <Button
+                android:id="@+id/bDate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/grey_button"
+                android:drawableLeft="@drawable/ic_menu_grey_calendar"
+                android:gravity="center_vertical|left"
+                android:textColor="#888888"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/bTime"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/grey_button"
+                android:drawableLeft="@drawable/ic_menu_grey_clock"
+                android:gravity="center_vertical|left"
+                android:textColor="#888888"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/etNoteText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="top"
+                android:inputType="none"
+                android:minLines="6" />
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout

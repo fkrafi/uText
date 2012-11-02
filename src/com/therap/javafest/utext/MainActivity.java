@@ -43,7 +43,7 @@ public class MainActivity extends GDActivity implements OnClickListener {
 			startActivity(new Intent(this, SearchActivity.class));
 			break;
 		case ACTION_BAR_ADD:
-			startActivity(new Intent(this, AddNoteActivity.class));
+			startActivity(new Intent(this, AddReminderActivity.class));
 			break;
 		}
 		return super.onHandleActionBarItemClick(item, position);
