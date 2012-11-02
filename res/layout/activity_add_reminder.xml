@@ -17,37 +17,39 @@
 
             <Button
                 android:id="@+id/bDate"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
+                style="@style/.Button"
                 android:background="@drawable/grey_button"
                 android:drawableLeft="@drawable/ic_menu_grey_calendar"
                 android:gravity="center_vertical|left"
-                android:textColor="#888888"
-                android:textSize="18sp" />
+                android:textColor="#888888" />
 
             <Button
                 android:id="@+id/bTime"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
+                style="@style/.Button"
                 android:background="@drawable/grey_button"
                 android:drawableLeft="@drawable/ic_menu_grey_clock"
                 android:gravity="center_vertical|left"
-                android:textColor="#888888"
-                android:textSize="18sp" />
+                android:textColor="#888888" />
 
-            <EditText
-                android:id="@+id/etNoteText"
+            <FrameLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
-                android:gravity="top"
-                android:inputType="none"
-                android:minLines="6" />
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/etNoteText"
+                    style="@style/.EditText"
+                    android:inputType="none"
+                    android:minLines="6" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:background="@null"
+                    android:contentDescription="@string/ib_cd_mic"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_edittext_mic" />
+            </FrameLayout>
         </LinearLayout>
     </ScrollView>
 

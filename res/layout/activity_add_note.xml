@@ -10,12 +10,25 @@
         android:layout_height="fill_parent"
         android:padding="10dp" >
 
-        <EditText
-            android:id="@+id/etNoteText"
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            android:minLines="6" />
+            android:layout_height="wrap_content" >
+
+            <EditText
+                android:id="@+id/etNoteText"
+                style="@style/.EditText"
+                android:inputType="none"
+                android:minLines="6" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:background="@null"
+                android:contentDescription="@string/ib_cd_mic"
+                android:padding="4dp"
+                android:src="@drawable/ic_edittext_mic" />
+        </FrameLayout>
     </ScrollView>
 
     <LinearLayout
