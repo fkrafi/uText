@@ -2,33 +2,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#efefef"
-    android:orientation="vertical" >
+    android:background="#efefef" >
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:padding="10dp" >
+        android:paddingBottom="75dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" >
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
             <EditText
-                android:id="@+id/etNoteText"
+                android:id="@+id/etListNoteTitle"
                 style="@style/.EditText"
-                android:inputType="none"
-                android:minLines="6" />
+                android:hint="@string/et_listnote_title_hint"
+                android:inputType="none" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/llListNoteItemsWrapper"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right|bottom"
-                android:background="@null"
-                android:contentDescription="@string/ib_cd_mic"
-                android:padding="4dp"
-                android:src="@drawable/ic_edittext_mic" />
-        </FrameLayout>
+                android:orientation="vertical" >
+
+                <com.therap.javafest.utext.ListNoteAddItemUI
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout
@@ -39,18 +44,11 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/bGallery"
+            android:id="@+id/bAddItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bottom_bar_button"
-            android:drawableLeft="@drawable/ic_menu_gallery" />
-
-        <Button
-            android:id="@+id/bAudio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bottom_bar_button"
-            android:drawableLeft="@drawable/ic_menu_mic" />
+            android:drawableLeft="@drawable/ic_menu_add" />
 
         <Button
             android:id="@+id/bLocation"

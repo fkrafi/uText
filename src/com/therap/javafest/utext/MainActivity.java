@@ -3,10 +3,14 @@ package com.therap.javafest.utext;
 import greendroid.app.GDActivity;
 import greendroid.widget.ActionBarItem;
 import greendroid.widget.ActionBarItem.Type;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class MainActivity extends GDActivity implements OnClickListener {
@@ -16,6 +20,7 @@ public class MainActivity extends GDActivity implements OnClickListener {
 	private static final int ACTION_BAR_ADD = 3;
 
 	private ListView lvNotes;
+	private Dialog dialogAddNoteOption;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,13 @@ public class MainActivity extends GDActivity implements OnClickListener {
 
 	private void Init() {
 		lvNotes = (ListView) findViewById(R.id.lvNotes);
+		lvNotes.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> adapter, View view, int pos,
+					long id) {
+				/*********** ListItemClicked **************/
+			}
+		});
+
 	}
 
 	@Override
@@ -43,16 +55,37 @@ public class MainActivity extends GDActivity implements OnClickListener {
 			startActivity(new Intent(this, SearchActivity.class));
 			break;
 		case ACTION_BAR_ADD:
-			startActivity(new Intent(this, AddReminderActivity.class));
+			dialogAddNoteOption = new Dialog(MainActivity.this);
+			dialogAddNoteOption.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			dialogAddNoteOption.setContentView(R.layout.note_type_dialog_items);
+			ListView lvAddNoteOptions = (ListView) dialogAddNoteOption
+					.findViewById(R.id.lvAddNoteOptions);
+			lvAddNoteOptions.setOnItemClickListener(new OnItemClickListener() {
+				public void onItemClick(AdapterView<?> adapter, View view,
+						int pos, long id) {
+					dialogAddNoteOption.dismiss();
+					switch (pos) {
+					case 0:
+						startActivity(new Intent(MainActivity.this,
+								AddMultiMediaNoteActivity.class));
+						break;
+					case 1:
+						startActivity(new Intent(MainActivity.this,
+								AddListNoteActivity.class));
+						break;
+					case 2:
+						startActivity(new Intent(MainActivity.this,
+								AddReminderActivity.class));
+						break;
+					}
+				}
+			});
+			dialogAddNoteOption.show();
 			break;
 		}
 		return super.onHandleActionBarItemClick(item, position);
 	}
 
 	public void onClick(View view) {
-		switch (view.getId()) {
-
-		}
-
 	}
 }

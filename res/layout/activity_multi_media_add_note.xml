@@ -18,21 +18,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/bDate"
-                style="@style/.Button"
-                android:background="@drawable/grey_button"
-                android:drawableLeft="@drawable/ic_menu_grey_calendar"
-                android:gravity="center_vertical|left"
-                android:textColor="#888888" />
-
-            <Button
-                android:id="@+id/bTime"
-                style="@style/.Button"
-                android:background="@drawable/grey_button"
-                android:drawableLeft="@drawable/ic_menu_grey_clock"
-                android:gravity="center_vertical|left"
-                android:textColor="#888888" />
+            <LinearLayout
+                android:id="@+id/llMultimedia"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+            </LinearLayout>
 
             <FrameLayout
                 android:layout_width="fill_parent"
@@ -45,6 +36,7 @@
                     android:minLines="6" />
 
                 <ImageButton
+                    android:id="@+id/ibASR"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|bottom"
@@ -62,6 +54,20 @@
         android:layout_alignParentBottom="true"
         android:background="#dedede"
         android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/bGallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bottom_bar_button"
+            android:drawableLeft="@drawable/ic_menu_gallery" />
+
+        <Button
+            android:id="@+id/bAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bottom_bar_button"
+            android:drawableLeft="@drawable/ic_menu_mic" />
 
         <Button
             android:id="@+id/bLocation"

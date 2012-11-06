@@ -20,4 +20,13 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-</resources>
+    <style name=".SeekBar">
+        <item name="android:progressDrawable">@drawable/seek_bar_line</item>
+        <item name="android:minHeight">13dip</item>
+        <item name="android:maxHeight">13dip</item>
+        <item name="android:thumb">@drawable/seek_bar_thumb</item>
+        <item name="android:thumbOffset">16dip</item>
+        <item name="android:paddingLeft">16dip</item>
+        <item name="android:paddingRight">16dip</item>
+    </style>
+</resources>

@@ -7,6 +7,12 @@
         android:minSdkVersion="7"
         android:targetSdkVersion="15" />
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature android:name="android.hardware.camera" />
+
     <application
         android:name=".UTextApplication"
         android:icon="@drawable/ic_launcher"
@@ -20,11 +26,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity" />
-        <activity android:name=".AddNoteActivity" />
+        <activity
+            android:name=".AddMultiMediaNoteActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".SignInActivity" />
         <activity android:name=".AddReminderActivity" />
         <activity android:name=".ViewNoteActivity" />
         <activity android:name=".ViewReminderActivity" />
+        <activity android:name=".AddListNoteActivity" />
     </application>
 
 </manifest>

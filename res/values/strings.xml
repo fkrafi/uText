@@ -18,5 +18,14 @@
     <string name="iv_cd_star">Important</string>
     <string name="iv_cd_logo">uText</string>
     <string name="ib_cd_mic">Speak</string>
+    <string name="et_listnote_title_hint">Title of the List Note</string>
+    <string name="ib_listnote_delete">Delete</string>
+    <string name="ib_cd_add_item">Add List Item</string>
+    <string name="b_from_gallery_text">Gallery</string>
+    <string name="b_from_camera_text">Image</string>
+    <string name="b_from_cam_recorder_text">Video</string>
+    <string name="iv_cd_image">Image</string>
+    <string name="ib_cd_delete">Delete</string>
+    <string name="ib_cd_play_stop">Play Stop</string>
 
 </resources>
