@@ -3,10 +3,11 @@ package com.therap.javafest.utext;
 import greendroid.app.GDActivity;
 import greendroid.widget.ActionBarItem;
 import greendroid.widget.ActionBarItem.Type;
-import android.app.AlertDialog;
+
+import java.util.ArrayList;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -22,13 +23,17 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.therap.javafest.utext.lib.AudioData;
+import com.therap.javafest.utext.lib.ImageData;
 import com.therap.javafest.utext.lib.ImageProcessing;
+import com.therap.javafest.utext.lib.MultiMediaNote;
+import com.therap.javafest.utext.lib.VideoData;
 import com.therap.javafest.utext.sqlitedb.AudioDataDB;
 import com.therap.javafest.utext.sqlitedb.ImageDataDB;
 import com.therap.javafest.utext.sqlitedb.MultiMediaNoteDB;
 import com.therap.javafest.utext.sqlitedb.VideoDataDB;
 
-public class AddMultiMediaNoteActivity extends GDActivity implements
+public class EditMultiMediaNoteActivity extends GDActivity implements
 		OnClickListener {
 
 	private static final int ACTION_BAR_SAVE = 1;
@@ -60,10 +65,17 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	private Dialog dialogAddNoteOption;
 	private ProgressDialog progressDialog;
 
+	private Intent intent;
+	private int mid;
+
+	private ArrayList<ImageData> id;
+	private ArrayList<AudioData> ad;
+	private ArrayList<VideoData> vd;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setActionBarContentView(R.layout.activity_add_multi_media_note);
+		setActionBarContentView(R.layout.activity_edit_multi_media_note);
 
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
 
@@ -71,31 +83,72 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	}
 
 	private void Init() {
-		videoDataDB = new VideoDataDB(AddMultiMediaNoteActivity.this);
-		imageDataDB = new ImageDataDB(AddMultiMediaNoteActivity.this);
-		audioDataDB = new AudioDataDB(AddMultiMediaNoteActivity.this);
-		multiMediaNoteDB = new MultiMediaNoteDB(AddMultiMediaNoteActivity.this);
-		ip = new ImageProcessing(AddMultiMediaNoteActivity.this);
+		intent = getIntent();
+		mid = Integer.parseInt(intent.getStringExtra("mid"));
 
-		etNoteText = (EditText) findViewById(R.id.etNoteText);
+		MultiMediaNote data = new MultiMediaNote();
+		
+		videoDataDB = new VideoDataDB(EditMultiMediaNoteActivity.this);
+		imageDataDB = new ImageDataDB(EditMultiMediaNoteActivity.this);
+		audioDataDB = new AudioDataDB(EditMultiMediaNoteActivity.this);
+		multiMediaNoteDB = new MultiMediaNoteDB(EditMultiMediaNoteActivity.this);
+		ip = new ImageProcessing(EditMultiMediaNoteActivity.this);
 
 		ibASR = (ImageButton) findViewById(R.id.ibASR);
 		ibASR.setOnClickListener(this);
-
 		bGallery = (Button) findViewById(R.id.bGallery);
 		bGallery.setOnClickListener(this);
-
 		bAudio = (Button) findViewById(R.id.bAudio);
 		bAudio.setOnClickListener(this);
-
 		bLocation = (Button) findViewById(R.id.bLocation);
 		bLocation.setOnClickListener(this);
 
+		audioDataDB = new AudioDataDB(EditMultiMediaNoteActivity.this);
+		imageDataDB = new ImageDataDB(EditMultiMediaNoteActivity.this);
+		videoDataDB = new VideoDataDB(EditMultiMediaNoteActivity.this);
+		multiMediaNoteDB = new MultiMediaNoteDB(EditMultiMediaNoteActivity.this);
+
+		data = multiMediaNoteDB.selectByMid(mid);
+
+		etNoteText = (EditText) findViewById(R.id.etNoteText);
+		etNoteText.setText(data.text);
+
 		bImportant = (Button) findViewById(R.id.bImportant);
 		bImportant.setOnClickListener(this);
+		if (data.is_important == 1) {
+			bImportant.setCompoundDrawablesWithIntrinsicBounds(
+					getBaseContext().getResources().getDrawable(
+							R.drawable.ic_menu_star_yellow), null, null, null);
+		}
 
 		llMultimedia = (LinearLayout) findViewById(R.id.llMultimedia);
 
+		id = imageDataDB.selectByMid(mid);
+		for (ImageData i : id) {
+			imageViewerUI = new ImageViewerUI(EditMultiMediaNoteActivity.this);
+			imageViewerUI.setImage(i.bitmapUri, this.getContentResolver());
+			imageViewerUI.setId(i.iid);
+			imageViewerUI.setDeleteEnable(false);
+			llMultimedia.addView(imageViewerUI);
+		}
+
+		ad = audioDataDB.selectByMid(mid);
+		for (AudioData a : ad) {
+			audioPlayerUI = new AudioPlayerUI(EditMultiMediaNoteActivity.this);
+			audioPlayerUI.setAudioUri(a.audioUri);
+			audioPlayerUI.setId(a.aid);
+			audioPlayerUI.setDeleteEnable(false);
+			llMultimedia.addView(audioPlayerUI);
+		}
+
+		vd = videoDataDB.selectByMid(mid);
+		for (VideoData v : vd) {
+			videoPlayerUI = new VideoPlayerUI(EditMultiMediaNoteActivity.this);
+			videoPlayerUI.setVideoUri(v.videoUri);
+			videoPlayerUI.setId(v.vid);
+			videoPlayerUI.setDeleteEnable(false);
+			llMultimedia.addView(videoPlayerUI);
+		}
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -107,15 +160,22 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 				View view = llMultimedia.getChildAt(i);
 				if (view.getClass() == AudioPlayerUI.class) {
 					audioPlayerUI = (AudioPlayerUI) view;
-					audioDataDB.insert(mid, audioPlayerUI.getUri().toString());
+					if (audioPlayerUI.getId() == R.string.default_id) {
+						audioDataDB.insert(mid, audioPlayerUI.getUri()
+								.toString());
+					}
 				} else if (view.getClass() == ImageViewerUI.class) {
 					imageViewerUI = (ImageViewerUI) view;
-					imageDataDB.insert(mid, imageViewerUI.getBitmapUri()
-							.toString());
+					if (imageViewerUI.getId() == R.string.default_id) {
+						imageDataDB.insert(mid, imageViewerUI.getBitmapUri()
+								.toString());
+					}
 				} else if (view.getClass() == VideoPlayerUI.class) {
 					videoPlayerUI = (VideoPlayerUI) view;
-					videoDataDB.insert(mid, videoPlayerUI.getVideoUri()
-							.toString());
+					if (videoPlayerUI.getId() == R.string.default_id) {
+						videoDataDB.insert(mid, videoPlayerUI.getVideoUri()
+								.toString());
+					}
 				}
 			}
 			progressDialog.dismiss();
@@ -138,39 +198,18 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 				saveNoteThread.start();
 				Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_LONG)
 						.show();
-				Intent intent = new Intent(AddMultiMediaNoteActivity.this,
-						MainActivity.class);
+				Intent intent = new Intent(EditMultiMediaNoteActivity.this,
+						ViewMultiMediaNoteActivity.class);
+				intent.putExtra("mid", mid);
 				startActivity(intent);
 			} else {
-				Toast.makeText(AddMultiMediaNoteActivity.this,
+				Toast.makeText(EditMultiMediaNoteActivity.this,
 						"Cannot Save Empty Multimedia Note!", Toast.LENGTH_LONG)
 						.show();
 			}
 			break;
 		}
 		return super.onHandleActionBarItemClick(item, position);
-	}
-
-	@Override
-	public void onBackPressed() {
-		String text = etNoteText.getText().toString();
-		int count = llMultimedia.getChildCount();
-		if (text.length() > 0 || count > 0) {
-			AlertDialog.Builder quitDialog = new AlertDialog.Builder(
-					AddMultiMediaNoteActivity.this);
-			quitDialog.setTitle("Do you want to quit without saving the note?");
-			quitDialog.setPositiveButton("Ok, Quit!",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							finish();
-						}
-
-					});
-			quitDialog.setNegativeButton("No", null);
-			quitDialog.show();
-		} else {
-			super.onBackPressed();
-		}
 	}
 
 	@Override
@@ -192,24 +231,24 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 		} else if (requestCode == REQUEST_AUDIO_RECORDING
 				&& resultCode == RESULT_OK) {
 			Uri audioUri = intent.getData();
-			audioPlayerUI = new AudioPlayerUI(AddMultiMediaNoteActivity.this);
+			audioPlayerUI = new AudioPlayerUI(EditMultiMediaNoteActivity.this);
 			audioPlayerUI.setAudioUri(audioUri);
 			llMultimedia.addView(audioPlayerUI);
 		} else if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
 			bitmapUri = intent.getData();
-			imageViewerUI = new ImageViewerUI(AddMultiMediaNoteActivity.this);
+			imageViewerUI = new ImageViewerUI(EditMultiMediaNoteActivity.this);
 			imageViewerUI.setImage(bitmapUri, this.getContentResolver());
 			llMultimedia.addView(imageViewerUI);
 		} else if (requestCode == REQUEST_IMAGE_CAMERA
 				&& resultCode == RESULT_OK) {
 			bitmapUri = ip.saveBitmap((Bitmap) intent.getExtras().get("data"));
-			imageViewerUI = new ImageViewerUI(AddMultiMediaNoteActivity.this);
+			imageViewerUI = new ImageViewerUI(EditMultiMediaNoteActivity.this);
 			imageViewerUI.setImage(bitmapUri, this.getContentResolver());
 			llMultimedia.addView(imageViewerUI);
 		} else if (requestCode == REQUEST_VIDEO_CAMERA
 				&& resultCode == RESULT_OK) {
 			Uri videoUri = intent.getData();
-			videoPlayerUI = new VideoPlayerUI(AddMultiMediaNoteActivity.this);
+			videoPlayerUI = new VideoPlayerUI(EditMultiMediaNoteActivity.this);
 			videoPlayerUI.setVideoUri(videoUri);
 			llMultimedia.addView(videoPlayerUI);
 		}
@@ -218,7 +257,7 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.bGallery:
-			dialogAddNoteOption = new Dialog(AddMultiMediaNoteActivity.this);
+			dialogAddNoteOption = new Dialog(EditMultiMediaNoteActivity.this);
 			dialogAddNoteOption.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			dialogAddNoteOption.setContentView(R.layout.gallery_dialog_items);
 			bFromGallery = (Button) dialogAddNoteOption
@@ -279,5 +318,4 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			break;
 		}
 	}
-
 }

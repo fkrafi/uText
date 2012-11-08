@@ -1,7 +1,10 @@
 package com.therap.javafest.utext;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,32 +16,38 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class AddImageViewerUI extends LinearLayout implements OnClickListener {
+import com.therap.javafest.utext.lib.ImageProcessing;
 
-	Bitmap bitmap;
+public class ImageViewerUI extends LinearLayout implements OnClickListener {
 
+	private Uri bitmapUri;
+	private Bitmap bitmap;
+
+	private ImageProcessing ip;
 	private Context context;
 	private ImageButton ibDelete;
 	private ImageView ivImage;
 	private TextView tvMediaType;
 	private LayoutInflater inflater;
 
-	public AddImageViewerUI(Context context) {
+	public ImageViewerUI(Context context) {
 		super(context);
 		this.context = context;
 		Init();
 	}
 
-	public AddImageViewerUI(Context context, AttributeSet attrs) {
+	public ImageViewerUI(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.context = context;
 		Init();
 	}
 
 	private void Init() {
+		ip = new ImageProcessing(context);
+
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.add_image_viewer_ui, this);
+		inflater.inflate(R.layout.image_viewer_ui, this);
 
 		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
 		ibDelete.setOnClickListener(this);
@@ -50,36 +59,44 @@ public class AddImageViewerUI extends LinearLayout implements OnClickListener {
 		tvMediaType.setText("1");
 	}
 
-	private Bitmap resize(Bitmap bitmap, int iwidth) {
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		double ratio = width / height;
-		int iheight = (int) (iwidth / ratio);
-		return Bitmap.createBitmap(iwidth, iheight, bitmap.getConfig());
+	public void setImage(Uri bitmapUri, ContentResolver cr) {
+		this.bitmapUri = bitmapUri;
+		bitmap = ip.uriToBitmap(bitmapUri, cr);
+		ivImage.setImageBitmap(ip.resize(bitmap, 250));
+		ivImage.setScaleType(ScaleType.FIT_XY);
 	}
 
-	public void setImage(Bitmap bitmap) {
-		this.bitmap = bitmap;
-		ivImage.setImageBitmap(resize(bitmap, 250));
-		// ivImage.setImageBitmap(bitmap);
-		ivImage.setScaleType(ScaleType.FIT_XY);
+	public void setBitmapUri(Uri bitmapUri) {
+		this.bitmapUri = bitmapUri;
+	}
+
+	public Uri getBitmapUri() {
+		return bitmapUri;
 	}
 
 	public Bitmap getImage() {
 		return bitmap;
 	}
 
-	public void setMediaType(String type) {
-		tvMediaType.setText(type);
+	public int getMediaType() {
+		return Integer.parseInt(tvMediaType.getText().toString());
 	}
 
-	public String getMediaType() {
-		return tvMediaType.getText().toString();
+	public void setDeleteEnable(boolean enable) {
+		if (enable == true) {
+			ibDelete.setVisibility(View.VISIBLE);
+		} else {
+			ibDelete.setVisibility(View.INVISIBLE);
+		}
 	}
 
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.ivImage:
+			Intent intent = new Intent(Intent.ACTION_VIEW, bitmapUri);
+			intent.putExtra(Intent.EXTRA_STREAM, bitmapUri);
+			intent.setDataAndType(bitmapUri, "image/jpeg");
+			context.startActivity(intent);
 			break;
 		case R.id.ibDelete:
 			((ViewManager) this.getParent()).removeView(this);

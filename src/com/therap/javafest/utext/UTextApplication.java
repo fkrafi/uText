@@ -6,7 +6,6 @@ public class UTextApplication extends GDApplication {
 
 	@Override
 	public Class<?> getHomeActivityClass() {
-		// TODO Auto-generated method stub
 		return MainActivity.class;
 	}
 

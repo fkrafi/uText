@@ -27,5 +27,12 @@
     <string name="iv_cd_image">Image</string>
     <string name="ib_cd_delete">Delete</string>
     <string name="ib_cd_play_stop">Play Stop</string>
+    <string name="audio_media_type">1</string>
+    <string name="image_media_type">2</string>
+    <string name="video_media_type">3</string>
+    <string name="location_media_type">4</string>
+    <string name="default_id">0</string>
+    <string name="title_activity_view_list_note">ViewListNoteActivity</string>
+    <string name="title_activity_edit_multi_media_note">EditMultiMediaNoteActivity</string>
 
 </resources>

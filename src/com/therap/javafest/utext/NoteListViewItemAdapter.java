@@ -1,63 +1,92 @@
 package com.therap.javafest.utext;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class NoteListViewItemAdapter extends ArrayAdapter<NoteListViewItem> {
-	private ArrayList<NoteListViewItem> items;
+import com.therap.javafest.utext.lib.NoteListItem;
 
-	public NoteListViewItemAdapter(Context context, int textViewResourceId,
-			ArrayList<NoteListViewItem> items) {
-		super(context, textViewResourceId, items);
-		this.items = items;
+public class NoteListViewItemAdapter extends BaseAdapter {
+	private ArrayList<NoteListItem> data;
+	private static LayoutInflater inflater = null;
+
+	public NoteListViewItemAdapter(Context context, ArrayList<NoteListItem> data) {
+		this.data = data;
+		inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	@Override
+	public int getCount() {
+		return data.size();
+	}
+
+	public Object getItem(int position) {
+		return position;
+	}
+
+	public long getItemId(int position) {
+		return position;
+	}
+
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (v == null) {
-			LayoutInflater inflater = (LayoutInflater) getContext()
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = inflater.inflate(R.layout.notes_listview_item_row, null);
 		}
-
-		NoteListViewItem item = items.get(position);
+		NoteListItem item = data.get(position);
 
 		if (item != null) {
-			TextView tvNote = (TextView) v.findViewById(R.id.tvNote);
+			TextView tvId = (TextView) v.findViewById(R.id.tvId);
+			TextView tvType = (TextView) v.findViewById(R.id.tvType);
+			TextView tvText = (TextView) v.findViewById(R.id.tvText);
 			TextView tvDateTime = (TextView) v.findViewById(R.id.tvDateTime);
 			ImageView ivList = (ImageView) v.findViewById(R.id.ivList);
 			ImageView ivReminder = (ImageView) v.findViewById(R.id.ivReminder);
 			ImageView ivGallery = (ImageView) v.findViewById(R.id.ivGallery);
 			ImageView ivAudio = (ImageView) v.findViewById(R.id.ivAudio);
+			ImageView ivVideo = (ImageView) v.findViewById(R.id.ivVideo);
 			ImageView ivLocation = (ImageView) v.findViewById(R.id.ivLocation);
 
-			tvNote.setText(item.getNote());
-			tvDateTime.setText(item.getDatetime());
+			tvId.setText(item.getId());
+			tvType.setText(String.valueOf(item.getType()));
+			tvText.setText(item.getText());
 
-			if (item.getList() == false) {
+			Timestamp ts = Timestamp.valueOf(item.getDateTime());
+			Date date = new Date(ts.getTime());
+			DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy hh:mm a");
+			tvDateTime.setText(dateFormat.format(date).toString());
+
+			if (item.getType() == NoteListItem.MULTIMEDIA_NOTE) {
 				ivList.setVisibility(View.INVISIBLE);
-			}
-			if (item.getReminder() == false) {
 				ivReminder.setVisibility(View.INVISIBLE);
+			} else if (item.getType() == NoteListItem.LIST_NOTE) {
+				ivList.setVisibility(View.VISIBLE);
+			} else if (item.getType() == NoteListItem.REMINDER) {
+				ivReminder.setVisibility(View.VISIBLE);
 			}
-			if (item.getGallery() == false) {
-				ivGallery.setVisibility(View.INVISIBLE);
+			if (item.getHasImage()) {
+				ivGallery.setVisibility(View.VISIBLE);
 			}
-			if (item.getAudio() == false) {
-				ivAudio.setVisibility(View.INVISIBLE);
+			if (item.getHasAudio()) {
+				ivAudio.setVisibility(View.VISIBLE);
 			}
-			if (item.getLocation() == false) {
-				ivLocation.setVisibility(View.INVISIBLE);
+			if (item.getHasVideo()) {
+				ivVideo.setVisibility(View.VISIBLE);
+			}
+			if (item.getHasLocation()) {
+				ivLocation.setVisibility(View.VISIBLE);
 			}
 		}
-		return super.getView(position, convertView, parent);
+		return v;
 	}
 }

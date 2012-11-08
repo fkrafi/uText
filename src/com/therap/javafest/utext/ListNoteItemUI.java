@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-public class ListNoteAddItemUI extends LinearLayout implements
+public class ListNoteItemUI extends LinearLayout implements
 		OnCheckedChangeListener, OnClickListener {
 
 	CheckBox cbDone;
@@ -23,7 +23,7 @@ public class ListNoteAddItemUI extends LinearLayout implements
 	Context context;
 	LinearLayout layout;
 
-	public ListNoteAddItemUI(Context context) {
+	public ListNoteItemUI(Context context) {
 		super(context);
 		this.context = context;
 		LayoutInflater layoutInflater = (LayoutInflater) context
@@ -33,7 +33,7 @@ public class ListNoteAddItemUI extends LinearLayout implements
 		Init();
 	}
 
-	public ListNoteAddItemUI(Context context, AttributeSet attrs) {
+	public ListNoteItemUI(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.context = context;
 		LayoutInflater layoutInflater = (LayoutInflater) context
@@ -74,11 +74,26 @@ public class ListNoteAddItemUI extends LinearLayout implements
 		return etText.getText().toString();
 	}
 
-	public void setDone(boolean checked) {
-		cbDone.setChecked(checked);
+	public void setTextEditable(boolean editable) {
+		etText.setEnabled(editable);
 	}
 
-	public boolean isChecked() {
-		return cbDone.isChecked();
+	public void setDone(int is_complete) {
+		cbDone.setChecked(is_complete == 1);
+	}
+
+	public int isDone() {
+		if (cbDone.isChecked() == true) {
+			return 1;
+		}
+		return 0;
+	}
+
+	public void setDeleteEnable(boolean enable) {
+		if (enable == true) {
+			ibDelete.setVisibility(View.VISIBLE);
+		} else {
+			ibDelete.setVisibility(View.INVISIBLE);
+		}
 	}
 }

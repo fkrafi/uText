@@ -6,7 +6,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,29 +14,32 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
-public class AddAudioPlayerUI extends LinearLayout implements OnClickListener,
+public class AudioPlayerUI extends LinearLayout implements OnClickListener,
 		OnCompletionListener, OnSeekBarChangeListener {
 
 	private Context context;
 
 	Uri audioUri = null;
 	private boolean playing = false;
-	private MediaPlayer mediaPlayer;
+
+	private TextView tvMediaType;
 	private SeekBar sbProgressBar;
+	private MediaPlayer mediaPlayer;
 	private LayoutInflater inflater;
 	private ImageButton ibPlayStop, ibDelete;
 
 	private Handler handler = new Handler();
 
-	public AddAudioPlayerUI(Context context) {
+	public AudioPlayerUI(Context context) {
 		super(context);
 		this.context = context;
 
 		Init();
 	}
 
-	public AddAudioPlayerUI(Context context, AttributeSet attrs) {
+	public AudioPlayerUI(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.context = context;
 		Init();
@@ -46,7 +48,9 @@ public class AddAudioPlayerUI extends LinearLayout implements OnClickListener,
 	private void Init() {
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.add_audio_player, this);
+		inflater.inflate(R.layout.audio_player_ui, this);
+
+		tvMediaType = (TextView) findViewById(R.id.tvMediaType);
 
 		mediaPlayer = new MediaPlayer();
 		mediaPlayer.setOnCompletionListener(this);
@@ -65,8 +69,20 @@ public class AddAudioPlayerUI extends LinearLayout implements OnClickListener,
 		this.audioUri = audioUri;
 	}
 
-	public Uri getUri(Uri audioUri) {
+	public Uri getUri() {
 		return audioUri;
+	}
+
+	public int getMediaType() {
+		return Integer.parseInt(tvMediaType.getText().toString());
+	}
+
+	public void setDeleteEnable(boolean enable) {
+		if (enable == true) {
+			ibDelete.setVisibility(View.VISIBLE);
+		} else {
+			ibDelete.setVisibility(View.INVISIBLE);
+		}
 	}
 
 	private void playStop() {
@@ -146,7 +162,6 @@ public class AddAudioPlayerUI extends LinearLayout implements OnClickListener,
 		mp.release();
 		sbProgressBar.setProgress(0);
 		ibPlayStop.setImageResource(R.drawable.ic_menu_play);
-		Log.d("Here", "Audio End");
 	}
 
 	public void onClick(View view) {

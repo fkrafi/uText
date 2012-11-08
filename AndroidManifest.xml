@@ -26,14 +26,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity" />
+        <activity android:name=".SignInActivity" />
         <activity
             android:name=".AddMultiMediaNoteActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SignInActivity" />
-        <activity android:name=".AddReminderActivity" />
-        <activity android:name=".ViewNoteActivity" />
-        <activity android:name=".ViewReminderActivity" />
         <activity android:name=".AddListNoteActivity" />
+        <activity android:name=".AddReminderActivity" />
+        <activity android:name=".ViewMultiMediaNoteActivity" />
+        <activity android:name=".ViewReminderActivity" />
+        <activity android:name=".ViewListNoteActivity" />
+        <activity android:name=".EditMultiMediaNoteActivity" />
     </application>
 
 </manifest>

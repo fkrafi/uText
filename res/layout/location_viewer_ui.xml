@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
+    android:background="#cdcdcd"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/iv_cd_location"
+        android:src="@drawable/ic_menu_location" />
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:textColor="#444444"
+            android:textSize="22sp" />
+
+        <ImageButton
+            android:id="@+id/ibDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:background="@null"
+            android:contentDescription="@string/ib_cd_delete"
+            android:padding="3dp"
+            android:src="@drawable/ic_menu_delete" />
+
+        <TextView
+            android:id="@+id/tvMediaType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/audio_media_type"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tvId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_id"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tvLocationX"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_id"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tvLocationY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_id"
+            android:visibility="invisible" />
+    </FrameLayout>
+
+</LinearLayout>
