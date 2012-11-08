@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -84,10 +85,15 @@ public class AddListNoteActivity extends GDActivity implements OnClickListener {
 				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				progressDialog.setMessage("Saving Your List Note");
 				progressDialog.show();
+				progressDialog.setOnDismissListener(new OnDismissListener() {
+					public void onDismiss(DialogInterface di) {
+						Toast.makeText(AddListNoteActivity.this,
+								"Saved Successfully!", Toast.LENGTH_LONG)
+								.show();
+					}
+				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_LONG)
-						.show();
 				Intent intent = new Intent(AddListNoteActivity.this,
 						MainActivity.class);
 				startActivity(intent);

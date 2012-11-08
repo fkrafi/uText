@@ -15,14 +15,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.therap.javafest.utext.lib.MultiMediaNote;
-import com.therap.javafest.utext.lib.NoteListItem;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.therap.javafest.utext.lib.MultiMediaNote;
+import com.therap.javafest.utext.lib.Note;
 
 public class MultiMediaNoteDB {
 
@@ -80,10 +80,10 @@ public class MultiMediaNoteDB {
 	public void update(int mid, String text, int important) {
 	}
 
-	public ArrayList<NoteListItem> selectForList() {
+	public ArrayList<Note> selectForList() {
 		open();
-		NoteListItem temp;
-		ArrayList<NoteListItem> ret = new ArrayList<NoteListItem>();
+		Note temp;
+		ArrayList<Note> ret = new ArrayList<Note>();
 		Cursor c = database.query(UTextDBHelper.DB_TABLE_MULTIMEDIA_NOTE,
 				new String[] { UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_MID,
 						UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_MODIFIED,
@@ -98,9 +98,8 @@ public class MultiMediaNoteDB {
 				.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_IS_ACTIVE);
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			if (c.getString(iActive).equals("1")) {
-				temp = new NoteListItem(c.getString(id),
-						NoteListItem.MULTIMEDIA_NOTE, c.getString(iText),
-						c.getString(iModified));
+				temp = new Note(c.getString(id), Note.MULTIMEDIA_NOTE,
+						c.getString(iText), c.getString(iModified));
 				ret.add(temp);
 			}
 		}
@@ -138,6 +137,38 @@ public class MultiMediaNoteDB {
 		ret.is_active = c.getInt(iActive);
 		ret.is_cloud = c.getInt(iCloud);
 
+		close();
+		return ret;
+	}
+
+	public ArrayList<MultiMediaNote> selectAll() {
+		open();
+		ArrayList<MultiMediaNote> ret = new ArrayList<MultiMediaNote>();
+		Cursor c = database.query(UTextDBHelper.DB_TABLE_MULTIMEDIA_NOTE, null,
+				null, null, null, null, null);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			MultiMediaNote temp = new MultiMediaNote();
+			temp.mid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_MID));
+			temp.created = c
+					.getString(c
+							.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_CREATED));
+			temp.modified = c
+					.getString(c
+							.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_MODIFIED));
+			temp.text = c.getString(c
+					.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_TEXT));
+			temp.is_important = c
+					.getInt(c
+							.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_IS_IMPORTANT));
+			temp.is_active = c
+					.getInt(c
+							.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_IS_ACTIVE));
+			temp.is_cloud = c
+					.getInt(c
+							.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_IS_CLOUD));
+			ret.add(temp);
+		}
 		close();
 		return ret;
 	}

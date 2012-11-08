@@ -4,14 +4,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.therap.javafest.utext.lib.NoteListItem;
-import com.therap.javafest.utext.lib.ReminderNote;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.therap.javafest.utext.lib.Note;
+import com.therap.javafest.utext.lib.ReminderNote;
 
 /************************************************************/
 /*			DB_TABLE_REMINDER = "reminder"					*/
@@ -79,10 +79,10 @@ public class ReminderNoteDB {
 	public void update(int mid, String text, int important) {
 	}
 
-	public ArrayList<NoteListItem> selectForList() {
+	public ArrayList<Note> selectForList() {
 		open();
-		NoteListItem temp;
-		ArrayList<NoteListItem> ret = new ArrayList<NoteListItem>();
+		Note temp;
+		ArrayList<Note> ret = new ArrayList<Note>();
 		Cursor c = database.query(UTextDBHelper.DB_TABLE_REMINDER,
 				new String[] { UTextDBHelper.REMINDER_COLUMN_RID,
 						UTextDBHelper.REMINDER_COLUMN_MODIFIED,
@@ -96,7 +96,7 @@ public class ReminderNoteDB {
 		int iActive = c.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_IS_ACTIVE);
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			if (c.getString(iActive).equals("1")) {
-				temp = new NoteListItem(c.getString(id), NoteListItem.REMINDER,
+				temp = new Note(c.getString(id), Note.REMINDER,
 						c.getString(iText), c.getString(iModified));
 				ret.add(temp);
 			}
@@ -138,6 +138,44 @@ public class ReminderNoteDB {
 		ret.is_active = c.getInt(iActive);
 		ret.is_cloud = c.getInt(iCloud);
 
+		close();
+		return ret;
+	}
+
+	public ArrayList<ReminderNote> selectAll() {
+		open();
+		ArrayList<ReminderNote> ret = new ArrayList<ReminderNote>();
+		Cursor c = database.query(UTextDBHelper.DB_TABLE_REMINDER, null, null,
+				null, null, null, null);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			ReminderNote temp = new ReminderNote();
+			temp.rid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_RID));
+			temp.created = c.getString(c
+					.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_CREATED));
+			temp.rdate = c
+					.getString(c
+							.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_REMINDER_DATE));
+			temp.text = c.getString(c
+					.getColumnIndex(UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_TEXT));
+			temp.rtime = c
+					.getString(c
+							.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_REMINDER_TIME));
+			temp.text = c.getString(c
+					.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_TEXT));
+			temp.modified = c.getString(c
+					.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_MODIFIED));
+			temp.is_important = c
+					.getInt(c
+							.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_IS_IMPORTANT));
+
+			temp.is_active = c.getInt(c
+					.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_IS_ACTIVE));
+
+			temp.is_cloud = c.getInt(c
+					.getColumnIndex(UTextDBHelper.REMINDER_COLUMN_IS_CLOUD));
+			ret.add(temp);
+		}
 		close();
 		return ret;
 	}

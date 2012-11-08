@@ -18,7 +18,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.therap.javafest.utext.lib.NoteListItem;
+import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.NoteRetriever;
 
 public class MainActivity extends GDActivity {
@@ -31,9 +31,9 @@ public class MainActivity extends GDActivity {
 	private Dialog dialogAddNoteOption;
 
 	private NoteListViewItemAdapter adapter;
-	private ArrayList<NoteListItem> allNotes;
+	private ArrayList<Note> allNotes;
 
-	private ArrayList<NoteListItem> notes;
+	private ArrayList<Note> notes;
 	private NoteRetriever noteRetriever;
 
 	@Override
@@ -54,8 +54,8 @@ public class MainActivity extends GDActivity {
 
 		noteRetriever = new NoteRetriever(MainActivity.this);
 
-		notes = new ArrayList<NoteListItem>();
-		allNotes = new ArrayList<NoteListItem>();
+		notes = new ArrayList<Note>();
+		allNotes = new ArrayList<Note>();
 
 		allNotes.addAll(noteRetriever.getAll());
 		notes = allNotes;
@@ -67,16 +67,16 @@ public class MainActivity extends GDActivity {
 			public void onItemClick(AdapterView<?> adapter, View view, int pos,
 					long id) {
 				Intent intent = null;
-				NoteListItem item = notes.get(pos);
-				if (item.getType() == NoteListItem.MULTIMEDIA_NOTE) {
+				Note item = notes.get(pos);
+				if (item.getType() == Note.MULTIMEDIA_NOTE) {
 					intent = new Intent(MainActivity.this,
 							ViewMultiMediaNoteActivity.class);
 					intent.putExtra("mid", item.getId());
-				} else if (item.getType() == NoteListItem.LIST_NOTE) {
+				} else if (item.getType() == Note.LIST_NOTE) {
 					intent = new Intent(MainActivity.this,
 							ViewListNoteActivity.class);
 					intent.putExtra("lsid", item.getId());
-				} else if (item.getType() == NoteListItem.REMINDER) {
+				} else if (item.getType() == Note.REMINDER) {
 					intent = new Intent(MainActivity.this,
 							ViewReminderActivity.class);
 					intent.putExtra("rid", item.getId());
@@ -121,7 +121,7 @@ public class MainActivity extends GDActivity {
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch (item.getItemId()) {
 		case ACTION_BAR_SYNC:
-			startActivity(new Intent(this, SignInActivity.class));
+			startActivity(new Intent(this, ExportDatabaseActivity.class));
 			finish();
 			break;
 		case ACTION_BAR_SEARCH:

@@ -14,13 +14,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.therap.javafest.utext.lib.NoteListItem;
+import com.therap.javafest.utext.lib.Note;
 
 public class NoteListViewItemAdapter extends BaseAdapter {
-	private ArrayList<NoteListItem> data;
+	private ArrayList<Note> data;
 	private static LayoutInflater inflater = null;
 
-	public NoteListViewItemAdapter(Context context, ArrayList<NoteListItem> data) {
+	public NoteListViewItemAdapter(Context context, ArrayList<Note> data) {
 		this.data = data;
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -43,7 +43,7 @@ public class NoteListViewItemAdapter extends BaseAdapter {
 		if (v == null) {
 			v = inflater.inflate(R.layout.notes_listview_item_row, null);
 		}
-		NoteListItem item = data.get(position);
+		Note item = data.get(position);
 
 		if (item != null) {
 			TextView tvId = (TextView) v.findViewById(R.id.tvId);
@@ -66,24 +66,29 @@ public class NoteListViewItemAdapter extends BaseAdapter {
 			DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy hh:mm a");
 			tvDateTime.setText(dateFormat.format(date).toString());
 
-			if (item.getType() == NoteListItem.MULTIMEDIA_NOTE) {
-				ivList.setVisibility(View.INVISIBLE);
-				ivReminder.setVisibility(View.INVISIBLE);
-			} else if (item.getType() == NoteListItem.LIST_NOTE) {
+			ivList.setVisibility(View.INVISIBLE);
+			ivReminder.setVisibility(View.INVISIBLE);
+			ivGallery.setVisibility(View.INVISIBLE);
+			ivAudio.setVisibility(View.INVISIBLE);
+			ivVideo.setVisibility(View.INVISIBLE);
+			ivLocation.setVisibility(View.INVISIBLE);
+
+			if (item.getType() == Note.LIST_NOTE) {
 				ivList.setVisibility(View.VISIBLE);
-			} else if (item.getType() == NoteListItem.REMINDER) {
+			} else if (item.getType() == Note.REMINDER) {
 				ivReminder.setVisibility(View.VISIBLE);
 			}
-			if (item.getHasImage()) {
+
+			if (item.getHasImage() == true) {
 				ivGallery.setVisibility(View.VISIBLE);
 			}
-			if (item.getHasAudio()) {
+			if (item.getHasAudio() == true) {
 				ivAudio.setVisibility(View.VISIBLE);
 			}
-			if (item.getHasVideo()) {
+			if (item.getHasVideo() == true) {
 				ivVideo.setVisibility(View.VISIBLE);
 			}
-			if (item.getHasLocation()) {
+			if (item.getHasLocation() == true) {
 				ivLocation.setVisibility(View.VISIBLE);
 			}
 		}

@@ -10,11 +10,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.ChildNote;
 import com.therap.javafest.utext.lib.ListNote;
@@ -80,6 +83,7 @@ public class ViewListNoteActivity extends GDActivity {
 		for (ChildNote c : cd) {
 			ListNoteItemUI item = new ListNoteItemUI(ViewListNoteActivity.this);
 			item.setText(c.text);
+			item.setId(c.cid);
 			item.setDone(c.is_complete);
 			item.setCheckDone(false);
 			item.setDeleteEnable(false);
@@ -96,9 +100,40 @@ public class ViewListNoteActivity extends GDActivity {
 		super.onBackPressed();
 	}
 
+	private void delete() {
+		Intent intent = new Intent(ViewListNoteActivity.this,
+				MainActivity.class);
+
+		int count = llListNoteItemsWrapper.getChildCount();
+		for (int i = 0; i < count; i++) {
+			childNoteDB.delete(llListNoteItemsWrapper.getChildAt(i).getId());
+		}
+
+		listNoteDB.delete(lsid);
+
+		Toast.makeText(ViewListNoteActivity.this, "Successfully Deleted!",
+				Toast.LENGTH_LONG).show();
+		startActivity(intent);
+		finish();
+	}
+
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch (item.getItemId()) {
+		case ACTION_BAR_DELETE:
+			AlertDialog.Builder quitDialog = new AlertDialog.Builder(
+					ViewListNoteActivity.this);
+			quitDialog.setTitle("Do you want to delete the note?");
+			quitDialog.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							delete();
+						}
+
+					});
+			quitDialog.setNegativeButton("No", null);
+			quitDialog.show();
+			break;
 		case ACTION_BAR_EDIT:
 			intent = new Intent(ViewListNoteActivity.this,
 					EditListNoteActivity.class);

@@ -38,6 +38,8 @@
         <activity android:name=".EditMultiMediaNoteActivity" />
         <activity android:name=".EditListNoteActivity" />
         <activity android:name=".UserVerificationActivity" />
+        <activity android:name=".EditReminderActivity" />
+        <activity android:name=".ExportDatabaseActivity" />
     </application>
 
 </manifest>

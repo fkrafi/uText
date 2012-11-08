@@ -85,76 +85,66 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 		intent = getIntent();
 		mid = Integer.parseInt(intent.getStringExtra("mid"));
 
-		try {
-			MultiMediaNote data = new MultiMediaNote();
+		MultiMediaNote data = new MultiMediaNote();
 
-			videoDataDB = new VideoDataDB(EditMultiMediaNoteActivity.this);
-			imageDataDB = new ImageDataDB(EditMultiMediaNoteActivity.this);
-			audioDataDB = new AudioDataDB(EditMultiMediaNoteActivity.this);
-			multiMediaNoteDB = new MultiMediaNoteDB(
-					EditMultiMediaNoteActivity.this);
-			ip = new ImageProcessing(EditMultiMediaNoteActivity.this);
+		videoDataDB = new VideoDataDB(EditMultiMediaNoteActivity.this);
+		imageDataDB = new ImageDataDB(EditMultiMediaNoteActivity.this);
+		audioDataDB = new AudioDataDB(EditMultiMediaNoteActivity.this);
+		multiMediaNoteDB = new MultiMediaNoteDB(EditMultiMediaNoteActivity.this);
+		ip = new ImageProcessing(EditMultiMediaNoteActivity.this);
 
-			ibASR = (ImageButton) findViewById(R.id.ibASR);
-			ibASR.setOnClickListener(this);
-			bGallery = (Button) findViewById(R.id.bGallery);
-			bGallery.setOnClickListener(this);
-			bAudio = (Button) findViewById(R.id.bAudio);
-			bAudio.setOnClickListener(this);
-			bLocation = (Button) findViewById(R.id.bLocation);
-			bLocation.setOnClickListener(this);
+		ibASR = (ImageButton) findViewById(R.id.ibASR);
+		ibASR.setOnClickListener(this);
+		bGallery = (Button) findViewById(R.id.bGallery);
+		bGallery.setOnClickListener(this);
+		bAudio = (Button) findViewById(R.id.bAudio);
+		bAudio.setOnClickListener(this);
+		bLocation = (Button) findViewById(R.id.bLocation);
+		bLocation.setOnClickListener(this);
 
-			audioDataDB = new AudioDataDB(EditMultiMediaNoteActivity.this);
-			imageDataDB = new ImageDataDB(EditMultiMediaNoteActivity.this);
-			videoDataDB = new VideoDataDB(EditMultiMediaNoteActivity.this);
-			multiMediaNoteDB = new MultiMediaNoteDB(
-					EditMultiMediaNoteActivity.this);
+		audioDataDB = new AudioDataDB(EditMultiMediaNoteActivity.this);
+		imageDataDB = new ImageDataDB(EditMultiMediaNoteActivity.this);
+		videoDataDB = new VideoDataDB(EditMultiMediaNoteActivity.this);
+		multiMediaNoteDB = new MultiMediaNoteDB(EditMultiMediaNoteActivity.this);
 
-			data = multiMediaNoteDB.selectByMid(mid);
+		data = multiMediaNoteDB.selectByMid(mid);
 
-			etNoteText = (EditText) findViewById(R.id.etNoteText);
-			etNoteText.setText(data.text);
+		etNoteText = (EditText) findViewById(R.id.etNoteText);
+		etNoteText.setText(data.text);
 
-			bImportant = (Button) findViewById(R.id.bImportant);
-			bImportant.setOnClickListener(this);
-			if (data.is_important == 1) {
-				important = 1;
-				bImportant.setCompoundDrawablesWithIntrinsicBounds(
-						getBaseContext().getResources().getDrawable(
-								R.drawable.ic_menu_star_yellow), null, null,
-						null);
-			}
+		bImportant = (Button) findViewById(R.id.bImportant);
+		bImportant.setOnClickListener(this);
+		if (data.is_important == 1) {
+			important = 1;
+			bImportant.setCompoundDrawablesWithIntrinsicBounds(
+					getBaseContext().getResources().getDrawable(
+							R.drawable.ic_menu_star_yellow), null, null, null);
+		}
 
-			llMultimedia = (LinearLayout) findViewById(R.id.llMultimedia);
+		llMultimedia = (LinearLayout) findViewById(R.id.llMultimedia);
 
-			id = imageDataDB.selectByMid(mid);
-			for (ImageData i : id) {
-				imageViewerUI = new ImageViewerUI(
-						EditMultiMediaNoteActivity.this);
-				imageViewerUI.setImage(i.bitmapUri, this.getContentResolver());
-				imageViewerUI.setId(i.iid);
-				llMultimedia.addView(imageViewerUI);
-			}
+		id = imageDataDB.selectByMid(mid);
+		for (ImageData i : id) {
+			imageViewerUI = new ImageViewerUI(EditMultiMediaNoteActivity.this);
+			imageViewerUI.setImage(i.bitmapUri, this.getContentResolver());
+			imageViewerUI.setId(i.iid);
+			llMultimedia.addView(imageViewerUI);
+		}
 
-			ad = audioDataDB.selectByMid(mid);
-			for (AudioData a : ad) {
-				audioPlayerUI = new AudioPlayerUI(
-						EditMultiMediaNoteActivity.this);
-				audioPlayerUI.setAudioUri(a.audioUri);
-				audioPlayerUI.setId(a.aid);
-				llMultimedia.addView(audioPlayerUI);
-			}
+		ad = audioDataDB.selectByMid(mid);
+		for (AudioData a : ad) {
+			audioPlayerUI = new AudioPlayerUI(EditMultiMediaNoteActivity.this);
+			audioPlayerUI.setAudioUri(a.audioUri);
+			audioPlayerUI.setId(a.aid);
+			llMultimedia.addView(audioPlayerUI);
+		}
 
-			vd = videoDataDB.selectByMid(mid);
-			for (VideoData v : vd) {
-				videoPlayerUI = new VideoPlayerUI(
-						EditMultiMediaNoteActivity.this);
-				videoPlayerUI.setVideoUri(v.videoUri);
-				videoPlayerUI.setId(v.vid);
-				llMultimedia.addView(videoPlayerUI);
-			}
-		} catch (Exception exp) {
-			Toast.makeText(this, exp.getMessage(), Toast.LENGTH_LONG).show();
+		vd = videoDataDB.selectByMid(mid);
+		for (VideoData v : vd) {
+			videoPlayerUI = new VideoPlayerUI(EditMultiMediaNoteActivity.this);
+			videoPlayerUI.setVideoUri(v.videoUri);
+			videoPlayerUI.setId(v.vid);
+			llMultimedia.addView(videoPlayerUI);
 		}
 
 	}

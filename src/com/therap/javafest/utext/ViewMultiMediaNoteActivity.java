@@ -87,7 +87,7 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 
 		ivImportant = (ImageView) findViewById(R.id.ivImportant);
 		if (data.is_important == 1) {
-			ivImportant.setImageResource(R.drawable.ic_menu_star_yellow);
+			ivImportant.setImageResource(R.drawable.ic_imageview_star_yellow);
 		}
 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);

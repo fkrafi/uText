@@ -50,8 +50,10 @@ public class ChildNoteDB {
 		contentValues.put(UTextDBHelper.CHILD_NOTE_COLUMN_TEXT, text);
 		contentValues.put(UTextDBHelper.CHILD_NOTE_COLUMN_IS_COMPLETE,
 				String.valueOf(done));
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED, curDateTime);
+		contentValues
+				.put(UTextDBHelper.CHILD_NOTE_COLUMN_MODIFIED, curDateTime);
 		contentValues.put(UTextDBHelper.CHILD_NOTE_COLUMN_IS_ACTIVE, 1);
+		contentValues.put(UTextDBHelper.CHILD_NOTE_COLUMN_IS_CLOUD, 0);
 		long id = database.insert(UTextDBHelper.DB_TABLE_CHILD_NOTE, null,
 				contentValues);
 		close();
@@ -63,8 +65,9 @@ public class ChildNoteDB {
 		Date date = new Date();
 		String curDateTime = (new Timestamp(date.getTime())).toString();
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED, curDateTime);
-		contentValues.put(UTextDBHelper.CHILD_NOTE_COLUMN_IS_ACTIVE, "0");
+		contentValues
+				.put(UTextDBHelper.CHILD_NOTE_COLUMN_MODIFIED, curDateTime);
+		contentValues.put(UTextDBHelper.CHILD_NOTE_COLUMN_IS_ACTIVE, 0);
 		database.update(UTextDBHelper.DB_TABLE_CHILD_NOTE, contentValues,
 				UTextDBHelper.CHILD_NOTE_COLUMN_CID + "=?",
 				new String[] { String.valueOf(cid) });
@@ -103,6 +106,34 @@ public class ChildNoteDB {
 			ret.add(temp);
 		}
 
+		close();
+		return ret;
+	}
+
+	public ArrayList<ChildNote> selectAll() {
+		open();
+		ArrayList<ChildNote> ret = new ArrayList<ChildNote>();
+		Cursor c = database.query(UTextDBHelper.DB_TABLE_CHILD_NOTE, null,
+				null, null, null, null, null);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			ChildNote temp = new ChildNote();
+			temp.cid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.CHILD_NOTE_COLUMN_CID));
+			temp.lsid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.CHILD_NOTE_COLUMN_LSID));
+			temp.text = c.getString(c
+					.getColumnIndex(UTextDBHelper.CHILD_NOTE_COLUMN_TEXT));
+			temp.modified = c
+					.getString(c
+							.getColumnIndex(UTextDBHelper.CHILD_NOTE_COLUMN_IS_COMPLETE));
+			temp.is_complete = c.getInt(c
+					.getColumnIndex(UTextDBHelper.CHILD_NOTE_COLUMN_MODIFIED));
+			temp.is_active = c.getInt(c
+					.getColumnIndex(UTextDBHelper.CHILD_NOTE_COLUMN_IS_ACTIVE));
+			temp.is_cloud = c.getInt(c
+					.getColumnIndex(UTextDBHelper.CHILD_NOTE_COLUMN_IS_CLOUD));
+			ret.add(temp);
+		}
 		close();
 		return ret;
 	}

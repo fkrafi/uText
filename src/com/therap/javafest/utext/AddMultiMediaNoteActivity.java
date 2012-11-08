@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -134,10 +135,15 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				progressDialog.setMessage("Saving Your Multimedia Note");
 				progressDialog.show();
+				progressDialog.setOnDismissListener(new OnDismissListener() {
+					public void onDismiss(DialogInterface di) {
+						Toast.makeText(AddMultiMediaNoteActivity.this,
+								"Saved Successfully!", Toast.LENGTH_LONG)
+								.show();
+					}
+				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_LONG)
-						.show();
 				Intent intent = new Intent(AddMultiMediaNoteActivity.this,
 						MainActivity.class);
 				startActivity(intent);

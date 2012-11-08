@@ -12,7 +12,7 @@ import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
 import com.therap.javafest.utext.sqlitedb.VideoDataDB;
 
 public class NoteRetriever {
-	private ArrayList<NoteListItem> notes;
+	private ArrayList<Note> notes;
 	private MultiMediaNoteDB multiMediaNoteDB;
 	private ImageDataDB imageDataDB;
 	private AudioDataDB audioDataDB;
@@ -21,7 +21,7 @@ public class NoteRetriever {
 	private ReminderNoteDB reminderNoteDB;
 
 	public NoteRetriever(Context context) {
-		notes = new ArrayList<NoteListItem>();
+		notes = new ArrayList<Note>();
 
 		multiMediaNoteDB = new MultiMediaNoteDB(context);
 		imageDataDB = new ImageDataDB(context);
@@ -35,13 +35,13 @@ public class NoteRetriever {
 		notes.addAll(getAllReminder());
 	}
 
-	public ArrayList<NoteListItem> getAll() {
+	public ArrayList<Note> getAll() {
 		return notes;
 	}
 
-	public ArrayList<NoteListItem> getAllMultiMediaNote() {
-		ArrayList<NoteListItem> mNotes = multiMediaNoteDB.selectForList();
-		for (NoteListItem mn : mNotes) {
+	public ArrayList<Note> getAllMultiMediaNote() {
+		ArrayList<Note> mNotes = multiMediaNoteDB.selectForList();
+		for (Note mn : mNotes) {
 			mn.setHasImage(imageDataDB.hasImage(Integer.parseInt(mn.getId())));
 			mn.setHasAudio(audioDataDB.hasAudio(Integer.parseInt(mn.getId())));
 			mn.setHasVideo(videoDataDB.hasVideo(Integer.parseInt(mn.getId())));
@@ -50,17 +50,17 @@ public class NoteRetriever {
 		return mNotes;
 	}
 
-	public ArrayList<NoteListItem> getAllListNote() {
-		ArrayList<NoteListItem> lNotes = listNoteDB.selectForList();
-		for (NoteListItem ln : lNotes) {
+	public ArrayList<Note> getAllListNote() {
+		ArrayList<Note> lNotes = listNoteDB.selectForList();
+		for (Note ln : lNotes) {
 			ln.setHasLocation(true);
 		}
 		return lNotes;
 	}
 
-	public ArrayList<NoteListItem> getAllReminder() {
-		ArrayList<NoteListItem> rNotes = reminderNoteDB.selectForList();
-		for (NoteListItem rn : rNotes) {
+	public ArrayList<Note> getAllReminder() {
+		ArrayList<Note> rNotes = reminderNoteDB.selectForList();
+		for (Note rn : rNotes) {
 			rn.setHasLocation(true);
 		}
 		return rNotes;

@@ -1,6 +1,6 @@
 package com.therap.javafest.utext.lib;
 
-public class NoteListItem {
+public class Note {
 	private String id = null;
 	private int type = 1;
 	private String text = null;
@@ -14,10 +14,10 @@ public class NoteListItem {
 	public static final int LIST_NOTE = 2;
 	public static final int REMINDER = 3;
 
-	public NoteListItem() {
+	public Note() {
 	}
 
-	public NoteListItem(String id, int type, String text, String datetime,
+	public Note(String id, int type, String text, String datetime,
 			boolean hasImage, boolean hasAudio, boolean hasVideo,
 			boolean hasLocation) {
 		this.id = id;
@@ -31,7 +31,7 @@ public class NoteListItem {
 
 	}
 
-	public NoteListItem(String id, int type, String text, String datetime) {
+	public Note(String id, int type, String text, String datetime) {
 		this.id = id;
 		this.type = type;
 		this.text = text;

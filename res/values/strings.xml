@@ -36,5 +36,7 @@
     <string name="title_activity_edit_multi_media_note">EditMultiMediaNoteActivity</string>
     <string name="title_activity_edit_list_note">EditListNoteActivity</string>
     <string name="title_activity_user_verification">UserVerificationActivity</string>
+    <string name="title_activity_edit_reminder">EditReminderActivity</string>
+    <string name="title_activity_export_database">ExportDatabaseActivity</string>
 
 </resources>

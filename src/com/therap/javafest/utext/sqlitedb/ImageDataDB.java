@@ -13,6 +13,17 @@ import android.net.Uri;
 
 import com.therap.javafest.utext.lib.ImageData;
 
+/****************************************************************/
+/*			DB_TABLE_IMAGE_DATA = "image_data";					*/
+/*			IMAGE_DATA_COLUMN_IID = "iid";						*/
+/*			IMAGE_DATA_COLUMN_MID = "mid";						*/
+/*			IMAGE_DATA_COLUMN_CREATED = "created";				*/
+/*			IMAGE_DATA_COLUMN_MODIFIED = "modified";			*/
+/*			IMAGE_DATA_COLUMN_DATA = "data";					*/
+/*			IMAGE_DATA_COLUMN_IS_ACTIVE = "is_active";			*/
+/*			IMAGE_DATA_COLUMN_IS_CLOUD = "is_cloud";			*/
+/****************************************************************/
+
 public class ImageDataDB {
 	private SQLiteDatabase database;
 	private UTextDBHelper helper;
@@ -72,8 +83,9 @@ public class ImageDataDB {
 		Cursor c = database.query(UTextDBHelper.DB_TABLE_IMAGE_DATA, null,
 				UTextDBHelper.IMAGE_DATA_COLUMN_MID + "=?",
 				new String[] { String.valueOf(mid) }, null, null, null);
+		int size = c.getCount();
 		close();
-		return (c.getCount() > 0);
+		return (size > 0);
 	}
 
 	public ArrayList<ImageData> selectByMid(int Mid) {
@@ -96,6 +108,33 @@ public class ImageDataDB {
 				temp.bitmapUri = Uri.parse(c.getString(iData));
 				ret.add(temp);
 			}
+		}
+		close();
+		return ret;
+	}
+
+	public ArrayList<ImageData> selectAll() {
+		open();
+		ArrayList<ImageData> ret = new ArrayList<ImageData>();
+		Cursor c = database.query(UTextDBHelper.DB_TABLE_IMAGE_DATA, null,
+				null, null, null, null, null);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			ImageData temp = new ImageData();
+			temp.iid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_IID));
+			temp.mid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_MID));
+			temp.created = c.getString(c
+					.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_CREATED));
+			temp.modified = c.getString(c
+					.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_MODIFIED));
+			temp.bitmapUri = Uri.parse(c.getString(c
+					.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_DATA)));
+			temp.is_active = c.getInt(c
+					.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_IS_ACTIVE));
+			temp.is_cloud = c.getInt(c
+					.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_IS_CLOUD));
+			ret.add(temp);
 		}
 		close();
 		return ret;

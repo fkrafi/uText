@@ -16,9 +16,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.View;
@@ -30,10 +28,10 @@ import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.therap.javafest.utext.lib.ReminderNote;
 import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
 
-public class AddReminderActivity extends GDActivity implements OnClickListener {
-
+public class EditReminderActivity extends GDActivity implements OnClickListener {
 	private static final int ACTION_BAR_SAVE = 1;
 	private static final int REQUEST_SPEECH = 1111;
 	private static final int DATE_PICKER_ID = 1010;
@@ -41,39 +39,50 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 
 	int important = 0;
 
-	private ReminderNoteDB reminderNoteDB;
-
 	private EditText etNoteText;
 	private ImageButton ibASR;
 	private Button bDate, bTime, bImportant, bLocation;
 
 	private ProgressDialog progressDialog;
 
+	private int rid;
+	private Intent intent;
+
+	private ReminderNoteDB reminderNoteDB;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setActionBarContentView(R.layout.activity_add_reminder);
-
-		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-
-		Init();
+		try {
+			super.onCreate(savedInstanceState);
+			setActionBarContentView(R.layout.activity_edit_reminder);
+			addActionBarItem(Type.Save, ACTION_BAR_SAVE);
+			Init();
+		} catch (Exception exp) {
+			Toast.makeText(this, exp.getMessage(), Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private void Init() {
-		reminderNoteDB = new ReminderNoteDB(AddReminderActivity.this);
+		intent = getIntent();
+		rid = Integer.parseInt(intent.getStringExtra("rid"));
 
-		Date date = new Date();
+		ReminderNote rn = new ReminderNote();
+
+		reminderNoteDB = new ReminderNoteDB(EditReminderActivity.this);
+
+		rn = reminderNoteDB.selectByLsid(rid);
+
 		bDate = (Button) findViewById(R.id.bDate);
-		DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy");
-		bDate.setText(dateFormat.format(date).toString());
-		bDate.setOnClickListener(this);
+		bDate.setText(rn.rdate);
+		bDate.setEnabled(false);
 
 		bTime = (Button) findViewById(R.id.bTime);
-		dateFormat = new SimpleDateFormat("hh:mm a");
-		bTime.setText(dateFormat.format(date));
-		bTime.setOnClickListener(this);
+		bTime.setText(rn.rtime);
+		bTime.setEnabled(false);
 
 		etNoteText = (EditText) findViewById(R.id.etNoteText);
+		etNoteText.setText(rn.text);
+
 		ibASR = (ImageButton) findViewById(R.id.ibASR);
 		ibASR.setOnClickListener(this);
 
@@ -82,6 +91,12 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 
 		bImportant = (Button) findViewById(R.id.bImportant);
 		bImportant.setOnClickListener(this);
+		if (rn.is_important == 1) {
+			important = 1;
+			bImportant.setCompoundDrawablesWithIntrinsicBounds(
+					getBaseContext().getResources().getDrawable(
+							R.drawable.ic_menu_star_yellow), null, null, null);
+		}
 
 	}
 
@@ -104,20 +119,15 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				progressDialog.setMessage("Saving Your Reminder");
 				progressDialog.show();
-				progressDialog.setOnDismissListener(new OnDismissListener() {
-					public void onDismiss(DialogInterface di) {
-						Toast.makeText(AddReminderActivity.this,
-								"Saved Successfully!", Toast.LENGTH_LONG)
-								.show();
-					}
-				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Intent intent = new Intent(AddReminderActivity.this,
+				Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_LONG)
+						.show();
+				Intent intent = new Intent(EditReminderActivity.this,
 						MainActivity.class);
 				startActivity(intent);
 			} else {
-				Toast.makeText(AddReminderActivity.this,
+				Toast.makeText(EditReminderActivity.this,
 						"Cannot Save Empty Reminder Note!", Toast.LENGTH_LONG)
 						.show();
 			}
@@ -148,11 +158,11 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	protected Dialog onCreateDialog(int id) {
 		Calendar c = Calendar.getInstance();
 		if (id == DATE_PICKER_ID) {
-			return (new DatePickerDialog(AddReminderActivity.this,
+			return (new DatePickerDialog(EditReminderActivity.this,
 					datePickerListener, c.get(Calendar.YEAR),
 					c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)));
 		} else if (id == TIME_PICKER_ID) {
-			return (new TimePickerDialog(AddReminderActivity.this,
+			return (new TimePickerDialog(EditReminderActivity.this,
 					timePickerListener, c.get(Calendar.HOUR_OF_DAY),
 					c.get(Calendar.MINUTE), false));
 		}
@@ -213,4 +223,5 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 			break;
 		}
 	}
+
 }

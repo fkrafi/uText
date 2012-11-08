@@ -11,7 +11,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.therap.javafest.utext.lib.ListNote;
-import com.therap.javafest.utext.lib.NoteListItem;
+import com.therap.javafest.utext.lib.Note;
 
 /****************************************************************/
 /*			DB_TABLE_LIST_NOTE = "list_note"					*/
@@ -66,7 +66,7 @@ public class ListNoteDB {
 		String curDateTime = (new Timestamp(date.getTime())).toString();
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED, curDateTime);
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE, "0");
+		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE, 0);
 		database.update(UTextDBHelper.DB_TABLE_LIST_NOTE, contentValues,
 				UTextDBHelper.LIST_NOTE_COLUMN_LSID + "=?",
 				new String[] { String.valueOf(lsid) });
@@ -75,10 +75,10 @@ public class ListNoteDB {
 	public void update(int mid, String text, int important) {
 	}
 
-	public ArrayList<NoteListItem> selectForList() {
+	public ArrayList<Note> selectForList() {
 		open();
-		NoteListItem temp;
-		ArrayList<NoteListItem> ret = new ArrayList<NoteListItem>();
+		Note temp;
+		ArrayList<Note> ret = new ArrayList<Note>();
 		Cursor c = database.query(UTextDBHelper.DB_TABLE_LIST_NOTE,
 				new String[] { UTextDBHelper.LIST_NOTE_COLUMN_LSID,
 						UTextDBHelper.LIST_NOTE_COLUMN_TITLE,
@@ -93,9 +93,8 @@ public class ListNoteDB {
 				.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE);
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			if (c.getString(iActive).equals("1")) {
-				temp = new NoteListItem(c.getString(id),
-						NoteListItem.LIST_NOTE, c.getString(iText),
-						c.getString(iModified));
+				temp = new Note(c.getString(id), Note.LIST_NOTE,
+						c.getString(iText), c.getString(iModified));
 				ret.add(temp);
 			}
 		}
@@ -134,6 +133,35 @@ public class ListNoteDB {
 		ret.is_active = c.getInt(iIS_ACTIVE);
 		ret.is_cloud = c.getInt(iIS_CLOUD);
 
+		close();
+		return ret;
+	}
+
+	public ArrayList<ListNote> selectAll() {
+		open();
+		ArrayList<ListNote> ret = new ArrayList<ListNote>();
+		Cursor c = database.query(UTextDBHelper.DB_TABLE_LIST_NOTE, null, null,
+				null, null, null, null);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			ListNote temp = new ListNote();
+			temp.lsid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_LSID));
+			temp.title = c.getString(c
+					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_TITLE));
+			temp.created = c.getString(c
+					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_CREATED));
+			temp.modified = c.getString(c
+					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED));
+			temp.is_important = c
+					.getInt(c
+							.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT));
+			temp.is_active = c.getInt(c
+					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE));
+			temp.is_cloud = c.getInt(c
+					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_CLOUD));
+
+			ret.add(temp);
+		}
 		close();
 		return ret;
 	}

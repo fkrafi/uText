@@ -71,7 +71,7 @@ public class ViewReminderActivity extends GDActivity {
 
 		ivImportant = (ImageView) findViewById(R.id.ivImportant);
 		if (rn.is_important == 1) {
-			ivImportant.setImageResource(R.drawable.ic_menu_star_yellow);
+			ivImportant.setImageResource(R.drawable.ic_imageview_star_yellow);
 		}
 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
@@ -116,6 +116,13 @@ public class ViewReminderActivity extends GDActivity {
 					});
 			quitDialog.setNegativeButton("No", null);
 			quitDialog.show();
+			break;
+		case ACTION_BAR_EDIT:
+			intent = new Intent(ViewReminderActivity.this,
+					EditListNoteActivity.class);
+			intent.putExtra("rid", String.valueOf(rid));
+			startActivity(intent);
+			finish();
 			break;
 		}
 		return super.onHandleActionBarItemClick(item, position);

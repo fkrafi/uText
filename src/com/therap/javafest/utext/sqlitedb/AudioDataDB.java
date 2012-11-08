@@ -13,6 +13,17 @@ import android.net.Uri;
 
 import com.therap.javafest.utext.lib.AudioData;
 
+/************************************************************************************/
+/*					DB_TABLE_AUDIO_DATA = "audio_data"								*/
+/*					AUDIO_DATA_COLUMN_AID = "aid";									*/
+/*					AUDIO_DATA_COLUMN_MID = "mid";									*/
+/*					AUDIO_DATA_COLUMN_CREATED = "created";							*/
+/*					AUDIO_DATA_COLUMN_MODIFIED = "modified";						*/
+/*					AUDIO_DATA_COLUMN_DATA = "data";								*/
+/*					AUDIO_DATA_COLUMN_IS_ACTIVE = "is_active";						*/
+/*					AUDIO_DATA_COLUMN_IS_CLOUD = "is_cloud";						*/
+/************************************************************************************/
+
 public class AudioDataDB {
 	private SQLiteDatabase database;
 	private UTextDBHelper helper;
@@ -72,8 +83,9 @@ public class AudioDataDB {
 		Cursor c = database.query(UTextDBHelper.DB_TABLE_AUDIO_DATA, null,
 				UTextDBHelper.AUDIO_DATA_COLUMN_MID + "=?",
 				new String[] { String.valueOf(mid) }, null, null, null);
+		int size = c.getCount();
 		close();
-		return (c.getCount() > 0);
+		return (size > 0);
 	}
 
 	public ArrayList<AudioData> selectByMid(int Mid) {
@@ -96,6 +108,33 @@ public class AudioDataDB {
 				temp.audioUri = Uri.parse(c.getString(iData));
 				ret.add(temp);
 			}
+		}
+		close();
+		return ret;
+	}
+
+	public ArrayList<AudioData> selectAll() {
+		open();
+		ArrayList<AudioData> ret = new ArrayList<AudioData>();
+		Cursor c = database.query(UTextDBHelper.DB_TABLE_AUDIO_DATA, null,
+				null, null, null, null, null);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			AudioData temp = new AudioData();
+			temp.aid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_AID));
+			temp.mid = c.getInt(c
+					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_MID));
+			temp.created = c.getString(c
+					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_CREATED));
+			temp.modified = c.getString(c
+					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_MODIFIED));
+			temp.audioUri = Uri.parse(c.getString(c
+					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_DATA)));
+			temp.is_active = c.getInt(c
+					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_IS_ACTIVE));
+			temp.is_cloud = c.getInt(c
+					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_IS_CLOUD));
+			ret.add(temp);
 		}
 		close();
 		return ret;
