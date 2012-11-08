@@ -56,7 +56,7 @@ public class ViewListNoteActivity extends GDActivity {
 
 		ivImportant = (ImageView) findViewById(R.id.ivImportant);
 		if (ln.is_important == 1) {
-			ivImportant.setImageResource(R.drawable.ic_menu_star_yellow);
+			ivImportant.setImageResource(R.drawable.ic_imageview_star_yellow);
 		}
 
 		Timestamp ts = Timestamp.valueOf(ln.modified);
@@ -81,6 +81,7 @@ public class ViewListNoteActivity extends GDActivity {
 			ListNoteItemUI item = new ListNoteItemUI(ViewListNoteActivity.this);
 			item.setText(c.text);
 			item.setDone(c.is_complete);
+			item.setCheckDone(false);
 			item.setDeleteEnable(false);
 			item.setTextEditable(false);
 			llListNoteItemsWrapper.addView(item);
@@ -98,7 +99,13 @@ public class ViewListNoteActivity extends GDActivity {
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch (item.getItemId()) {
-
+		case ACTION_BAR_EDIT:
+			intent = new Intent(ViewListNoteActivity.this,
+					EditListNoteActivity.class);
+			intent.putExtra("lsid", String.valueOf(lsid));
+			startActivity(intent);
+			finish();
+			break;
 		}
 		return super.onHandleActionBarItemClick(item, position);
 	}

@@ -38,7 +38,6 @@ public class AddListNoteActivity extends GDActivity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_add_list_note);
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-
 		Init();
 	}
 

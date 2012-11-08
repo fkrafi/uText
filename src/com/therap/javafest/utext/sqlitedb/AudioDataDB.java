@@ -84,15 +84,18 @@ public class AudioDataDB {
 				new String[] { String.valueOf(Mid) }, null, null, null);
 		int iid = c.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_AID);
 		int iData = c.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_DATA);
-
+		int iActive = c
+				.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_IS_ACTIVE);
 		if (c != null)
 			c.moveToFirst();
 
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-			AudioData temp = new AudioData();
-			temp.aid = c.getInt(iid);
-			temp.audioUri = Uri.parse(c.getString(iData));
-			ret.add(temp);
+			if (c.getInt(iActive) == 1) {
+				AudioData temp = new AudioData();
+				temp.aid = c.getInt(iid);
+				temp.audioUri = Uri.parse(c.getString(iData));
+				ret.add(temp);
+			}
 		}
 		close();
 		return ret;

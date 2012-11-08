@@ -1,14 +1,87 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="#efefef"
+    android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingBottom="75dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/llMultimedia"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/etNoteText"
+                    style="@style/.EditText"
+                    android:inputType="none"
+                    android:minLines="6" />
+
+                <ImageButton
+                    android:id="@+id/ibASR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:background="@null"
+                    android:contentDescription="@string/ib_cd_mic"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_edittext_mic" />
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/hello_world"
-        tools:context=".EditMultiMediaNoteActivity" />
+        android:layout_alignParentBottom="true"
+        android:background="#dedede"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/bGallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bottom_bar_button"
+            android:drawableLeft="@drawable/ic_menu_gallery" />
+
+        <Button
+            android:id="@+id/bAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bottom_bar_button"
+            android:drawableLeft="@drawable/ic_menu_mic" />
+
+        <Button
+            android:id="@+id/bLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bottom_bar_button"
+            android:drawableLeft="@drawable/ic_menu_location" />
+
+        <Button
+            android:id="@+id/bImportant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bottom_bar_button"
+            android:drawableLeft="@drawable/ic_menu_star" />
+    </LinearLayout>
 
 </RelativeLayout>

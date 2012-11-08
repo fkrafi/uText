@@ -171,7 +171,7 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 		case ACTION_BAR_EDIT:
 			Intent intent = new Intent(ViewMultiMediaNoteActivity.this,
 					EditMultiMediaNoteActivity.class);
-			intent.putExtra("mid", mid);
+			intent.putExtra("mid", String.valueOf(mid));
 			startActivity(intent);
 			finish();
 			break;

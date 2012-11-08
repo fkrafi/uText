@@ -1,10 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
     android:layout_marginBottom="10dp"
     android:layout_marginTop="10dp"
-    android:background="#efefef"
+    android:background="@drawable/listview_item_background"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -39,7 +38,9 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#cdcdcd" >
+        android:background="#cdcdcd"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" >
 
         <TextView
             android:id="@+id/tvDateTime"
@@ -47,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="#222222"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
 
         <LinearLayout
             android:layout_width="0dip"

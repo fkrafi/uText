@@ -84,15 +84,19 @@ public class VideoDataDB {
 				new String[] { String.valueOf(Mid) }, null, null, null);
 		int vid = c.getColumnIndex(UTextDBHelper.VIDEO_DATA_COLUMN_VID);
 		int iData = c.getColumnIndex(UTextDBHelper.VIDEO_DATA_COLUMN_DATA);
+		int iActive = c
+				.getColumnIndex(UTextDBHelper.VIDEO_DATA_COLUMN_IS_ACTIVE);
 
 		if (c != null)
 			c.moveToFirst();
 
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-			VideoData temp = new VideoData();
-			temp.vid = c.getInt(vid);
-			temp.videoUri = Uri.parse(c.getString(iData));
-			ret.add(temp);
+			if (c.getInt(iActive) == 1) {
+				VideoData temp = new VideoData();
+				temp.vid = c.getInt(vid);
+				temp.videoUri = Uri.parse(c.getString(iData));
+				ret.add(temp);
+			}
 		}
 		close();
 		return ret;

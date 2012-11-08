@@ -84,15 +84,18 @@ public class ImageDataDB {
 				new String[] { String.valueOf(Mid) }, null, null, null);
 		int iid = c.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_IID);
 		int iData = c.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_DATA);
-
+		int iActive = c
+				.getColumnIndex(UTextDBHelper.IMAGE_DATA_COLUMN_IS_ACTIVE);
 		if (c != null)
 			c.moveToFirst();
 
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-			ImageData temp = new ImageData();
-			temp.iid = c.getInt(iid);
-			temp.bitmapUri = Uri.parse(c.getString(iData));
-			ret.add(temp);
+			if (c.getInt(iActive) == 1) {
+				ImageData temp = new ImageData();
+				temp.iid = c.getInt(iid);
+				temp.bitmapUri = Uri.parse(c.getString(iData));
+				ret.add(temp);
+			}
 		}
 		close();
 		return ret;

@@ -26,24 +26,21 @@ public class ListNoteItemUI extends LinearLayout implements
 	public ListNoteItemUI(Context context) {
 		super(context);
 		this.context = context;
-		LayoutInflater layoutInflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		layout = (LinearLayout) layoutInflater.inflate(
-				R.layout.listnote_add_item_ui, this);
 		Init();
 	}
 
 	public ListNoteItemUI(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.context = context;
-		LayoutInflater layoutInflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		layout = (LinearLayout) layoutInflater.inflate(
-				R.layout.listnote_add_item_ui, this);
 		Init();
 	}
 
 	private void Init() {
+		LayoutInflater layoutInflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		layout = (LinearLayout) layoutInflater.inflate(
+				R.layout.listnote_add_item_ui, this);
+
 		cbDone = (CheckBox) layout.findViewById(R.id.cbDone);
 		cbDone.setOnCheckedChangeListener(this);
 		etText = (EditText) layout.findViewById(R.id.etText);
@@ -95,5 +92,9 @@ public class ListNoteItemUI extends LinearLayout implements
 		} else {
 			ibDelete.setVisibility(View.INVISIBLE);
 		}
+	}
+
+	public void setCheckDone(boolean flag) {
+		cbDone.setClickable(flag);
 	}
 }

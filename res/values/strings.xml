@@ -34,5 +34,7 @@
     <string name="default_id">0</string>
     <string name="title_activity_view_list_note">ViewListNoteActivity</string>
     <string name="title_activity_edit_multi_media_note">EditMultiMediaNoteActivity</string>
+    <string name="title_activity_edit_list_note">EditListNoteActivity</string>
+    <string name="title_activity_user_verification">UserVerificationActivity</string>
 
 </resources>
