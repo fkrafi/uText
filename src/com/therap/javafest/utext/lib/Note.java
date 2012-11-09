@@ -9,6 +9,8 @@ public class Note {
 	private boolean hasAudio = false;
 	private boolean hasVideo = false;
 	private boolean hasLocation = false;
+	private int count = 0;
+	private int important = 0;
 
 	public static final int MULTIMEDIA_NOTE = 1;
 	public static final int LIST_NOTE = 2;
@@ -18,8 +20,8 @@ public class Note {
 	}
 
 	public Note(String id, int type, String text, String datetime,
-			boolean hasImage, boolean hasAudio, boolean hasVideo,
-			boolean hasLocation) {
+			int important, boolean hasImage, boolean hasAudio,
+			boolean hasVideo, boolean hasLocation, int count) {
 		this.id = id;
 		this.type = type;
 		this.text = text;
@@ -28,14 +30,8 @@ public class Note {
 		this.hasAudio = hasAudio;
 		this.hasVideo = hasVideo;
 		this.hasLocation = hasLocation;
-
-	}
-
-	public Note(String id, int type, String text, String datetime) {
-		this.id = id;
-		this.type = type;
-		this.text = text;
-		this.datetime = datetime;
+		this.count = count;
+		this.important = important;
 	}
 
 	public void setId(String id) {
@@ -101,4 +97,21 @@ public class Note {
 	public boolean getHasLocation() {
 		return hasLocation;
 	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setImportant(int important) {
+		this.important = important;
+	}
+
+	public int getImportant() {
+		return important;
+	}
+
 }

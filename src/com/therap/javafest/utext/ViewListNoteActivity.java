@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -37,6 +39,8 @@ public class ViewListNoteActivity extends GDActivity {
 	private ImageView ivImportant;
 	private LinearLayout llListNoteItemsWrapper;
 	private TextView tvDateTime, tvLocation, tvTitle;
+
+	private ProgressDialog progressDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +68,7 @@ public class ViewListNoteActivity extends GDActivity {
 
 		Timestamp ts = Timestamp.valueOf(ln.modified);
 		Date date = new Date(ts.getTime());
-		DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy hh:mm a");
+		DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 		tvDateTime = (TextView) findViewById(R.id.tvDateTime);
 		tvDateTime.setText(dateFormat.format(date).toString());
 
@@ -88,6 +92,7 @@ public class ViewListNoteActivity extends GDActivity {
 			item.setCheckDone(false);
 			item.setDeleteEnable(false);
 			item.setTextEditable(false);
+			item.setTextFocused(false);
 			llListNoteItemsWrapper.addView(item);
 		}
 	}
@@ -97,24 +102,19 @@ public class ViewListNoteActivity extends GDActivity {
 		Intent intent = new Intent(ViewListNoteActivity.this,
 				MainActivity.class);
 		startActivity(intent);
-		super.onBackPressed();
+		finish();
 	}
 
-	private void delete() {
-		Intent intent = new Intent(ViewListNoteActivity.this,
-				MainActivity.class);
-
-		int count = llListNoteItemsWrapper.getChildCount();
-		for (int i = 0; i < count; i++) {
-			childNoteDB.delete(llListNoteItemsWrapper.getChildAt(i).getId());
+	private class DeleteNoteThread extends Thread {
+		public void run() {
+			int count = llListNoteItemsWrapper.getChildCount();
+			for (int i = 0; i < count; i++) {
+				childNoteDB
+						.delete(llListNoteItemsWrapper.getChildAt(i).getId());
+			}
+			listNoteDB.delete(lsid);
+			progressDialog.dismiss();
 		}
-
-		listNoteDB.delete(lsid);
-
-		Toast.makeText(ViewListNoteActivity.this, "Successfully Deleted!",
-				Toast.LENGTH_LONG).show();
-		startActivity(intent);
-		finish();
 	}
 
 	@Override
@@ -123,13 +123,34 @@ public class ViewListNoteActivity extends GDActivity {
 		case ACTION_BAR_DELETE:
 			AlertDialog.Builder quitDialog = new AlertDialog.Builder(
 					ViewListNoteActivity.this);
-			quitDialog.setTitle("Do you want to delete the note?");
+			quitDialog.setTitle("Do you want to delete this list note?");
 			quitDialog.setPositiveButton("Yes",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							delete();
+							progressDialog = new ProgressDialog(
+									ViewListNoteActivity.this);
+							progressDialog
+									.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+							progressDialog
+									.setMessage("Deleting your list note");
+							progressDialog.show();
+							progressDialog
+									.setOnDismissListener(new OnDismissListener() {
+										public void onDismiss(DialogInterface di) {
+											Toast.makeText(
+													ViewListNoteActivity.this,
+													"Deleted Successfully!",
+													Toast.LENGTH_LONG).show();
+											Intent intent = new Intent(
+													ViewListNoteActivity.this,
+													MainActivity.class);
+											startActivity(intent);
+											finish();
+										}
+									});
+							DeleteNoteThread deleteNoteThread = new DeleteNoteThread();
+							deleteNoteThread.start();
 						}
-
 					});
 			quitDialog.setNegativeButton("No", null);
 			quitDialog.show();

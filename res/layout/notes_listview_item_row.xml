@@ -1,15 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:layout_marginTop="10dp"
-    android:background="@drawable/listview_item_background"
+    android:background="@drawable/list_selector"
     android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#dfdfdf"
         android:padding="5dp" >
 
         <TextView
@@ -17,8 +14,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:textColor="#444444"
-            android:textSize="14sp" />
+            android:textColor="#040404"
+            android:textSize="18dip" />
 
         <TextView
             android:id="@+id/tvId"
@@ -38,7 +35,7 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#cdcdcd"
+        android:paddingBottom="5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp" >
 
@@ -47,8 +44,8 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="#222222"
-            android:textSize="10sp" />
+            android:textColor="#343434"
+            android:textSize="12sp" />
 
         <LinearLayout
             android:layout_width="0dip"
@@ -61,6 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/iv_cd_list_note"
+                android:padding="2dp"
                 android:src="@drawable/ic_listview_list"
                 android:visibility="invisible" />
 
@@ -69,6 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/iv_cd_reminder"
+                android:padding="2dp"
                 android:src="@drawable/ic_listview_reminder"
                 android:visibility="invisible" />
 
@@ -77,6 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/iv_cd_gallery"
+                android:padding="2dp"
                 android:src="@drawable/ic_listview_camera"
                 android:visibility="invisible" />
 
@@ -85,6 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/iv_cd_audio"
+                android:padding="2dp"
                 android:src="@drawable/ic_listview_mic"
                 android:visibility="invisible" />
 
@@ -93,6 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/iv_cd_audio"
+                android:padding="2dp"
                 android:src="@drawable/ic_listview_video"
                 android:visibility="invisible" />
 
@@ -101,6 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/iv_cd_location"
+                android:padding="2dp"
                 android:src="@drawable/ic_listview_location"
                 android:visibility="invisible" />
         </LinearLayout>

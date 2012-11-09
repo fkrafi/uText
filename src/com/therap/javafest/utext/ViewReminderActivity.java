@@ -10,7 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -35,6 +37,8 @@ public class ViewReminderActivity extends GDActivity {
 	private Button bDate, bTime;
 	private TextView tvDateTime, tvLocation, tvText;
 
+	private ProgressDialog progressDialog;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,7 +61,7 @@ public class ViewReminderActivity extends GDActivity {
 
 		Timestamp ts = Timestamp.valueOf(rn.modified);
 		Date date = new Date(ts.getTime());
-		DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy hh:mm a");
+		DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 		tvDateTime = (TextView) findViewById(R.id.tvDateTime);
 		tvDateTime.setText(dateFormat.format(date).toString());
 
@@ -82,14 +86,11 @@ public class ViewReminderActivity extends GDActivity {
 
 	}
 
-	private void delete() {
-		Intent intent = new Intent(ViewReminderActivity.this,
-				MainActivity.class);
-		reminderNoteDB.delete(rid);
-		Toast.makeText(ViewReminderActivity.this, "Successfully Deleted!",
-				Toast.LENGTH_LONG).show();
-		startActivity(intent);
-		finish();
+	private class DeleteNoteThread extends Thread {
+		public void run() {
+			reminderNoteDB.delete(rid);
+			progressDialog.dismiss();
+		}
 	}
 
 	@Override
@@ -97,7 +98,7 @@ public class ViewReminderActivity extends GDActivity {
 		Intent intent = new Intent(ViewReminderActivity.this,
 				MainActivity.class);
 		startActivity(intent);
-		super.onBackPressed();
+		finish();
 	}
 
 	@Override
@@ -110,7 +111,28 @@ public class ViewReminderActivity extends GDActivity {
 			quitDialog.setPositiveButton("Yes",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							delete();
+							progressDialog = new ProgressDialog(
+									ViewReminderActivity.this);
+							progressDialog
+									.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+							progressDialog.setMessage("Deleting Your Reminder");
+							progressDialog.show();
+							progressDialog
+									.setOnDismissListener(new OnDismissListener() {
+										public void onDismiss(DialogInterface di) {
+											Toast.makeText(
+													ViewReminderActivity.this,
+													"Deleted Successfully!",
+													Toast.LENGTH_LONG).show();
+											Intent intent = new Intent(
+													ViewReminderActivity.this,
+													MainActivity.class);
+											startActivity(intent);
+											finish();
+										}
+									});
+							DeleteNoteThread deleteNoteThread = new DeleteNoteThread();
+							deleteNoteThread.start();
 						}
 
 					});
@@ -119,7 +141,7 @@ public class ViewReminderActivity extends GDActivity {
 			break;
 		case ACTION_BAR_EDIT:
 			intent = new Intent(ViewReminderActivity.this,
-					EditListNoteActivity.class);
+					EditReminderActivity.class);
 			intent.putExtra("rid", String.valueOf(rid));
 			startActivity(intent);
 			finish();

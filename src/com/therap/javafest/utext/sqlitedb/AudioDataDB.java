@@ -13,23 +13,12 @@ import android.net.Uri;
 
 import com.therap.javafest.utext.lib.AudioData;
 
-/************************************************************************************/
-/*					DB_TABLE_AUDIO_DATA = "audio_data"								*/
-/*					AUDIO_DATA_COLUMN_AID = "aid";									*/
-/*					AUDIO_DATA_COLUMN_MID = "mid";									*/
-/*					AUDIO_DATA_COLUMN_CREATED = "created";							*/
-/*					AUDIO_DATA_COLUMN_MODIFIED = "modified";						*/
-/*					AUDIO_DATA_COLUMN_DATA = "data";								*/
-/*					AUDIO_DATA_COLUMN_IS_ACTIVE = "is_active";						*/
-/*					AUDIO_DATA_COLUMN_IS_CLOUD = "is_cloud";						*/
-/************************************************************************************/
-
 public class AudioDataDB {
 	private SQLiteDatabase database;
-	private UTextDBHelper helper;
+	private DBHelper helper;
 
 	public AudioDataDB(Context context) {
-		helper = new UTextDBHelper(context);
+		helper = new DBHelper(context);
 	}
 
 	public void open() throws SQLException {
@@ -42,36 +31,24 @@ public class AudioDataDB {
 
 	public long insert(long mid, String audioUri) {
 		open();
-
 		Date date = new Date();
 		String curDateTime = (new Timestamp(date.getTime())).toString();
-
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(UTextDBHelper.AUDIO_DATA_COLUMN_MID,
-				String.valueOf(mid));
-		contentValues.put(UTextDBHelper.AUDIO_DATA_COLUMN_CREATED, curDateTime);
-		contentValues.put(UTextDBHelper.AUDIO_DATA_COLUMN_DATA, audioUri);
-		contentValues
-				.put(UTextDBHelper.AUDIO_DATA_COLUMN_MODIFIED, curDateTime);
-		contentValues.put(UTextDBHelper.AUDIO_DATA_COLUMN_IS_ACTIVE, "1");
-		long id = database.insert(UTextDBHelper.DB_TABLE_AUDIO_DATA, null,
+		contentValues.put(DBHelper.AUDIO_DATA_COLUMN_MID, String.valueOf(mid));
+		contentValues.put(DBHelper.AUDIO_DATA_COLUMN_CREATED, curDateTime);
+		contentValues.put(DBHelper.AUDIO_DATA_COLUMN_AUDIO_URI, audioUri);
+		contentValues.put(DBHelper.AUDIO_DATA_COLUMN_MODIFIED, curDateTime);
+		long id = database.insert(DBHelper.DB_TABLE_AUDIO_DATA, null,
 				contentValues);
 		close();
 		return id;
 	}
 
-	public void delete(int mid, int aid) {
+	public void delete(int aid) {
 		open();
-		Date date = new Date();
-		String curDateTime = (new Timestamp(date.getTime())).toString();
-		ContentValues contentValues = new ContentValues();
-		contentValues
-				.put(UTextDBHelper.AUDIO_DATA_COLUMN_MODIFIED, curDateTime);
-		contentValues.put(UTextDBHelper.AUDIO_DATA_COLUMN_IS_ACTIVE, "0");
-		database.update(UTextDBHelper.DB_TABLE_AUDIO_DATA, contentValues,
-				UTextDBHelper.AUDIO_DATA_COLUMN_MID + "=? AND "
-						+ UTextDBHelper.AUDIO_DATA_COLUMN_AID + "=?",
-				new String[] { String.valueOf(mid), String.valueOf(aid) });
+		database.delete(DBHelper.DB_TABLE_AUDIO_DATA,
+				DBHelper.AUDIO_DATA_COLUMN_AID + "=?",
+				new String[] { String.valueOf(aid) });
 		close();
 	}
 
@@ -80,34 +57,33 @@ public class AudioDataDB {
 
 	public boolean hasAudio(int mid) {
 		open();
-		Cursor c = database.query(UTextDBHelper.DB_TABLE_AUDIO_DATA, null,
-				UTextDBHelper.AUDIO_DATA_COLUMN_MID + "=?",
+		Cursor c = database.query(DBHelper.DB_TABLE_AUDIO_DATA, null,
+				DBHelper.AUDIO_DATA_COLUMN_MID + "=?",
 				new String[] { String.valueOf(mid) }, null, null, null);
 		int size = c.getCount();
 		close();
 		return (size > 0);
 	}
 
-	public ArrayList<AudioData> selectByMid(int Mid) {
+	public ArrayList<AudioData> selectByMid(int mid) {
 		open();
 		ArrayList<AudioData> ret = new ArrayList<AudioData>();
-		Cursor c = database.query(UTextDBHelper.DB_TABLE_AUDIO_DATA, null,
-				UTextDBHelper.AUDIO_DATA_COLUMN_MID + "=?",
-				new String[] { String.valueOf(Mid) }, null, null, null);
-		int iid = c.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_AID);
-		int iData = c.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_DATA);
-		int iActive = c
-				.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_IS_ACTIVE);
-		if (c != null)
-			c.moveToFirst();
-
+		Cursor c = database.query(DBHelper.DB_TABLE_AUDIO_DATA, null,
+				DBHelper.AUDIO_DATA_COLUMN_MID + "=?",
+				new String[] { String.valueOf(mid) }, null, null, null);
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-			if (c.getInt(iActive) == 1) {
-				AudioData temp = new AudioData();
-				temp.aid = c.getInt(iid);
-				temp.audioUri = Uri.parse(c.getString(iData));
-				ret.add(temp);
-			}
+			AudioData temp = new AudioData();
+			temp.aid = c.getInt(c
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_AID));
+			temp.mid = c.getInt(c
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_MID));
+			temp.created = c.getString(c
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_CREATED));
+			temp.modified = c.getString(c
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_MODIFIED));
+			temp.audioUri = Uri.parse(c.getString(c
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_AUDIO_URI)));
+			ret.add(temp);
 		}
 		close();
 		return ret;
@@ -116,27 +92,31 @@ public class AudioDataDB {
 	public ArrayList<AudioData> selectAll() {
 		open();
 		ArrayList<AudioData> ret = new ArrayList<AudioData>();
-		Cursor c = database.query(UTextDBHelper.DB_TABLE_AUDIO_DATA, null,
-				null, null, null, null, null);
+		Cursor c = database.query(DBHelper.DB_TABLE_AUDIO_DATA, null, null,
+				null, null, null, null);
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			AudioData temp = new AudioData();
 			temp.aid = c.getInt(c
-					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_AID));
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_AID));
 			temp.mid = c.getInt(c
-					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_MID));
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_MID));
 			temp.created = c.getString(c
-					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_CREATED));
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_CREATED));
 			temp.modified = c.getString(c
-					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_MODIFIED));
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_MODIFIED));
 			temp.audioUri = Uri.parse(c.getString(c
-					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_DATA)));
-			temp.is_active = c.getInt(c
-					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_IS_ACTIVE));
-			temp.is_cloud = c.getInt(c
-					.getColumnIndex(UTextDBHelper.AUDIO_DATA_COLUMN_IS_CLOUD));
+					.getColumnIndex(DBHelper.AUDIO_DATA_COLUMN_AUDIO_URI)));
 			ret.add(temp);
 		}
 		close();
 		return ret;
+	}
+
+	public void deleteAllByMid(int mid) {
+		open();
+		database.delete(DBHelper.DB_TABLE_AUDIO_DATA,
+				DBHelper.AUDIO_DATA_COLUMN_MID + "=?",
+				new String[] { String.valueOf(mid) });
+		close();
 	}
 }

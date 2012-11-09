@@ -8,20 +8,23 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.NoteRetriever;
 
 public class MainActivity extends GDActivity {
+
+	private Context context;
 
 	private static final int ACTION_BAR_SYNC = 1;
 	private static final int ACTION_BAR_SEARCH = 2;
@@ -40,19 +43,18 @@ public class MainActivity extends GDActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_main);
-
 		addActionBarItem(Type.Share, ACTION_BAR_SYNC);
 		addActionBarItem(Type.Search, ACTION_BAR_SEARCH);
 		addActionBarItem(Type.Add, ACTION_BAR_ADD);
-
 		Init();
 		createFolders();
 	}
 
 	private void Init() {
+		context = MainActivity.this;
 		lvNotes = (ListView) findViewById(R.id.lvNotes);
 
-		noteRetriever = new NoteRetriever(MainActivity.this);
+		noteRetriever = new NoteRetriever(context);
 
 		notes = new ArrayList<Note>();
 		allNotes = new ArrayList<Note>();
@@ -69,15 +71,15 @@ public class MainActivity extends GDActivity {
 				Intent intent = null;
 				Note item = notes.get(pos);
 				if (item.getType() == Note.MULTIMEDIA_NOTE) {
-					intent = new Intent(MainActivity.this,
+					intent = new Intent(context,
 							ViewMultiMediaNoteActivity.class);
 					intent.putExtra("mid", item.getId());
 				} else if (item.getType() == Note.LIST_NOTE) {
-					intent = new Intent(MainActivity.this,
+					intent = new Intent(context,
 							ViewListNoteActivity.class);
 					intent.putExtra("lsid", item.getId());
 				} else if (item.getType() == Note.REMINDER) {
-					intent = new Intent(MainActivity.this,
+					intent = new Intent(context,
 							ViewReminderActivity.class);
 					intent.putExtra("rid", item.getId());
 				}
@@ -85,7 +87,7 @@ public class MainActivity extends GDActivity {
 					startActivity(intent);
 					finish();
 				} catch (Exception exp) {
-					Toast.makeText(MainActivity.this, exp.getMessage(),
+					Toast.makeText(context, exp.getMessage(),
 							Toast.LENGTH_LONG).show();
 				}
 			}
@@ -129,7 +131,7 @@ public class MainActivity extends GDActivity {
 			finish();
 			break;
 		case ACTION_BAR_ADD:
-			dialogAddNoteOption = new Dialog(MainActivity.this);
+			dialogAddNoteOption = new Dialog(context);
 			dialogAddNoteOption.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			dialogAddNoteOption.setContentView(R.layout.note_type_dialog_items);
 			ListView lvAddNoteOptions = (ListView) dialogAddNoteOption
@@ -140,17 +142,17 @@ public class MainActivity extends GDActivity {
 					dialogAddNoteOption.dismiss();
 					switch (pos) {
 					case 0:
-						startActivity(new Intent(MainActivity.this,
+						startActivity(new Intent(context,
 								AddMultiMediaNoteActivity.class));
 						finish();
 						break;
 					case 1:
-						startActivity(new Intent(MainActivity.this,
+						startActivity(new Intent(context,
 								AddListNoteActivity.class));
 						finish();
 						break;
 					case 2:
-						startActivity(new Intent(MainActivity.this,
+						startActivity(new Intent(context,
 								AddReminderActivity.class));
 						finish();
 						break;

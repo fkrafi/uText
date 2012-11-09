@@ -65,9 +65,7 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_add_multi_media_note);
-
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-
 		Init();
 	}
 
@@ -120,7 +118,6 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 				}
 			}
 			progressDialog.dismiss();
-			finish();
 		}
 	}
 
@@ -140,13 +137,15 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 						Toast.makeText(AddMultiMediaNoteActivity.this,
 								"Saved Successfully!", Toast.LENGTH_LONG)
 								.show();
+						Intent intent = new Intent(
+								AddMultiMediaNoteActivity.this,
+								MainActivity.class);
+						startActivity(intent);
+						finish();
 					}
 				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Intent intent = new Intent(AddMultiMediaNoteActivity.this,
-						MainActivity.class);
-				startActivity(intent);
 			} else {
 				Toast.makeText(AddMultiMediaNoteActivity.this,
 						"Cannot Save Empty Multimedia Note!", Toast.LENGTH_LONG)
@@ -164,10 +163,14 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 		if (text.length() > 0 || count > 0) {
 			AlertDialog.Builder quitDialog = new AlertDialog.Builder(
 					AddMultiMediaNoteActivity.this);
-			quitDialog.setTitle("Do you want to quit without saving the note?");
+			quitDialog.setTitle("Do You Want To Quit Without Saving The Note?");
 			quitDialog.setPositiveButton("Ok, Quit!",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
+							Intent intent = new Intent(
+									AddMultiMediaNoteActivity.this,
+									MainActivity.class);
+							startActivity(intent);
 							finish();
 						}
 
@@ -175,7 +178,10 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			quitDialog.setNegativeButton("No", null);
 			quitDialog.show();
 		} else {
-			super.onBackPressed();
+			Intent intent = new Intent(AddMultiMediaNoteActivity.this,
+					MainActivity.class);
+			startActivity(intent);
+			finish();
 		}
 	}
 
@@ -183,7 +189,6 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-
 		if (requestCode == REQUEST_SPEECH && resultCode == RESULT_OK) {
 			String text = etNoteText.getText().toString();
 			String sentence = intent.getStringArrayListExtra(

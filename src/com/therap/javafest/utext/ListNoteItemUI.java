@@ -97,4 +97,8 @@ public class ListNoteItemUI extends LinearLayout implements
 	public void setCheckDone(boolean flag) {
 		cbDone.setClickable(flag);
 	}
+
+	public void setTextFocused(boolean b) {
+		etText.setFocusable(b);
+	}
 }

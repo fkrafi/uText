@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -78,6 +80,15 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 		setActionBarContentView(R.layout.activity_edit_multi_media_note);
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
 		Init();
+	}
+
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(EditMultiMediaNoteActivity.this,
+				ViewMultiMediaNoteActivity.class);
+		intent.putExtra("mid", String.valueOf(mid));
+		startActivity(intent);
+		finish();
 	}
 
 	private void Init() {
@@ -152,32 +163,27 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 	private class SaveNoteThread extends Thread {
 		public void run() {
 			String text = etNoteText.getText().toString();
-			long mid = multiMediaNoteDB.insert(text, important);
+			multiMediaNoteDB.update(mid, text, important);
+			audioDataDB.deleteAllByMid(mid);
+			imageDataDB.deleteAllByMid(mid);
+			videoDataDB.deleteAllByMid(mid);
 			int count = llMultimedia.getChildCount();
 			for (int i = 0; i < count; i++) {
 				View view = llMultimedia.getChildAt(i);
 				if (view.getClass() == AudioPlayerUI.class) {
 					audioPlayerUI = (AudioPlayerUI) view;
-					if (audioPlayerUI.getId() == R.string.default_id) {
-						audioDataDB.insert(mid, audioPlayerUI.getUri()
-								.toString());
-					}
+					audioDataDB.insert(mid, audioPlayerUI.getUri().toString());
 				} else if (view.getClass() == ImageViewerUI.class) {
 					imageViewerUI = (ImageViewerUI) view;
-					if (imageViewerUI.getId() == R.string.default_id) {
-						imageDataDB.insert(mid, imageViewerUI.getBitmapUri()
-								.toString());
-					}
+					imageDataDB.insert(mid, imageViewerUI.getBitmapUri()
+							.toString());
 				} else if (view.getClass() == VideoPlayerUI.class) {
 					videoPlayerUI = (VideoPlayerUI) view;
-					if (videoPlayerUI.getId() == R.string.default_id) {
-						videoDataDB.insert(mid, videoPlayerUI.getVideoUri()
-								.toString());
-					}
+					videoDataDB.insert(mid, videoPlayerUI.getVideoUri()
+							.toString());
 				}
 			}
 			progressDialog.dismiss();
-			finish();
 		}
 	}
 
@@ -191,15 +197,22 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 				progressDialog = new ProgressDialog(this);
 				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				progressDialog.setMessage("Saving Your Multimedia Note");
+				progressDialog.setOnDismissListener(new OnDismissListener() {
+					public void onDismiss(DialogInterface di) {
+						Toast.makeText(EditMultiMediaNoteActivity.this,
+								"Saved Successfully!", Toast.LENGTH_LONG)
+								.show();
+						Intent intent = new Intent(
+								EditMultiMediaNoteActivity.this,
+								ViewMultiMediaNoteActivity.class);
+						intent.putExtra("mid", String.valueOf(mid));
+						startActivity(intent);
+						finish();
+					}
+				});
 				progressDialog.show();
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_LONG)
-						.show();
-				Intent intent = new Intent(EditMultiMediaNoteActivity.this,
-						ViewMultiMediaNoteActivity.class);
-				intent.putExtra("mid", mid);
-				startActivity(intent);
 			} else {
 				Toast.makeText(EditMultiMediaNoteActivity.this,
 						"Cannot Save Empty Multimedia Note!", Toast.LENGTH_LONG)

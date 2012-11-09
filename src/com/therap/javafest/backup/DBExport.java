@@ -23,7 +23,7 @@ import com.therap.javafest.utext.sqlitedb.ImageDataDB;
 import com.therap.javafest.utext.sqlitedb.ListNoteDB;
 import com.therap.javafest.utext.sqlitedb.MultiMediaNoteDB;
 import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
-import com.therap.javafest.utext.sqlitedb.UTextDBHelper;
+import com.therap.javafest.utext.sqlitedb.DBHelper;
 import com.therap.javafest.utext.sqlitedb.VideoDataDB;
 
 public class DBExport {
@@ -77,19 +77,15 @@ public class DBExport {
 			data += "\"" + String.valueOf(ad.mid) + "\",";
 			data += "\"" + ad.created + "\",";
 			data += "\"" + ad.modified + "\",";
-			data += "\"" + ad.audioUri + "\",";
-			data += "\"" + String.valueOf(ad.is_active) + "\",";
-			data += "\"" + String.valueOf(ad.is_cloud) + "\"\n";
+			data += "\"" + ad.audioUri + "\"\n";
 		}
 
 		for (ChildNote cd : childNote) {
 			data += "\"" + String.valueOf(cd.cid) + "\",";
 			data += "\"" + String.valueOf(cd.lsid) + "\",";
-			data += "\"" + cd.text + "\",";
-			data += "\"" + String.valueOf(cd.is_complete) + "\",";
 			data += "\"" + cd.modified + "\",";
-			data += "\"" + String.valueOf(cd.is_active) + "\",";
-			data += "\"" + String.valueOf(cd.is_cloud) + "\"\n";
+			data += "\"" + cd.text + "\",";
+			data += "\"" + String.valueOf(cd.is_complete) + "\"\n";
 		}
 
 		for (ImageData id : imageData) {
@@ -97,9 +93,7 @@ public class DBExport {
 			data += "\"" + String.valueOf(id.mid) + "\",";
 			data += "\"" + id.created + "\",";
 			data += "\"" + id.modified + "\",";
-			data += "\"" + id.bitmapUri + "\",";
-			data += "\"" + String.valueOf(id.is_active) + "\",";
-			data += "\"" + String.valueOf(id.is_cloud) + "\"\n";
+			data += "\"" + id.bitmapUri + "\"\n";
 		}
 
 		for (ListNote ln : listNote) {
@@ -107,9 +101,7 @@ public class DBExport {
 			data += "\"" + String.valueOf(ln.title) + "\",";
 			data += "\"" + ln.created + "\",";
 			data += "\"" + ln.modified + "\",";
-			data += "\"" + String.valueOf(ln.is_important) + "\",";
-			data += "\"" + String.valueOf(ln.is_active) + "\",";
-			data += "\"" + String.valueOf(ln.is_cloud) + "\"\n";
+			data += "\"" + String.valueOf(ln.is_important) + "\"\n";
 		}
 
 		for (MultiMediaNote mmn : multiMediaNote) {
@@ -117,21 +109,17 @@ public class DBExport {
 			data += "\"" + mmn.created + "\",";
 			data += "\"" + mmn.modified + "\",";
 			data += "\"" + mmn.text + "\",";
-			data += "\"" + String.valueOf(mmn.is_important) + "\",";
-			data += "\"" + String.valueOf(mmn.is_active) + "\",";
-			data += "\"" + String.valueOf(mmn.is_cloud) + "\"\n";
+			data += "\"" + String.valueOf(mmn.is_important) + "\"\n";
 		}
 
 		for (ReminderNote rn : reminderNote) {
 			data += "\"" + String.valueOf(rn.rid) + "\",";
 			data += "\"" + rn.created + "\",";
+			data += "\"" + rn.modified + "\",";
 			data += "\"" + rn.rdate + "\",";
 			data += "\"" + rn.rtime + "\",";
-			data += "\"" + rn.modified + "\",";
 			data += "\"" + rn.text + "\",";
-			data += "\"" + String.valueOf(rn.is_important) + "\",";
-			data += "\"" + String.valueOf(rn.is_active) + "\",";
-			data += "\"" + String.valueOf(rn.is_cloud) + "\"\n";
+			data += "\"" + String.valueOf(rn.is_important) + "\"\n";
 		}
 
 		for (VideoData vd : videoData) {
@@ -139,9 +127,7 @@ public class DBExport {
 			data += "\"" + String.valueOf(vd.mid) + "\",";
 			data += "\"" + vd.created + "\",";
 			data += "\"" + vd.modified + "\",";
-			data += "\"" + vd.videoUri.toString() + "\",";
-			data += "\"" + String.valueOf(vd.is_active) + "\",";
-			data += "\"" + String.valueOf(vd.is_cloud) + "\"\n";
+			data += "\"" + vd.videoUri.toString() + "\"\n";
 		}
 
 		File csvFile = new File(exportDir, "export.csv");
@@ -150,7 +136,6 @@ public class DBExport {
 			writer.write(data);
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -158,198 +143,136 @@ public class DBExport {
 	public void ExportAsXML() {
 		String data = "<?xml version=\"1.0\"?>\n<database name=\"utextdb.db\" version=\"3\" >\n";
 
-		data += "\t<!-- Table " + UTextDBHelper.DB_TABLE_AUDIO_DATA + " -->";
+		data += "\t<!-- Table " + DBHelper.DB_TABLE_AUDIO_DATA + " -->";
 		for (AudioData ad : audioData) {
-			data += "\t<table name=\"" + UTextDBHelper.DB_TABLE_AUDIO_DATA
+			data += "\t<table name=\"" + DBHelper.DB_TABLE_AUDIO_DATA
 					+ "\" >\n";
-
-			data += "\t\t<column name=\"" + UTextDBHelper.AUDIO_DATA_COLUMN_AID
+			data += "\t\t<column name=\"" + DBHelper.AUDIO_DATA_COLUMN_AID
 					+ "\" >" + String.valueOf(ad.aid) + "</column>\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.AUDIO_DATA_COLUMN_MID
+			data += "\t\t<column name=\"" + DBHelper.AUDIO_DATA_COLUMN_MID
 					+ "\" >" + String.valueOf(ad.mid) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.AUDIO_DATA_COLUMN_CREATED
+					+ "\" >" + ad.created + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.AUDIO_DATA_COLUMN_MODIFIED
+					+ "\" >" + ad.modified + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.AUDIO_DATA_COLUMN_CREATED + "\" >"
-					+ ad.created + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.AUDIO_DATA_COLUMN_MODIFIED + "\" >"
-					+ ad.modified + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.AUDIO_DATA_COLUMN_DATA + "\" >"
+					+ DBHelper.AUDIO_DATA_COLUMN_AUDIO_URI + "\" >"
 					+ ad.audioUri + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.AUDIO_DATA_COLUMN_IS_ACTIVE + "\" >"
-					+ String.valueOf(ad.is_active) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.AUDIO_DATA_COLUMN_IS_CLOUD + "\" >"
-					+ String.valueOf(ad.is_cloud) + "</column>\n";
-
 			data += "\t</table>\n";
 		}
 
-		data += "\t<!-- Table " + UTextDBHelper.DB_TABLE_CHILD_NOTE + " -->";
+		data += "\t<!-- Table " + DBHelper.DB_TABLE_CHILD_NOTE + " -->";
 		for (ChildNote cd : childNote) {
-			data += "\t<table name=\"" + UTextDBHelper.DB_TABLE_CHILD_NOTE
+			data += "\t<table name=\"" + DBHelper.DB_TABLE_CHILD_NOTE
 					+ "\" >\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.CHILD_NOTE_COLUMN_CID
+			data += "\t\t<column name=\"" + DBHelper.CHILD_NOTE_COLUMN_CID
 					+ "\" >" + String.valueOf(cd.cid) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.CHILD_NOTE_COLUMN_LSID
+					+ "\" >" + String.valueOf(cd.lsid) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.CHILD_NOTE_COLUMN_TEXT
+					+ "\" >" + cd.text + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.CHILD_NOTE_COLUMN_LSID + "\" >"
-					+ String.valueOf(cd.lsid) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.CHILD_NOTE_COLUMN_TEXT + "\" >" + cd.text
-					+ "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.CHILD_NOTE_COLUMN_IS_COMPLETE + "\" >"
+					+ DBHelper.CHILD_NOTE_COLUMN_IS_COMPLETE + "\" >"
 					+ String.valueOf(cd.is_complete) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.CHILD_NOTE_COLUMN_MODIFIED + "\" >"
-					+ cd.modified + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.CHILD_NOTE_COLUMN_IS_ACTIVE + "\" >"
-					+ String.valueOf(cd.is_active) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.CHILD_NOTE_COLUMN_IS_CLOUD + "\" >"
-					+ String.valueOf(cd.is_cloud) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.CHILD_NOTE_COLUMN_MODIFIED
+					+ "\" >" + cd.modified + "</column>\n";
 			data += "\t</table>\n";
 		}
 
-		data += "\t<!-- Table " + UTextDBHelper.DB_TABLE_IMAGE_DATA + " -->";
+		data += "\t<!-- Table " + DBHelper.DB_TABLE_IMAGE_DATA + " -->";
 		for (ImageData id : imageData) {
-			data += "\t<table name=\"" + UTextDBHelper.DB_TABLE_IMAGE_DATA
+			data += "\t<table name=\"" + DBHelper.DB_TABLE_IMAGE_DATA
 					+ "\" >\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.IMAGE_DATA_COLUMN_IID
+			data += "\t\t<column name=\"" + DBHelper.IMAGE_DATA_COLUMN_IID
 					+ "\" >" + String.valueOf(id.iid) + "</column>\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.IMAGE_DATA_COLUMN_MID
+			data += "\t\t<column name=\"" + DBHelper.IMAGE_DATA_COLUMN_MID
 					+ "\" >" + String.valueOf(id.mid) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.IMAGE_DATA_COLUMN_CREATED
+					+ "\" >" + id.created + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.IMAGE_DATA_COLUMN_MODIFIED
+					+ "\" >" + id.modified + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.IMAGE_DATA_COLUMN_CREATED + "\" >"
-					+ id.created + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.IMAGE_DATA_COLUMN_MODIFIED + "\" >"
-					+ id.modified + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.IMAGE_DATA_COLUMN_DATA + "\" >"
+					+ DBHelper.IMAGE_DATA_COLUMN_IMAGE_URI + "\" >"
 					+ id.bitmapUri + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.IMAGE_DATA_COLUMN_IS_ACTIVE + "\" >"
-					+ String.valueOf(id.is_active) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.IMAGE_DATA_COLUMN_IS_CLOUD + "\" >"
-					+ String.valueOf(id.is_cloud) + "</column>\n";
 			data += "\t</table>\n";
 		}
 
-		data += "\t<!-- Table " + UTextDBHelper.DB_TABLE_LIST_NOTE + " -->";
+		data += "\t<!-- Table " + DBHelper.DB_TABLE_LIST_NOTE + " -->";
 		for (ListNote ln : listNote) {
-			data += "\t<table name=\"" + UTextDBHelper.DB_TABLE_LIST_NOTE
-					+ "\" >\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.LIST_NOTE_COLUMN_LSID
+			data += "\t<table name=\"" + DBHelper.DB_TABLE_LIST_NOTE + "\" >\n";
+			data += "\t\t<column name=\"" + DBHelper.LIST_NOTE_COLUMN_LSID
 					+ "\" >" + String.valueOf(ln.lsid) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.LIST_NOTE_COLUMN_TITLE
+					+ "\" >" + String.valueOf(ln.title) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.LIST_NOTE_COLUMN_CREATED
+					+ "\" >" + ln.created + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.LIST_NOTE_COLUMN_MODIFIED
+					+ "\" >" + ln.modified + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.LIST_NOTE_COLUMN_TITLE + "\" >"
-					+ String.valueOf(ln.title) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.LIST_NOTE_COLUMN_CREATED + "\" >"
-					+ ln.created + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED + "\" >"
-					+ ln.modified + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT + "\" >"
+					+ DBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT + "\" >"
 					+ String.valueOf(ln.is_important) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE + "\" >"
-					+ String.valueOf(ln.is_active) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.LIST_NOTE_COLUMN_IS_CLOUD + "\" >"
-					+ String.valueOf(ln.is_cloud) + "</column>\n";
 			data += "\t</table>\n";
 		}
 
-		data += "\t<!-- Table " + UTextDBHelper.DB_TABLE_MULTIMEDIA_NOTE
-				+ " -->";
+		data += "\t<!-- Table " + DBHelper.DB_TABLE_MULTIMEDIA_NOTE + " -->";
 		for (MultiMediaNote mmn : multiMediaNote) {
-			data += "\t<table name=\"" + UTextDBHelper.DB_TABLE_MULTIMEDIA_NOTE
+			data += "\t<table name=\"" + DBHelper.DB_TABLE_MULTIMEDIA_NOTE
 					+ "\" >\n";
+			data += "\t\t<column name=\"" + DBHelper.MULTIMEDIA_NOTE_COLUMN_MID
+					+ "\" >" + String.valueOf(mmn.mid) + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_MID + "\" >"
-					+ String.valueOf(mmn.mid) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_CREATED + "\" >"
+					+ DBHelper.MULTIMEDIA_NOTE_COLUMN_CREATED + "\" >"
 					+ mmn.created + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_MODIFIED + "\" >"
+					+ DBHelper.MULTIMEDIA_NOTE_COLUMN_MODIFIED + "\" >"
 					+ mmn.modified + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_TEXT + "\" >"
-					+ mmn.text + "</column>\n";
+					+ DBHelper.MULTIMEDIA_NOTE_COLUMN_TEXT + "\" >" + mmn.text
+					+ "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_IS_IMPORTANT
-					+ "\" >" + String.valueOf(mmn.is_important) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_IS_ACTIVE + "\" >"
-					+ String.valueOf(mmn.is_active) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.MULTIMEDIA_NOTE_COLUMN_IS_CLOUD + "\" >"
-					+ String.valueOf(mmn.is_cloud) + "</column>\n";
+					+ DBHelper.MULTIMEDIA_NOTE_COLUMN_IS_IMPORTANT + "\" >"
+					+ String.valueOf(mmn.is_important) + "</column>\n";
 			data += "\t</table>\n";
 		}
 
-		data += "\t<!-- Table " + UTextDBHelper.DB_TABLE_REMINDER + " -->";
+		data += "\t<!-- Table " + DBHelper.DB_TABLE_REMINDER + " -->";
 		for (ReminderNote rn : reminderNote) {
-			data += "\t<table name=\"" + UTextDBHelper.DB_TABLE_REMINDER
-					+ "\" >\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.REMINDER_COLUMN_RID
+			data += "\t<table name=\"" + DBHelper.DB_TABLE_REMINDER + "\" >\n";
+			data += "\t\t<column name=\"" + DBHelper.REMINDER_COLUMN_RID
 					+ "\" >" + String.valueOf(rn.rid) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.REMINDER_COLUMN_CREATED
+					+ "\" >" + rn.created + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.REMINDER_COLUMN_CREATED + "\" >"
-					+ rn.created + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.REMINDER_COLUMN_REMINDER_DATE + "\" >"
+					+ DBHelper.REMINDER_COLUMN_REMINDER_DATE + "\" >"
 					+ rn.rdate + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.REMINDER_COLUMN_REMINDER_TIME + "\" >"
+					+ DBHelper.REMINDER_COLUMN_REMINDER_TIME + "\" >"
 					+ rn.rtime + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.REMINDER_COLUMN_MODIFIED + "\" >"
-					+ rn.modified + "</column>\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.REMINDER_COLUMN_TEXT
+			data += "\t\t<column name=\"" + DBHelper.REMINDER_COLUMN_MODIFIED
+					+ "\" >" + rn.modified + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.REMINDER_COLUMN_TEXT
 					+ "\" >" + rn.text + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.REMINDER_COLUMN_IS_IMPORTANT + "\" >"
+					+ DBHelper.REMINDER_COLUMN_IS_IMPORTANT + "\" >"
 					+ String.valueOf(rn.is_important) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.REMINDER_COLUMN_IS_ACTIVE + "\" >"
-					+ String.valueOf(rn.is_active) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.REMINDER_COLUMN_IS_CLOUD + "\" >"
-					+ String.valueOf(rn.is_cloud) + "</column>\n";
 			data += "\t</table>\n";
 		}
 
-		data += "\t<!-- Table " + UTextDBHelper.DB_TABLE_VIDEO_DATA + " -->";
+		data += "\t<!-- Table " + DBHelper.DB_TABLE_VIDEO_DATA + " -->";
 		for (VideoData vd : videoData) {
-			data += "\t<table name=\"" + UTextDBHelper.DB_TABLE_VIDEO_DATA
+			data += "\t<table name=\"" + DBHelper.DB_TABLE_VIDEO_DATA
 					+ "\" >\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.VIDEO_DATA_COLUMN_VID
+			data += "\t\t<column name=\"" + DBHelper.VIDEO_DATA_COLUMN_VID
 					+ "\" >" + String.valueOf(vd.vid) + "</column>\n";
-			data += "\t\t<column name=\"" + UTextDBHelper.VIDEO_DATA_COLUMN_MID
+			data += "\t\t<column name=\"" + DBHelper.VIDEO_DATA_COLUMN_MID
 					+ "\" >" + String.valueOf(vd.mid) + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.VIDEO_DATA_COLUMN_CREATED
+					+ "\" >" + vd.created + "</column>\n";
+			data += "\t\t<column name=\"" + DBHelper.VIDEO_DATA_COLUMN_MODIFIED
+					+ "\" >" + vd.modified + "</column>\n";
 			data += "\t\t<column name=\""
-					+ UTextDBHelper.VIDEO_DATA_COLUMN_CREATED + "\" >"
-					+ vd.created + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.VIDEO_DATA_COLUMN_MODIFIED + "\" >"
-					+ vd.modified + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.VIDEO_DATA_COLUMN_DATA + "\" >"
+					+ DBHelper.VIDEO_DATA_COLUMN_VIDEO_URI + "\" >"
 					+ vd.videoUri.toString() + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.VIDEO_DATA_COLUMN_IS_ACTIVE + "\" >"
-					+ String.valueOf(vd.is_active) + "</column>\n";
-			data += "\t\t<column name=\""
-					+ UTextDBHelper.VIDEO_DATA_COLUMN_IS_CLOUD + "\" >"
-					+ String.valueOf(vd.is_cloud) + "</column>\n";
 			data += "\t</table>\n";
 		}
 		data += "</database>";

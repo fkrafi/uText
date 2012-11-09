@@ -13,23 +13,12 @@ import android.database.sqlite.SQLiteDatabase;
 import com.therap.javafest.utext.lib.ListNote;
 import com.therap.javafest.utext.lib.Note;
 
-/****************************************************************/
-/*			DB_TABLE_LIST_NOTE = "list_note"					*/
-/*			LIST_NOTE_COLUMN_LSID = "lsid"						*/
-/*			LIST_NOTE_COLUMN_CREATED = "created"				*/
-/*			LIST_NOTE_COLUMN_TITLE = "title"					*/
-/*			LIST_NOTE_COLUMN_MODIFIED = "modified"				*/
-/*			LIST_NOTE_COLUMN_IS_IMPORTANT = "is_important"		*/
-/*			LIST_NOTE_COLUMN_IS_ACTIVE = "is_active"			*/
-/*			LIST_NOTE_COLUMN_IS_CLOUD = "is_cloud"				*/
-/****************************************************************/
-
 public class ListNoteDB {
 	private SQLiteDatabase database;
-	private UTextDBHelper helper;
+	private DBHelper helper;
 
 	public ListNoteDB(Context context) {
-		helper = new UTextDBHelper(context);
+		helper = new DBHelper(context);
 	}
 
 	public void open() throws SQLException {
@@ -42,19 +31,15 @@ public class ListNoteDB {
 
 	public long insert(String title, int important) {
 		open();
-
 		Date date = new Date();
 		String curDateTime = (new Timestamp(date.getTime())).toString();
-
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_CREATED, curDateTime);
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_TITLE, title);
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED, curDateTime);
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT,
+		contentValues.put(DBHelper.LIST_NOTE_COLUMN_CREATED, curDateTime);
+		contentValues.put(DBHelper.LIST_NOTE_COLUMN_TITLE, title);
+		contentValues.put(DBHelper.LIST_NOTE_COLUMN_MODIFIED, curDateTime);
+		contentValues.put(DBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT,
 				String.valueOf(important));
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE, 1);
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_IS_CLOUD, 0);
-		long id = database.insert(UTextDBHelper.DB_TABLE_LIST_NOTE, null,
+		long id = database.insert(DBHelper.DB_TABLE_LIST_NOTE, null,
 				contentValues);
 		close();
 		return id;
@@ -62,41 +47,46 @@ public class ListNoteDB {
 
 	public void delete(int lsid) {
 		open();
+		database.delete(DBHelper.DB_TABLE_LIST_NOTE,
+				DBHelper.LIST_NOTE_COLUMN_LSID + "=?",
+				new String[] { String.valueOf(lsid) });
+		close();
+	}
+
+	public void update(int lsid, String title, int important) {
+		open();
 		Date date = new Date();
 		String curDateTime = (new Timestamp(date.getTime())).toString();
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED, curDateTime);
-		contentValues.put(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE, 0);
-		database.update(UTextDBHelper.DB_TABLE_LIST_NOTE, contentValues,
-				UTextDBHelper.LIST_NOTE_COLUMN_LSID + "=?",
+		contentValues.put(DBHelper.LIST_NOTE_COLUMN_TITLE, title);
+		contentValues.put(DBHelper.LIST_NOTE_COLUMN_MODIFIED, curDateTime);
+		contentValues.put(DBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT,
+				String.valueOf(important));
+		database.update(DBHelper.DB_TABLE_LIST_NOTE, contentValues,
+				DBHelper.LIST_NOTE_COLUMN_LSID + "=?",
 				new String[] { String.valueOf(lsid) });
-	}
-
-	public void update(int mid, String text, int important) {
+		close();
 	}
 
 	public ArrayList<Note> selectForList() {
 		open();
 		Note temp;
 		ArrayList<Note> ret = new ArrayList<Note>();
-		Cursor c = database.query(UTextDBHelper.DB_TABLE_LIST_NOTE,
-				new String[] { UTextDBHelper.LIST_NOTE_COLUMN_LSID,
-						UTextDBHelper.LIST_NOTE_COLUMN_TITLE,
-						UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED,
-						UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE }, null, null,
-				null, null, null);
-		int id = c.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_LSID);
-		int iModified = c
-				.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED);
-		int iText = c.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_TITLE);
-		int iActive = c
-				.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE);
+		Cursor c = database.query(DBHelper.DB_TABLE_LIST_NOTE, null, null,
+				null, null, null, null);
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-			if (c.getString(iActive).equals("1")) {
-				temp = new Note(c.getString(id), Note.LIST_NOTE,
-						c.getString(iText), c.getString(iModified));
-				ret.add(temp);
-			}
+			temp = new Note(
+					c.getString(c
+							.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_LSID)),
+					Note.LIST_NOTE,
+					c.getString(c
+							.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_TITLE)),
+					c.getString(c
+							.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_MODIFIED)),
+					c.getInt(c
+							.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT)),
+					false, false, false, false, 0);
+			ret.add(temp);
 		}
 		close();
 		return ret;
@@ -105,34 +95,21 @@ public class ListNoteDB {
 	public ListNote selectByLsid(int lsid) {
 		open();
 		ListNote ret = new ListNote();
-		Cursor c = database.query(UTextDBHelper.DB_TABLE_LIST_NOTE, null,
-				UTextDBHelper.LIST_NOTE_COLUMN_LSID + "=?",
+		Cursor c = database.query(DBHelper.DB_TABLE_LIST_NOTE, null,
+				DBHelper.LIST_NOTE_COLUMN_LSID + "=?",
 				new String[] { String.valueOf(lsid) }, null, null, null);
-
-		int iLSID = c.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_LSID);
-		int iCREATED = c.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_CREATED);
-		int iTITLE = c.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_TITLE);
-		int iMODIFIED = c
-				.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED);
-		int iIS_IMPORTANT = c
-				.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT);
-		int iIS_ACTIVE = c
-				.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE);
-		int iIS_CLOUD = c
-				.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_CLOUD);
-
 		if (c != null) {
 			c.moveToFirst();
 		}
-
-		ret.lsid = c.getInt(iLSID);
-		ret.created = c.getString(iCREATED);
-		ret.title = c.getString(iTITLE);
-		ret.modified = c.getString(iMODIFIED);
-		ret.is_important = c.getInt(iIS_IMPORTANT);
-		ret.is_active = c.getInt(iIS_ACTIVE);
-		ret.is_cloud = c.getInt(iIS_CLOUD);
-
+		ret.lsid = c.getInt(c.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_LSID));
+		ret.created = c.getString(c
+				.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_CREATED));
+		ret.title = c.getString(c
+				.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_TITLE));
+		ret.modified = c.getString(c
+				.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_MODIFIED));
+		ret.is_important = c.getInt(c
+				.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT));
 		close();
 		return ret;
 	}
@@ -140,26 +117,20 @@ public class ListNoteDB {
 	public ArrayList<ListNote> selectAll() {
 		open();
 		ArrayList<ListNote> ret = new ArrayList<ListNote>();
-		Cursor c = database.query(UTextDBHelper.DB_TABLE_LIST_NOTE, null, null,
+		Cursor c = database.query(DBHelper.DB_TABLE_LIST_NOTE, null, null,
 				null, null, null, null);
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			ListNote temp = new ListNote();
 			temp.lsid = c.getInt(c
-					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_LSID));
+					.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_LSID));
 			temp.title = c.getString(c
-					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_TITLE));
+					.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_TITLE));
 			temp.created = c.getString(c
-					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_CREATED));
+					.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_CREATED));
 			temp.modified = c.getString(c
-					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_MODIFIED));
-			temp.is_important = c
-					.getInt(c
-							.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT));
-			temp.is_active = c.getInt(c
-					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_ACTIVE));
-			temp.is_cloud = c.getInt(c
-					.getColumnIndex(UTextDBHelper.LIST_NOTE_COLUMN_IS_CLOUD));
-
+					.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_MODIFIED));
+			temp.is_important = c.getInt(c
+					.getColumnIndex(DBHelper.LIST_NOTE_COLUMN_IS_IMPORTANT));
 			ret.add(temp);
 		}
 		close();

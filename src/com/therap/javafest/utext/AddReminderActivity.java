@@ -53,9 +53,7 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_add_reminder);
-
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-
 		Init();
 	}
 
@@ -90,7 +88,6 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 			reminderNoteDB.insert(bDate.getText().toString(), bTime.getText()
 					.toString(), etNoteText.getText().toString(), important);
 			progressDialog.dismiss();
-			finish();
 		}
 	}
 
@@ -109,13 +106,14 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 						Toast.makeText(AddReminderActivity.this,
 								"Saved Successfully!", Toast.LENGTH_LONG)
 								.show();
+						Intent intent = new Intent(AddReminderActivity.this,
+								MainActivity.class);
+						startActivity(intent);
+						finish();
 					}
 				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Intent intent = new Intent(AddReminderActivity.this,
-						MainActivity.class);
-				startActivity(intent);
 			} else {
 				Toast.makeText(AddReminderActivity.this,
 						"Cannot Save Empty Reminder Note!", Toast.LENGTH_LONG)

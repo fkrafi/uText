@@ -16,6 +16,9 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -47,28 +50,26 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 
 	private int rid;
 	private Intent intent;
+	private Context context;
 
 	private ReminderNoteDB reminderNoteDB;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);
-			setActionBarContentView(R.layout.activity_edit_reminder);
-			addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-			Init();
-		} catch (Exception exp) {
-			Toast.makeText(this, exp.getMessage(), Toast.LENGTH_LONG).show();
-		}
+		super.onCreate(savedInstanceState);
+		setActionBarContentView(R.layout.activity_edit_reminder);
+		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
+		Init();
 	}
 
 	private void Init() {
+		context = this;
 		intent = getIntent();
 		rid = Integer.parseInt(intent.getStringExtra("rid"));
 
 		ReminderNote rn = new ReminderNote();
 
-		reminderNoteDB = new ReminderNoteDB(EditReminderActivity.this);
+		reminderNoteDB = new ReminderNoteDB(context);
 
 		rn = reminderNoteDB.selectByLsid(rid);
 
@@ -102,10 +103,10 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 
 	private class SaveNoteThread extends Thread {
 		public void run() {
-			reminderNoteDB.insert(bDate.getText().toString(), bTime.getText()
-					.toString(), etNoteText.getText().toString(), important);
+			reminderNoteDB.update(rid, bDate.getText().toString(), bTime
+					.getText().toString(), etNoteText.getText().toString(),
+					important);
 			progressDialog.dismiss();
-			finish();
 		}
 	}
 
@@ -115,21 +116,26 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 		case ACTION_BAR_SAVE:
 			String text = etNoteText.getText().toString().trim();
 			if (text.length() > 0) {
-				progressDialog = new ProgressDialog(this);
+				progressDialog = new ProgressDialog(context);
 				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				progressDialog.setMessage("Saving Your Reminder");
 				progressDialog.show();
+				progressDialog.setOnDismissListener(new OnDismissListener() {
+					public void onDismiss(DialogInterface di) {
+						Toast.makeText(context, "Saved Successfully!",
+								Toast.LENGTH_LONG).show();
+						Intent intent = new Intent(context,
+								ViewReminderActivity.class);
+						intent.putExtra("rid", String.valueOf(rid));
+						startActivity(intent);
+						finish();
+					}
+				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_LONG)
-						.show();
-				Intent intent = new Intent(EditReminderActivity.this,
-						MainActivity.class);
-				startActivity(intent);
 			} else {
-				Toast.makeText(EditReminderActivity.this,
-						"Cannot Save Empty Reminder Note!", Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(context, "Cannot Save Empty Reminder Note!",
+						Toast.LENGTH_LONG).show();
 			}
 			break;
 		}
@@ -137,9 +143,15 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 	}
 
 	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(context, ViewReminderActivity.class);
+		intent.putExtra("rid", String.valueOf(rid));
+		finish();
+	}
+
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
 		if (requestCode == REQUEST_SPEECH && resultCode == RESULT_OK) {
 			String text = etNoteText.getText().toString();
 			String sentence = data.getStringArrayListExtra(
@@ -158,13 +170,12 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 	protected Dialog onCreateDialog(int id) {
 		Calendar c = Calendar.getInstance();
 		if (id == DATE_PICKER_ID) {
-			return (new DatePickerDialog(EditReminderActivity.this,
-					datePickerListener, c.get(Calendar.YEAR),
-					c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)));
+			return (new DatePickerDialog(context, datePickerListener,
+					c.get(Calendar.YEAR), c.get(Calendar.MONTH),
+					c.get(Calendar.DAY_OF_MONTH)));
 		} else if (id == TIME_PICKER_ID) {
-			return (new TimePickerDialog(EditReminderActivity.this,
-					timePickerListener, c.get(Calendar.HOUR_OF_DAY),
-					c.get(Calendar.MINUTE), false));
+			return (new TimePickerDialog(context, timePickerListener,
+					c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), false));
 		}
 		return super.onCreateDialog(id);
 	}

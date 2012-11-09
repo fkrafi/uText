@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -76,6 +77,7 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 		cd = childNoteDB.selectByLsid(lsid);
 		for (ChildNote c : cd) {
 			ListNoteItemUI item = new ListNoteItemUI(EditListNoteActivity.this);
+			item.setId(c.cid);
 			item.setText(c.text);
 			item.setDone(c.is_complete);
 			llListNoteItemsWrapper.addView(item);
@@ -93,8 +95,9 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 
 	private class SaveNoteThread extends Thread {
 		public void run() {
-			long lsid = listNoteDB.insert(etListNoteTitle.getText().toString(),
+			listNoteDB.update(lsid, etListNoteTitle.getText().toString(),
 					important);
+			childNoteDB.deleteAllChildByLsid(lsid);
 			int count = llListNoteItemsWrapper.getChildCount();
 			for (int i = 0; i < count; i++) {
 				item = (ListNoteItemUI) llListNoteItemsWrapper.getChildAt(i);
@@ -102,7 +105,6 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 						item.isDone());
 			}
 			progressDialog.dismiss();
-			finish();
 		}
 	}
 
@@ -112,17 +114,24 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 		case ACTION_BAR_SAVE:
 			String title = etListNoteTitle.getText().toString();
 			if (title.trim().length() > 0) {
-				progressDialog = new ProgressDialog(this);
+				progressDialog = new ProgressDialog(EditListNoteActivity.this);
 				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				progressDialog.setMessage("Saving Your List Note");
+				progressDialog.setMessage("Saving your list note");
 				progressDialog.show();
+				progressDialog.setOnDismissListener(new OnDismissListener() {
+					public void onDismiss(DialogInterface di) {
+						Toast.makeText(EditListNoteActivity.this,
+								"Saved Successfully!", Toast.LENGTH_LONG)
+								.show();
+						Intent i = new Intent(EditListNoteActivity.this,
+								ViewListNoteActivity.class);
+						i.putExtra("lsid", String.valueOf(lsid));
+						startActivity(i);
+						finish();
+					}
+				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
-				Toast.makeText(this, "Saved Successfully!", Toast.LENGTH_LONG)
-						.show();
-				Intent intent = new Intent(EditListNoteActivity.this,
-						MainActivity.class);
-				startActivity(intent);
 			} else {
 				Toast.makeText(EditListNoteActivity.this,
 						"Cannot Save List Note With Empty Title!",
@@ -143,6 +152,10 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 			quitDialog.setPositiveButton("Ok, Quit!",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
+							Intent i = new Intent(EditListNoteActivity.this,
+									ViewListNoteActivity.class);
+							i.putExtra("lsid", String.valueOf(lsid));
+							startActivity(i);
 							finish();
 						}
 
@@ -150,7 +163,11 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 			quitDialog.setNegativeButton("No", null);
 			quitDialog.show();
 		} else {
-			super.onBackPressed();
+			Intent i = new Intent(EditListNoteActivity.this,
+					ViewListNoteActivity.class);
+			i.putExtra("lsid", String.valueOf(lsid));
+			startActivity(i);
+			finish();
 		}
 	}
 

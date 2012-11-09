@@ -63,7 +63,7 @@ public class NoteListViewItemAdapter extends BaseAdapter {
 
 			Timestamp ts = Timestamp.valueOf(item.getDateTime());
 			Date date = new Date(ts.getTime());
-			DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy hh:mm a");
+			DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 			tvDateTime.setText(dateFormat.format(date).toString());
 
 			ivList.setVisibility(View.INVISIBLE);

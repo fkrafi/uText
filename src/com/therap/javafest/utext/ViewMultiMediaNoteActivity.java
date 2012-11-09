@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -53,6 +55,8 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 	private ArrayList<AudioData> ad;
 	private ArrayList<VideoData> vd;
 
+	private ProgressDialog progressDialog;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,27 +64,26 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 
 		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
 		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
-
 		Init();
 	}
 
 	private void Init() {
 		intent = getIntent();
 		mid = Integer.parseInt(intent.getStringExtra("mid"));
-		MultiMediaNote data = new MultiMediaNote();
 
 		audioDataDB = new AudioDataDB(ViewMultiMediaNoteActivity.this);
 		imageDataDB = new ImageDataDB(ViewMultiMediaNoteActivity.this);
 		videoDataDB = new VideoDataDB(ViewMultiMediaNoteActivity.this);
 		multiMediaNoteDB = new MultiMediaNoteDB(ViewMultiMediaNoteActivity.this);
 
+		MultiMediaNote data = new MultiMediaNote();
 		data = multiMediaNoteDB.selectByMid(mid);
 
 		tvDateTime = (TextView) findViewById(R.id.tvDateTime);
-		Timestamp ts = Timestamp.valueOf(data.modified);
-		Date date = new Date(ts.getTime());
-		DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy hh:mm a");
-		tvDateTime.setText(dateFormat.format(date).toString());
+		DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
+		tvDateTime.setText(dateFormat.format(
+				new Date((Timestamp.valueOf(data.modified)).getTime()))
+				.toString());
 
 		tvText = (TextView) findViewById(R.id.tvText);
 		tvText.setText(data.text);
@@ -124,23 +127,20 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 
 	}
 
-	private void delete() {
-		Intent intent = new Intent(ViewMultiMediaNoteActivity.this,
-				MainActivity.class);
-		for (AudioData a : ad) {
-			audioDataDB.delete(mid, a.aid);
+	private class DeleteNoteThread extends Thread {
+		public void run() {
+			for (AudioData a : ad) {
+				audioDataDB.delete(a.aid);
+			}
+			for (ImageData i : id) {
+				imageDataDB.delete(i.iid);
+			}
+			for (VideoData v : vd) {
+				videoDataDB.delete(v.vid);
+			}
+			multiMediaNoteDB.delete(mid);
+			progressDialog.dismiss();
 		}
-		for (ImageData i : id) {
-			imageDataDB.delete(mid, i.iid);
-		}
-		for (VideoData v : vd) {
-			videoDataDB.delete(mid, v.vid);
-		}
-		multiMediaNoteDB.delete(mid);
-		Toast.makeText(ViewMultiMediaNoteActivity.this,
-				"Successfully Deleted!", Toast.LENGTH_LONG).show();
-		startActivity(intent);
-		finish();
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 		Intent intent = new Intent(ViewMultiMediaNoteActivity.this,
 				MainActivity.class);
 		startActivity(intent);
-		super.onBackPressed();
+		finish();
 	}
 
 	@Override
@@ -161,7 +161,29 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 			quitDialog.setPositiveButton("Yes",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							delete();
+							progressDialog = new ProgressDialog(
+									ViewMultiMediaNoteActivity.this);
+							progressDialog
+									.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+							progressDialog
+									.setMessage("Deleting Your Multimedia Note");
+							progressDialog.show();
+							progressDialog
+									.setOnDismissListener(new OnDismissListener() {
+										public void onDismiss(DialogInterface di) {
+											Toast.makeText(
+													ViewMultiMediaNoteActivity.this,
+													"Deleted Successfully!",
+													Toast.LENGTH_LONG).show();
+											Intent intent = new Intent(
+													ViewMultiMediaNoteActivity.this,
+													MainActivity.class);
+											startActivity(intent);
+											finish();
+										}
+									});
+							DeleteNoteThread deleteNoteThread = new DeleteNoteThread();
+							deleteNoteThread.start();
 						}
 
 					});
