@@ -179,8 +179,12 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 		LocationData locationData = new LocationData();
 		locationDataDB = new LocationDataDB(context);
 		locationData = locationDataDB.selectByNoteId(mid, Note.MULTIMEDIA_NOTE);
-		Toast.makeText(context, locationData.toString(), Toast.LENGTH_LONG)
-				.show();
+		if(locationData != null){
+			tvLocation.setText(locationData.place);
+			tvLocationLongitude.setText(String.valueOf(locationData.longitude));
+			tvLocationLatitude.setText(String.valueOf(locationData.latitude));
+			llLocationWrapper.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -205,6 +209,13 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 					videoDataDB.insert(mid, videoPlayerUI.getVideoUri()
 							.toString());
 				}
+			}
+			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
+				locationDataDB.update(mid, Double.parseDouble(tvLocationLongitude.getText()
+						.toString()), Double.parseDouble(tvLocationLatitude.getText().toString()),
+						tvLocation.getText().toString());
+			}else{
+				locationDataDB.delete(mid, Note.MULTIMEDIA_NOTE);
 			}
 			progressDialog.dismiss();
 		}

@@ -150,6 +150,7 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 				videoDataDB.delete(v.vid);
 			}
 			multiMediaNoteDB.delete(mid);
+			locationDataDB.delete(mid, Note.MULTIMEDIA_NOTE);
 			progressDialog.dismiss();
 		}
 	}

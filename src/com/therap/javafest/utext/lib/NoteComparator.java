@@ -37,8 +37,8 @@ public class NoteComparator implements Comparator<Note> {
 		Integer imp2 = Integer.valueOf(n2.getImportant());
 		if (count1.equals(count2)) {
 			if (n1.getType() == Note.REMINDER && n2.getType() == Note.REMINDER) {
-				Date rdate1 = StringToDate(n1.getRDateTime());
-				Date rdate2 = StringToDate(n1.getRDateTime());
+				Date rdate1 = NoteComparator.StringToDate(n1.getRDateTime());
+				Date rdate2 = NoteComparator.StringToDate(n1.getRDateTime());
 				if (rdate1.equals(rdate2)) {
 					return imp2.compareTo(imp1);
 				}
@@ -55,7 +55,7 @@ public class NoteComparator implements Comparator<Note> {
 		return count2.compareTo(count1);
 	}
 
-	public Date StringToDate(String rDateTime) {
+	public static Date StringToDate(String rDateTime) {
 		String tokens[] = rDateTime.split(" ");
 		int year = Integer.valueOf(tokens[3].trim());
 		int month = Integer.valueOf(tokens[2].trim());

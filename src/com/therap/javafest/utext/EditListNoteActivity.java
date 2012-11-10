@@ -116,8 +116,12 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 		LocationData locationData = new LocationData();
 		locationDataDB = new LocationDataDB(context);
 		locationData = locationDataDB.selectByNoteId(lsid, Note.LIST_NOTE);
-		Toast.makeText(context, locationData.toString(), Toast.LENGTH_LONG)
-				.show();
+		if (locationData != null) {
+			tvLocation.setText(locationData.place);
+			tvLocationLongitude.setText(String.valueOf(locationData.longitude));
+			tvLocationLatitude.setText(String.valueOf(locationData.latitude));
+			llLocationWrapper.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -131,7 +135,13 @@ public class EditListNoteActivity extends GDActivity implements OnClickListener 
 				childNoteDB.insert(lsid, item.getText().toString(),
 						item.isDone());
 			}
-
+			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
+				locationDataDB.update(lsid, Double.parseDouble(tvLocationLongitude.getText()
+						.toString()), Double.parseDouble(tvLocationLatitude.getText().toString()),
+						tvLocation.getText().toString());
+			}else{
+				locationDataDB.delete(lsid, Note.LIST_NOTE);
+			}
 			progressDialog.dismiss();
 		}
 	}

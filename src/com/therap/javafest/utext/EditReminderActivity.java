@@ -59,6 +59,7 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
 
 	private ProgressDialog progressDialog;
+	private LocationDataDB locationDataDB;
 
 	private int rid;
 	private Intent intent;
@@ -119,10 +120,14 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 		ibDelete.setOnClickListener(this);
 
 		LocationData locationData = new LocationData();
-		LocationDataDB locationDataDB = new LocationDataDB(context);
+		locationDataDB = new LocationDataDB(context);
 		locationData = locationDataDB.selectByNoteId(rid, Note.REMINDER);
-		Toast.makeText(context, locationData.toString(), Toast.LENGTH_LONG)
-				.show();
+		if(locationData != null){
+			tvLocation.setText(locationData.place);
+			tvLocationLongitude.setText(String.valueOf(locationData.longitude));
+			tvLocationLatitude.setText(String.valueOf(locationData.latitude));
+			llLocationWrapper.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -130,6 +135,13 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 			reminderNoteDB.update(rid, bDate.getText().toString(), bTime
 					.getText().toString(), etNoteText.getText().toString(),
 					important);
+			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
+				locationDataDB.update(rid, Double.parseDouble(tvLocationLongitude.getText()
+						.toString()), Double.parseDouble(tvLocationLatitude.getText().toString()),
+						tvLocation.getText().toString());
+			}else{
+				locationDataDB.delete(rid, Note.REMINDER);
+			}
 			progressDialog.dismiss();
 		}
 	}

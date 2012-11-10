@@ -130,25 +130,21 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 	}
 
 	private void Search() {
-		String pattern = "";
 		String tokens[] = etSearchFor.getText().toString().trim().split(" ");
-		for (String token : tokens) {
-			pattern += "(" + token + ")";
-		}
-		Log.d("pattern", pattern);
-		Pattern r = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 		notes.clear();
 		for (Note n : allNotes) {
 			String text = n.getText();
-			Matcher m = r.matcher(text);
-			int count = m.groupCount();
+			int count = 0;
+			for(String token : tokens){
+				if(text.contains(token)){
+					count++;
+				}
+			}
 			n.setCount(count);
 			if (count > 0) {
 				notes.add(n);
 			}
-			Log.d("find", n.getText() + " : " + String.valueOf(count));
 		}
-		Log.d("notes", String.valueOf(notes.size()));
 		Collections.sort(notes, new NoteComparator(
 				NoteComparator.SEARCH_COMPARE));
 		adapter = new NoteListViewItemAdapter(this, notes);
@@ -190,6 +186,7 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 		if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
 			String result = predictions.get(0).name;
 			etSearchFor.setText(etSearchFor.getText().toString() + result);
+			Search();
 		}
 	}
 }

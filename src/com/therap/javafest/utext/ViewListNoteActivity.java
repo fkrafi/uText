@@ -123,6 +123,7 @@ public class ViewListNoteActivity extends GDActivity {
 						.delete(llListNoteItemsWrapper.getChildAt(i).getId());
 			}
 			listNoteDB.delete(lsid);
+			locationDataDB.delete(lsid, Note.LIST_NOTE);
 			progressDialog.dismiss();
 		}
 	}

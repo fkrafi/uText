@@ -50,11 +50,11 @@ public class LocationDataDB {
 		return id;
 	}
 
-	public void delete(int nid) {
+	public void delete(int nid, int ntype) {
 		open();
 		database.delete(DBHelper.DB_TABLE_LOCATION_DATA,
-				DBHelper.LOCATION_DATA_COLUMN_LID + "=?",
-				new String[] { String.valueOf(lid) });
+				DBHelper.LOCATION_DATA_COLUMN_LID + "=? AND " + DBHelper.LOCATION_DATA_COLUMN_NTYPE + "=?",
+				new String[] { String.valueOf(nid), String.valueOf(ntype) });
 		close();
 	}
 

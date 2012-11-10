@@ -7,8 +7,11 @@ import greendroid.widget.ActionBarItem.Type;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +26,8 @@ import android.widget.Toast;
 import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.NoteComparator;
 import com.therap.javafest.utext.lib.NoteRetriever;
+import com.therap.javafest.utext.lib.ReminderNote;
+import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
 
 public class MainActivity extends GDActivity {
 
@@ -39,6 +44,8 @@ public class MainActivity extends GDActivity {
 	private NoteListViewItemAdapter adapter;
 	private ArrayList<Note> allNotes, notes;
 
+	private ReminderNoteDB reminderNoteDB;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,12 +53,15 @@ public class MainActivity extends GDActivity {
 		addActionBarItem(Type.Share, ACTION_BAR_SYNC);
 		addActionBarItem(Type.Search, ACTION_BAR_SEARCH);
 		addActionBarItem(Type.Add, ACTION_BAR_ADD);
-		Init();
+		renderView();
 		createFolders();
+		renderAllReminder();
 	}
 
-	private void Init() {
+	private void renderView() {
 		context = MainActivity.this;
+		reminderNoteDB = new ReminderNoteDB(context);
+
 		lvNotes = (ListView) findViewById(R.id.lvNotes);
 
 		noteRetriever = new NoteRetriever(context);
@@ -94,6 +104,31 @@ public class MainActivity extends GDActivity {
 			}
 		});
 
+	}
+
+	private void renderAllReminder() {
+		ArrayList<ReminderNote> reminderNote = reminderNoteDB.selectAll();
+		for (ReminderNote r : reminderNote) {
+			long date1 = NoteComparator.StringToDate(r.rdate + " " + r.rtime)
+					.getTime();
+			long date2 = (new Date()).getTime();
+			long diffTime = date1 - date2;
+			if (diffTime > 0) {
+				Bundle bundle = new Bundle();
+				bundle.putString("TITLE", r.text);
+				Toast.makeText(this,String.valueOf(diffTime), Toast.LENGTH_LONG).show();
+				new AlarmReceiver(this, bundle, (int)diffTime, r.rid);
+			}else{
+				try{
+					Intent intent = new Intent(this, AlarmReceiver.class);
+					PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+			        alarmManager.cancel(pendingIntent);
+				}catch(Exception exp){
+					exp.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private void createFolders() {
