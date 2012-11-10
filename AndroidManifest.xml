@@ -41,7 +41,6 @@
         <activity android:name=".ViewListNoteActivity" />
         <activity android:name=".EditMultiMediaNoteActivity" />
         <activity android:name=".EditListNoteActivity" />
-        <activity android:name=".UserVerificationActivity" />
         <activity android:name=".EditReminderActivity" />
         <activity android:name=".ExportDatabaseActivity" />
         <activity android:name=".AddMapActivity" />
