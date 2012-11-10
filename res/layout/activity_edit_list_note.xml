@@ -29,6 +29,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
             </LinearLayout>
+
+            <include layout="@layout/location_viewer_ui" />
         </LinearLayout>
     </ScrollView>
 

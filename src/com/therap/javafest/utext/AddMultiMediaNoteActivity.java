@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,11 +22,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.ImageProcessing;
+import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.sqlitedb.AudioDataDB;
 import com.therap.javafest.utext.sqlitedb.ImageDataDB;
+import com.therap.javafest.utext.sqlitedb.LocationDataDB;
 import com.therap.javafest.utext.sqlitedb.MultiMediaNoteDB;
 import com.therap.javafest.utext.sqlitedb.VideoDataDB;
 
@@ -38,8 +42,11 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	private static final int REQUEST_GALLERY = 3333;
 	private static final int REQUEST_IMAGE_CAMERA = 4444;
 	private static final int REQUEST_VIDEO_CAMERA = 5555;
+	private static final int REQUEST_MAP_LOCATION = 10;
 
 	private int important = 0;
+
+	private Address address;
 
 	private Uri bitmapUri;
 	private ImageProcessing ip;
@@ -47,14 +54,16 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	private AudioDataDB audioDataDB;
 	private ImageDataDB imageDataDB;
 	private VideoDataDB videoDataDB;
+	private LocationDataDB locationDataDB;
 	private MultiMediaNoteDB multiMediaNoteDB;
 
-	private ImageButton ibASR;
 	private EditText etNoteText;
-	private LinearLayout llMultimedia;
+	private ImageButton ibASR, ibDelete;
 	private AudioPlayerUI audioPlayerUI;
 	private ImageViewerUI imageViewerUI;
 	private VideoPlayerUI videoPlayerUI;
+	private LinearLayout llMultimedia, llLocationWrapper;
+	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
 	private Button bGallery, bAudio, bLocation, bImportant, bFromGallery,
 			bFromCamera, bFromCamRecorder;
 
@@ -66,13 +75,14 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_add_multi_media_note);
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-		Init();
+		renderView();
 	}
 
-	private void Init() {
+	private void renderView() {
 		videoDataDB = new VideoDataDB(AddMultiMediaNoteActivity.this);
 		imageDataDB = new ImageDataDB(AddMultiMediaNoteActivity.this);
 		audioDataDB = new AudioDataDB(AddMultiMediaNoteActivity.this);
+		locationDataDB = new LocationDataDB(AddMultiMediaNoteActivity.this);
 		multiMediaNoteDB = new MultiMediaNoteDB(AddMultiMediaNoteActivity.this);
 		ip = new ImageProcessing(AddMultiMediaNoteActivity.this);
 
@@ -95,6 +105,14 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 
 		llMultimedia = (LinearLayout) findViewById(R.id.llMultimedia);
 
+		llLocationWrapper = (LinearLayout) findViewById(R.id.llLocationWrapper);
+		llLocationWrapper.setVisibility(View.INVISIBLE);
+		tvLocation = (TextView) findViewById(R.id.tvLocation);
+		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
+		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
+		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
+		ibDelete.setOnClickListener(this);
+
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -116,6 +134,12 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 					videoDataDB.insert(mid, videoPlayerUI.getVideoUri()
 							.toString());
 				}
+			}
+			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
+				locationDataDB.insert(mid, Note.MULTIMEDIA_NOTE, Double
+						.parseDouble(tvLocationLongitude.getText().toString()),
+						Double.parseDouble(tvLocationLatitude.getText()
+								.toString()), tvLocation.getText().toString());
 			}
 			progressDialog.dismiss();
 		}
@@ -223,6 +247,15 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			videoPlayerUI = new VideoPlayerUI(AddMultiMediaNoteActivity.this);
 			videoPlayerUI.setVideoUri(videoUri);
 			llMultimedia.addView(videoPlayerUI);
+		} else if (requestCode == REQUEST_MAP_LOCATION
+				&& resultCode == RESULT_OK) {
+			address = intent.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
+			tvLocation.setText(address.getAddressLine(0).toString() + ", "
+					+ address.getAddressLine(1).toString() + ", "
+					+ address.getCountryCode().toString());
+			tvLocationLongitude.setText(String.valueOf(address.getLongitude()));
+			tvLocationLatitude.setText(String.valueOf(address.getLatitude()));
+			llLocationWrapper.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -287,6 +320,16 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			dialogAddNoteOption.dismiss();
 			Intent intentVideo = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 			startActivityForResult(intentVideo, REQUEST_VIDEO_CAMERA);
+			break;
+		case R.id.bLocation:
+			Intent i = new Intent(this, AddMapActivity.class);
+			startActivityForResult(i, REQUEST_MAP_LOCATION);
+			break;
+		case R.id.ibDelete:
+			tvLocation.setText("");
+			tvLocationLongitude.setText("");
+			tvLocationLatitude.setText("");
+			llLocationWrapper.setVisibility(View.INVISIBLE);
 			break;
 		}
 	}

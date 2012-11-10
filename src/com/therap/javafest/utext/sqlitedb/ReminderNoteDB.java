@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.ReminderNote;
@@ -74,6 +75,13 @@ public class ReminderNoteDB {
 					c.getInt(c
 							.getColumnIndex(DBHelper.REMINDER_COLUMN_IS_IMPORTANT)),
 					false, false, false, false, 0);
+			String str = c.getString(c
+					.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_DATE))
+					+ " "
+					+ c.getString(c
+							.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_TIME));
+			Log.d("mydate1", str);
+			temp.setRDateTime(str);
 			ret.add(temp);
 		}
 		close();

@@ -6,6 +6,7 @@ import greendroid.widget.ActionBarItem.Type;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.Note;
+import com.therap.javafest.utext.lib.NoteComparator;
 import com.therap.javafest.utext.lib.NoteRetriever;
 
 public class MainActivity extends GDActivity {
@@ -33,11 +35,9 @@ public class MainActivity extends GDActivity {
 	private ListView lvNotes;
 	private Dialog dialogAddNoteOption;
 
-	private NoteListViewItemAdapter adapter;
-	private ArrayList<Note> allNotes;
-
-	private ArrayList<Note> notes;
 	private NoteRetriever noteRetriever;
+	private NoteListViewItemAdapter adapter;
+	private ArrayList<Note> allNotes, notes;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +62,9 @@ public class MainActivity extends GDActivity {
 		allNotes.addAll(noteRetriever.getAll());
 		notes = allNotes;
 
+		Collections.sort(notes, new NoteComparator(
+				NoteComparator.DEFAULT_COMPARE));
+
 		adapter = new NoteListViewItemAdapter(this, notes);
 		lvNotes.setAdapter(adapter);
 
@@ -75,20 +78,18 @@ public class MainActivity extends GDActivity {
 							ViewMultiMediaNoteActivity.class);
 					intent.putExtra("mid", item.getId());
 				} else if (item.getType() == Note.LIST_NOTE) {
-					intent = new Intent(context,
-							ViewListNoteActivity.class);
+					intent = new Intent(context, ViewListNoteActivity.class);
 					intent.putExtra("lsid", item.getId());
 				} else if (item.getType() == Note.REMINDER) {
-					intent = new Intent(context,
-							ViewReminderActivity.class);
+					intent = new Intent(context, ViewReminderActivity.class);
 					intent.putExtra("rid", item.getId());
 				}
 				try {
 					startActivity(intent);
 					finish();
 				} catch (Exception exp) {
-					Toast.makeText(context, exp.getMessage(),
-							Toast.LENGTH_LONG).show();
+					Toast.makeText(context, exp.getMessage(), Toast.LENGTH_LONG)
+							.show();
 				}
 			}
 		});

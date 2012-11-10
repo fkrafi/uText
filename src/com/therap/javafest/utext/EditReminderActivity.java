@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.View;
@@ -28,10 +29,15 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.therap.javafest.utext.lib.LocationData;
+import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.ReminderNote;
+import com.therap.javafest.utext.sqlitedb.LocationDataDB;
 import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
 
 public class EditReminderActivity extends GDActivity implements OnClickListener {
@@ -39,18 +45,23 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 	private static final int REQUEST_SPEECH = 1111;
 	private static final int DATE_PICKER_ID = 1010;
 	private static final int TIME_PICKER_ID = 2020;
+	private static final int REQUEST_MAP_LOCATION = 10;
 
 	int important = 0;
 
+	private Context context;
+	private Address address;
+
 	private EditText etNoteText;
-	private ImageButton ibASR;
+	private ImageButton ibASR, ibDelete;
+	private LinearLayout llLocationWrapper;
 	private Button bDate, bTime, bImportant, bLocation;
+	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
 
 	private ProgressDialog progressDialog;
 
 	private int rid;
 	private Intent intent;
-	private Context context;
 
 	private ReminderNoteDB reminderNoteDB;
 
@@ -59,10 +70,10 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_edit_reminder);
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-		Init();
+		renderView();
 	}
 
-	private void Init() {
+	private void renderView() {
 		context = this;
 		intent = getIntent();
 		rid = Integer.parseInt(intent.getStringExtra("rid"));
@@ -99,6 +110,19 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 							R.drawable.ic_menu_star_yellow), null, null, null);
 		}
 
+		llLocationWrapper = (LinearLayout) findViewById(R.id.llLocationWrapper);
+		llLocationWrapper.setVisibility(View.INVISIBLE);
+		tvLocation = (TextView) findViewById(R.id.tvLocation);
+		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
+		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
+		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
+		ibDelete.setOnClickListener(this);
+
+		LocationData locationData = new LocationData();
+		LocationDataDB locationDataDB = new LocationDataDB(context);
+		locationData = locationDataDB.selectByNoteId(rid, Note.REMINDER);
+		Toast.makeText(context, locationData.toString(), Toast.LENGTH_LONG)
+				.show();
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -163,6 +187,15 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 			} else {
 				etNoteText.setText(text + sentence);
 			}
+		} else if (requestCode == REQUEST_MAP_LOCATION
+				&& resultCode == RESULT_OK) {
+			address = intent.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
+			tvLocation.setText(address.getAddressLine(0).toString() + ", "
+					+ address.getAddressLine(1).toString() + ", "
+					+ address.getCountryCode().toString());
+			tvLocationLongitude.setText(String.valueOf(address.getLongitude()));
+			tvLocationLatitude.setText(String.valueOf(address.getLatitude()));
+			llLocationWrapper.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -231,6 +264,16 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 			// intentASR.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
 			intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
 			startActivityForResult(intentASR, REQUEST_SPEECH);
+			break;
+		case R.id.bLocation:
+			Intent i = new Intent(this, AddMapActivity.class);
+			startActivityForResult(i, REQUEST_MAP_LOCATION);
+			break;
+		case R.id.ibDelete:
+			tvLocation.setText("");
+			tvLocationLongitude.setText("");
+			tvLocationLatitude.setText("");
+			llLocationWrapper.setVisibility(View.INVISIBLE);
 			break;
 		}
 	}

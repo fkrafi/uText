@@ -11,6 +11,7 @@ import java.util.Date;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -20,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.therap.javafest.utext.lib.LocationData;
+import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.ReminderNote;
+import com.therap.javafest.utext.sqlitedb.LocationDataDB;
 import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
 
 public class ViewReminderActivity extends GDActivity {
@@ -29,9 +33,12 @@ public class ViewReminderActivity extends GDActivity {
 	private static final int ACTION_BAR_EDIT = 2;
 
 	private int rid;
+
+	private Context context;
 	private Intent intent;
 
 	private ReminderNoteDB reminderNoteDB;
+	private LocationDataDB locationDataDB;
 
 	private ImageView ivImportant;
 	private Button bDate, bTime;
@@ -43,13 +50,13 @@ public class ViewReminderActivity extends GDActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_view_reminder);
-
 		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
 		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
-		Init();
+		renderView();
 	}
 
-	private void Init() {
+	private void renderView() {
+		context = this;
 		intent = getIntent();
 		rid = Integer.parseInt(intent.getStringExtra("rid"));
 
@@ -79,16 +86,22 @@ public class ViewReminderActivity extends GDActivity {
 		}
 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
-		tvLocation.setText("Dhaka, Bangladesh");
+		LocationData locationData = new LocationData();
+		locationDataDB = new LocationDataDB(context);
+		locationData = locationDataDB.selectByNoteId(rid, Note.REMINDER);
+		tvLocation.setText("");
+		if (locationData != null) {
+			tvLocation.setText(locationData.place);
+		}
 
 		tvText = (TextView) findViewById(R.id.tvText);
 		tvText.setText(rn.text);
-
 	}
 
 	private class DeleteNoteThread extends Thread {
 		public void run() {
 			reminderNoteDB.delete(rid);
+			locationDataDB.delete(rid, Note.REMINDER);
 			progressDialog.dismiss();
 		}
 	}

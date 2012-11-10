@@ -8,7 +8,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.therap.javafest.backup.DBExport;
+import com.therap.javafest.utext.backup.DBExport;
 
 public class ExportDatabaseActivity extends Activity implements
 		OnItemClickListener {

@@ -17,8 +17,9 @@ import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.View;
@@ -27,9 +28,13 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.therap.javafest.utext.lib.Note;
+import com.therap.javafest.utext.sqlitedb.LocationDataDB;
 import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
 
 public class AddReminderActivity extends GDActivity implements OnClickListener {
@@ -38,14 +43,20 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	private static final int REQUEST_SPEECH = 1111;
 	private static final int DATE_PICKER_ID = 1010;
 	private static final int TIME_PICKER_ID = 2020;
+	private static final int REQUEST_MAP_LOCATION = 10;
+
+	private Address address;
 
 	int important = 0;
 
 	private ReminderNoteDB reminderNoteDB;
+	private LocationDataDB locationDataDB;
 
 	private EditText etNoteText;
-	private ImageButton ibASR;
+	private ImageButton ibASR, ibDelete;
 	private Button bDate, bTime, bImportant, bLocation;
+	private LinearLayout llLocationWrapper;
+	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
 
 	private ProgressDialog progressDialog;
 
@@ -59,6 +70,7 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 
 	private void Init() {
 		reminderNoteDB = new ReminderNoteDB(AddReminderActivity.this);
+		locationDataDB = new LocationDataDB(AddReminderActivity.this);
 
 		Date date = new Date();
 		bDate = (Button) findViewById(R.id.bDate);
@@ -81,12 +93,26 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 		bImportant = (Button) findViewById(R.id.bImportant);
 		bImportant.setOnClickListener(this);
 
+		llLocationWrapper = (LinearLayout) findViewById(R.id.llLocationWrapper);
+		llLocationWrapper.setVisibility(View.INVISIBLE);
+		tvLocation = (TextView) findViewById(R.id.tvLocation);
+		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
+		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
+		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
+		ibDelete.setOnClickListener(this);
+
 	}
 
 	private class SaveNoteThread extends Thread {
 		public void run() {
-			reminderNoteDB.insert(bDate.getText().toString(), bTime.getText()
+			long rid = reminderNoteDB.insert(bDate.getText().toString(), bTime.getText()
 					.toString(), etNoteText.getText().toString(), important);
+			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
+				locationDataDB.insert(rid, Note.LIST_NOTE, Double
+						.parseDouble(tvLocationLongitude.getText().toString()),
+						Double.parseDouble(tvLocationLatitude.getText()
+								.toString()), tvLocation.getText().toString());
+			}
 			progressDialog.dismiss();
 		}
 	}
@@ -139,6 +165,15 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 			} else {
 				etNoteText.setText(text + sentence);
 			}
+		} else if (requestCode == REQUEST_MAP_LOCATION
+				&& resultCode == RESULT_OK) {
+			address = data.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
+			tvLocation.setText(address.getAddressLine(0).toString() + ", "
+					+ address.getAddressLine(1).toString() + ", "
+					+ address.getCountryCode().toString());
+			tvLocationLongitude.setText(String.valueOf(address.getLongitude()));
+			tvLocationLatitude.setText(String.valueOf(address.getLatitude()));
+			llLocationWrapper.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -208,6 +243,16 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 			// intentASR.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
 			intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
 			startActivityForResult(intentASR, REQUEST_SPEECH);
+			break;
+		case R.id.bLocation:
+			Intent i = new Intent(this, AddMapActivity.class);
+			startActivityForResult(i, REQUEST_MAP_LOCATION);
+			break;
+		case R.id.ibDelete:
+			tvLocation.setText("");
+			tvLocationLongitude.setText("");
+			tvLocationLatitude.setText("");
+			llLocationWrapper.setVisibility(View.INVISIBLE);
 			break;
 		}
 	}

@@ -6,31 +6,43 @@ import greendroid.widget.ActionBarItem.Type;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.sqlitedb.ChildNoteDB;
 import com.therap.javafest.utext.sqlitedb.ListNoteDB;
+import com.therap.javafest.utext.sqlitedb.LocationDataDB;
 
 public class AddListNoteActivity extends GDActivity implements OnClickListener {
 	private static final int ACTION_BAR_SAVE = 1;
+	private static final int REQUEST_MAP_LOCATION = 10;
+
+	private Address address;
 
 	private int important = 0;
 
 	private ListNoteItemUI item;
 	private EditText etListNoteTitle;
-	private LinearLayout llListNoteItemsWrapper;
 	private Button bAddItem, bLocation, bImportant;
+
+	private ImageButton ibDelete;
+	private LinearLayout llListNoteItemsWrapper, llLocationWrapper;
+	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
 
 	private ListNoteDB listNoteDB;
 	private ChildNoteDB childNoteDB;
+	private LocationDataDB locationDataDB;
 
 	private ProgressDialog progressDialog;
 
@@ -39,12 +51,13 @@ public class AddListNoteActivity extends GDActivity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_add_list_note);
 		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
-		Init();
+		renderView();
 	}
 
-	private void Init() {
+	private void renderView() {
 		listNoteDB = new ListNoteDB(AddListNoteActivity.this);
 		childNoteDB = new ChildNoteDB(AddListNoteActivity.this);
+		locationDataDB = new LocationDataDB(AddListNoteActivity.this);
 
 		etListNoteTitle = (EditText) findViewById(R.id.etListNoteTitle);
 
@@ -58,6 +71,14 @@ public class AddListNoteActivity extends GDActivity implements OnClickListener {
 
 		bImportant = (Button) findViewById(R.id.bImportant);
 		bImportant.setOnClickListener(this);
+
+		llLocationWrapper = (LinearLayout) findViewById(R.id.llLocationWrapper);
+		llLocationWrapper.setVisibility(View.INVISIBLE);
+		tvLocation = (TextView) findViewById(R.id.tvLocation);
+		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
+		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
+		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
+		ibDelete.setOnClickListener(this);
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -69,6 +90,12 @@ public class AddListNoteActivity extends GDActivity implements OnClickListener {
 				item = (ListNoteItemUI) llListNoteItemsWrapper.getChildAt(i);
 				childNoteDB.insert(lsid, item.getText().toString(),
 						item.isDone());
+			}
+			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
+				locationDataDB.insert(lsid, Note.LIST_NOTE, Double
+						.parseDouble(tvLocationLongitude.getText().toString()),
+						Double.parseDouble(tvLocationLatitude.getText()
+								.toString()), tvLocation.getText().toString());
 			}
 			progressDialog.dismiss();
 		}
@@ -135,6 +162,20 @@ public class AddListNoteActivity extends GDActivity implements OnClickListener {
 		}
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_MAP_LOCATION && resultCode == RESULT_OK) {
+			address = data.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
+			tvLocation.setText(address.getAddressLine(0).toString() + ", "
+					+ address.getAddressLine(1).toString() + ", "
+					+ address.getCountryCode().toString());
+			tvLocationLongitude.setText(String.valueOf(address.getLongitude()));
+			tvLocationLatitude.setText(String.valueOf(address.getLatitude()));
+			llLocationWrapper.setVisibility(View.VISIBLE);
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.bAddItem:
@@ -154,6 +195,16 @@ public class AddListNoteActivity extends GDActivity implements OnClickListener {
 								R.drawable.ic_menu_star_yellow), null, null,
 						null);
 			}
+			break;
+		case R.id.bLocation:
+			Intent i = new Intent(this, AddMapActivity.class);
+			startActivityForResult(i, REQUEST_MAP_LOCATION);
+			break;
+		case R.id.ibDelete:
+			tvLocation.setText("");
+			tvLocationLongitude.setText("");
+			tvLocationLatitude.setText("");
+			llLocationWrapper.setVisibility(View.INVISIBLE);
 			break;
 		}
 	}

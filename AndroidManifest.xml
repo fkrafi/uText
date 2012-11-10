@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -40,6 +41,9 @@
         <activity android:name=".UserVerificationActivity" />
         <activity android:name=".EditReminderActivity" />
         <activity android:name=".ExportDatabaseActivity" />
+        <activity android:name=".AddMapActivity" />
+
+        <uses-library android:name="com.google.android.maps" />
     </application>
 
 </manifest>

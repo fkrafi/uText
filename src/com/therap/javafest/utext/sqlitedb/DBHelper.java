@@ -40,7 +40,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public static final String DB_TABLE_LOCATION_DATA = "location_data";
 	public static final String LOCATION_DATA_COLUMN_LID = "lid";
-	public static final String LOCATION_DATA_COLUMN_MID = "mid";
+	public static final String LOCATION_DATA_COLUMN_NID = "nid";
+	public static final String LOCATION_DATA_COLUMN_NTYPE = "ntype";
 	public static final String LOCATION_DATA_COLUMN_CREATED = "created";
 	public static final String LOCATION_DATA_COLUMN_MODIFIED = "modified";
 	public static final String LOCATION_DATA_COLUMN_LONGITUDE = "longitude";
@@ -117,7 +118,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE " + DB_TABLE_LOCATION_DATA + "("
 				+ LOCATION_DATA_COLUMN_LID
 				+ " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
-				+ LOCATION_DATA_COLUMN_MID + " INTEGER, "
+				+ LOCATION_DATA_COLUMN_NID + " INTEGER, "
+				+ LOCATION_DATA_COLUMN_NTYPE + " INTEGER, "
 				+ LOCATION_DATA_COLUMN_CREATED + " TEXT, "
 				+ LOCATION_DATA_COLUMN_MODIFIED + " TEXT, "
 				+ LOCATION_DATA_COLUMN_LONGITUDE + " REAL, "

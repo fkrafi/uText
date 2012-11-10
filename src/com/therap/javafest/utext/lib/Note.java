@@ -1,16 +1,18 @@
 package com.therap.javafest.utext.lib;
 
 public class Note {
-	private String id = null;
+	private String id = "";
 	private int type = 1;
-	private String text = null;
-	private String datetime = null;
+	private String text = "";
+	private String datetime = "";
 	private boolean hasImage = false;
 	private boolean hasAudio = false;
 	private boolean hasVideo = false;
 	private boolean hasLocation = false;
 	private int count = 0;
 	private int important = 0;
+
+	private String rDateTime = "";
 
 	public static final int MULTIMEDIA_NOTE = 1;
 	public static final int LIST_NOTE = 2;
@@ -112,6 +114,14 @@ public class Note {
 
 	public int getImportant() {
 		return important;
+	}
+
+	public void setRDateTime(String rDateTime) {
+		this.rDateTime = rDateTime;
+	}
+
+	public String getRDateTime() {
+		return rDateTime;
 	}
 
 }
