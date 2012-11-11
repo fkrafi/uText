@@ -17,10 +17,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.util.Linkify;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView.BufferType;
 
 import com.therap.javafest.utext.lib.AudioData;
 import com.therap.javafest.utext.lib.ImageData;
@@ -61,6 +64,7 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 	private ArrayList<AudioData> ad;
 	private ArrayList<VideoData> vd;
 
+	private SpanableText st;
 	private ProgressDialog progressDialog;
 
 	@Override
@@ -75,6 +79,7 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 	private void renderView() {
 		context = this;
 		intent = getIntent();
+		st = new SpanableText(context);
 		mid = Integer.parseInt(intent.getStringExtra("mid"));
 
 		audioDataDB = new AudioDataDB(context);
@@ -92,7 +97,9 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 				.toString());
 
 		tvText = (TextView) findViewById(R.id.tvText);
-		tvText.setText(data.text);
+		SpannableString ss = st.putEmoticons(data.text);
+		Linkify.addLinks(ss, Linkify.ALL);
+		tvText.setText(ss, BufferType.SPANNABLE);
 
 		ivImportant = (ImageView) findViewById(R.id.ivImportant);
 		if (data.is_important == 1) {

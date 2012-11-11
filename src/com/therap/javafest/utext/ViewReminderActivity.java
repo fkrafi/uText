@@ -17,10 +17,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.util.Linkify;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView.BufferType;
 
 import com.therap.javafest.utext.lib.LocationData;
 import com.therap.javafest.utext.lib.Note;
@@ -47,6 +50,8 @@ public class ViewReminderActivity extends GDActivity {
 
 	private int rmonth, ryear, rday, rhour, rminute;
 
+	private SpanableText st;
+
 	private ProgressDialog progressDialog;
 
 	@Override
@@ -65,12 +70,9 @@ public class ViewReminderActivity extends GDActivity {
 	private void renderView() {
 		context = this;
 		intent = getIntent();
-		try {
-			rid = Integer.parseInt(intent.getStringExtra("rid"));
-			Toast.makeText(this, String.valueOf(rid), Toast.LENGTH_LONG).show();
-		} catch (Exception exp) {
-			exp.printStackTrace();
-		}
+		st = new SpanableText(context);
+
+		rid = Integer.parseInt(intent.getStringExtra("rid"));
 
 		ReminderNote rn = new ReminderNote();
 
@@ -117,7 +119,9 @@ public class ViewReminderActivity extends GDActivity {
 		}
 
 		tvText = (TextView) findViewById(R.id.tvText);
-		tvText.setText(rn.text);
+		SpannableString ss = st.putEmoticons(rn.text);
+		Linkify.addLinks(ss, Linkify.ALL);
+		tvText.setText(ss, BufferType.SPANNABLE);
 	}
 
 	private class DeleteNoteThread extends Thread {

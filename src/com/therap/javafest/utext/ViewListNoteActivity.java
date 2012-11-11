@@ -17,10 +17,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.util.Linkify;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView.BufferType;
 
 import com.therap.javafest.utext.lib.ChildNote;
 import com.therap.javafest.utext.lib.ListNote;
@@ -46,6 +49,7 @@ public class ViewListNoteActivity extends GDActivity {
 	private LinearLayout llListNoteItemsWrapper;
 	private TextView tvDateTime, tvLocation, tvTitle;
 
+	private SpanableText st;
 	private ProgressDialog progressDialog;
 
 	@Override
@@ -60,6 +64,7 @@ public class ViewListNoteActivity extends GDActivity {
 	private void renderView() {
 		context = this;
 		intent = getIntent();
+		st = new SpanableText(context);
 		lsid = Integer.parseInt(intent.getStringExtra("lsid"));
 
 		ListNote ln = new ListNote();
@@ -78,7 +83,9 @@ public class ViewListNoteActivity extends GDActivity {
 		tvDateTime.setText(dateFormat.format(date).toString());
 
 		tvTitle = (TextView) findViewById(R.id.tvTitle);
-		tvTitle.setText(ln.title);
+		SpannableString ss = st.putEmoticons(ln.title);
+		Linkify.addLinks(ss, Linkify.ALL);
+		tvTitle.setText(ss, BufferType.SPANNABLE);
 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
 		LocationData locationData = new LocationData();
@@ -97,7 +104,9 @@ public class ViewListNoteActivity extends GDActivity {
 		cd = childNoteDB.selectByLsid(lsid);
 		for (ChildNote c : cd) {
 			ListNoteItemUI item = new ListNoteItemUI(context);
-			item.setText(c.text);
+			ss = st.putEmoticons(c.text);
+			Linkify.addLinks(ss, Linkify.ALL);
+			item.setText(ss);
 			item.setId(c.cid);
 			item.setDone(c.is_complete);
 			item.setCheckDone(false);

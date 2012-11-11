@@ -2,6 +2,7 @@ package com.therap.javafest.utext;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.text.SpannableString;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView.BufferType;
 
 public class ListNoteItemUI extends LinearLayout implements
 		OnCheckedChangeListener, OnClickListener {
@@ -65,6 +67,10 @@ public class ListNoteItemUI extends LinearLayout implements
 
 	public void setText(String text) {
 		etText.setText(text);
+	}
+
+	public void setText(SpannableString text) {
+		etText.setText(text, BufferType.SPANNABLE);
 	}
 
 	public String getText() {
