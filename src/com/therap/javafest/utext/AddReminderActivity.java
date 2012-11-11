@@ -58,6 +58,8 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	private LinearLayout llLocationWrapper;
 	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
 
+	private int rmonth, ryear, rday, rhour, rminute;
+
 	private ProgressDialog progressDialog;
 
 	@Override
@@ -69,10 +71,17 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	}
 
 	private void Init() {
+		Date date = (new GregorianCalendar()).getTime();
+		Calendar c = Calendar.getInstance();
+		rmonth = c.get(Calendar.MONTH);
+		ryear = c.get(Calendar.YEAR);
+		rday = c.get(Calendar.DAY_OF_MONTH);
+		rhour = c.get(Calendar.HOUR_OF_DAY);
+		rminute = c.get(Calendar.MINUTE);
+
 		reminderNoteDB = new ReminderNoteDB(AddReminderActivity.this);
 		locationDataDB = new LocationDataDB(AddReminderActivity.this);
 
-		Date date = new Date();
 		bDate = (Button) findViewById(R.id.bDate);
 		DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy");
 		bDate.setText(dateFormat.format(date).toString());
@@ -105,8 +114,11 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 
 	private class SaveNoteThread extends Thread {
 		public void run() {
-			long rid = reminderNoteDB.insert(bDate.getText().toString(), bTime.getText()
-					.toString(), etNoteText.getText().toString(), important);
+			String t = String.valueOf(ryear) + " " + String.valueOf(rmonth)
+					+ " " + String.valueOf(rday) + " " + String.valueOf(rhour)
+					+ " " + String.valueOf(rminute);
+			long rid = reminderNoteDB.insert(t,
+					etNoteText.getText().toString(), important);
 			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
 				locationDataDB.insert(rid, Note.LIST_NOTE, Double
 						.parseDouble(tvLocationLongitude.getText().toString()),
@@ -197,6 +209,9 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 				int dayOfMonth) {
 			Date date = (new GregorianCalendar(year, monthOfYear, dayOfMonth))
 					.getTime();
+			ryear = year;
+			rmonth = monthOfYear;
+			rday = dayOfMonth;
 			DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy");
 			bDate.setText(dateFormat.format(date).toString());
 
@@ -208,6 +223,8 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 			Calendar c = Calendar.getInstance();
 			Date date = new Date(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
 					c.get(Calendar.DAY_OF_MONTH), hour, minute);
+			rhour = hour;
+			rminute = minute;
 			DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
 			bTime.setText(dateFormat.format(date).toString());
 		}

@@ -52,9 +52,6 @@ public class ImageDataDB {
 		close();
 	}
 
-	public void update(int mid, String text, int important) {
-	}
-
 	public boolean hasImage(int mid) {
 		open();
 		Cursor c = database.query(DBHelper.DB_TABLE_IMAGE_DATA, null,

@@ -3,6 +3,7 @@ package com.therap.javafest.utext.lib;
 import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class NoteComparator implements Comparator<Note> {
 	private int method;
@@ -21,9 +22,9 @@ public class NoteComparator implements Comparator<Note> {
 	}
 
 	private int defaultCompare(Note n1, Note n2) {
-		Date date1 = new Date((Timestamp.valueOf(n1.getDateTime())).getTime());
-		Date date2 = new Date((Timestamp.valueOf(n1.getDateTime()).getTime()));
-		return date1.compareTo(date2);
+		long date1 = (Timestamp.valueOf(n1.getDateTime())).getTime();
+		long date2 = (Timestamp.valueOf(n1.getDateTime())).getTime();
+		return (date1 < date2) ? 1 : ((date1 == date2) ? 0 : -1);
 	}
 
 	private int searchCompare(Note n1, Note n2) {
@@ -56,14 +57,10 @@ public class NoteComparator implements Comparator<Note> {
 	}
 
 	public static Date StringToDate(String rDateTime) {
-		String tokens[] = rDateTime.split(" ");
-		int year = Integer.valueOf(tokens[3].trim());
-		int month = Integer.valueOf(tokens[2].trim());
-		int date = Integer.valueOf(tokens[1].trim());
-		String time[] = tokens[4].split(":");
-		int hrs = (Integer.valueOf(time[0].trim()) + (tokens[5].equals("PM") ? 12
-				: 0)) % 24;
-		int min = Integer.valueOf(time[1].trim());
-		return new Date(year, month, date, hrs, min);
+		String str[] = rDateTime.split(" ");
+		return (new GregorianCalendar(Integer.parseInt(str[0]),
+				Integer.parseInt(str[1]), Integer.parseInt(str[2]),
+				Integer.parseInt(str[3]), Integer.parseInt(str[4]), 0))
+				.getTime();
 	}
 }

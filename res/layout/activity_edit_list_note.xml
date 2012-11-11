@@ -20,8 +20,10 @@
             <EditText
                 android:id="@+id/etListNoteTitle"
                 style="@style/.EditText"
+                android:autoLink="all"
                 android:hint="@string/et_listnote_title_hint"
-                android:inputType="none" />
+                android:inputType="none"
+                android:linksClickable="true" />
 
             <LinearLayout
                 android:id="@+id/llListNoteItemsWrapper"

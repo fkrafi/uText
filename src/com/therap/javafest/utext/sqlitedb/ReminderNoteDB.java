@@ -9,7 +9,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.ReminderNote;
@@ -30,7 +29,7 @@ public class ReminderNoteDB {
 		helper.close();
 	}
 
-	public long insert(String rDate, String rTime, String text, int important) {
+	public long insert(String rDate, String text, int important) {
 		open();
 		Date date = new Date();
 		String curDateTime = (new Timestamp(date.getTime())).toString();
@@ -38,7 +37,6 @@ public class ReminderNoteDB {
 		contentValues.put(DBHelper.REMINDER_COLUMN_CREATED, curDateTime);
 		contentValues.put(DBHelper.REMINDER_COLUMN_MODIFIED, curDateTime);
 		contentValues.put(DBHelper.REMINDER_COLUMN_REMINDER_DATE, rDate);
-		contentValues.put(DBHelper.REMINDER_COLUMN_REMINDER_TIME, rTime);
 		contentValues.put(DBHelper.REMINDER_COLUMN_TEXT, text);
 		contentValues.put(DBHelper.REMINDER_COLUMN_IS_IMPORTANT,
 				String.valueOf(important));
@@ -54,9 +52,6 @@ public class ReminderNoteDB {
 				DBHelper.REMINDER_COLUMN_RID + "=?",
 				new String[] { String.valueOf(rid) });
 		close();
-	}
-
-	public void update(int mid, String text, int important) {
 	}
 
 	public ArrayList<Note> selectForList() {
@@ -76,11 +71,7 @@ public class ReminderNoteDB {
 							.getColumnIndex(DBHelper.REMINDER_COLUMN_IS_IMPORTANT)),
 					false, false, false, false, 0);
 			String str = c.getString(c
-					.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_DATE))
-					+ " "
-					+ c.getString(c
-							.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_TIME));
-			Log.d("mydate1", str);
+					.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_DATE));
 			temp.setRDateTime(str);
 			ret.add(temp);
 		}
@@ -103,8 +94,6 @@ public class ReminderNoteDB {
 				.getColumnIndex(DBHelper.REMINDER_COLUMN_MODIFIED));
 		ret.rdate = c.getString(c
 				.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_DATE));
-		ret.rtime = c.getString(c
-				.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_TIME));
 		ret.text = c.getString(c.getColumnIndex(DBHelper.REMINDER_COLUMN_TEXT));
 		ret.is_important = c.getInt(c
 				.getColumnIndex(DBHelper.REMINDER_COLUMN_IS_IMPORTANT));
@@ -126,8 +115,6 @@ public class ReminderNoteDB {
 					.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_DATE));
 			temp.text = c.getString(c
 					.getColumnIndex(DBHelper.MULTIMEDIA_NOTE_COLUMN_TEXT));
-			temp.rtime = c.getString(c
-					.getColumnIndex(DBHelper.REMINDER_COLUMN_REMINDER_TIME));
 			temp.text = c.getString(c
 					.getColumnIndex(DBHelper.REMINDER_COLUMN_TEXT));
 			temp.modified = c.getString(c
@@ -140,15 +127,13 @@ public class ReminderNoteDB {
 		return ret;
 	}
 
-	public void update(int rid, String rDate, String rTime, String text,
-			int important) {
+	public void update(int rid, String rDate, String text, int important) {
 		open();
 		Date date = new Date();
 		String curDateTime = (new Timestamp(date.getTime())).toString();
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DBHelper.REMINDER_COLUMN_MODIFIED, curDateTime);
 		contentValues.put(DBHelper.REMINDER_COLUMN_REMINDER_DATE, rDate);
-		contentValues.put(DBHelper.REMINDER_COLUMN_REMINDER_TIME, rTime);
 		contentValues.put(DBHelper.REMINDER_COLUMN_TEXT, text);
 		contentValues.put(DBHelper.REMINDER_COLUMN_IS_IMPORTANT,
 				String.valueOf(important));

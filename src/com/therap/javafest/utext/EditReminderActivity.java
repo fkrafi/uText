@@ -66,6 +66,8 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 
 	private ReminderNoteDB reminderNoteDB;
 
+	private int rmonth, ryear, rday, rhour, rminute;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,18 +82,26 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 		rid = Integer.parseInt(intent.getStringExtra("rid"));
 
 		ReminderNote rn = new ReminderNote();
-
 		reminderNoteDB = new ReminderNoteDB(context);
-
 		rn = reminderNoteDB.selectByLsid(rid);
 
+		String str[] = rn.rdate.split(" ");
+		ryear = Integer.parseInt(str[0]);
+		rmonth = Integer.parseInt(str[1]);
+		rday = Integer.parseInt(str[2]);
+		rhour = Integer.parseInt(str[3]);
+		rminute = Integer.parseInt(str[4]);
+		Date date = (new GregorianCalendar(ryear, rmonth, rday, rhour, rminute,
+				0)).getTime();
 		bDate = (Button) findViewById(R.id.bDate);
-		bDate.setText(rn.rdate);
-		bDate.setEnabled(false);
+		DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy");
+		bDate.setText(dateFormat.format(date).toString());
+		bDate.setOnClickListener(this);
 
 		bTime = (Button) findViewById(R.id.bTime);
-		bTime.setText(rn.rtime);
-		bTime.setEnabled(false);
+		dateFormat = new SimpleDateFormat("hh:mm a");
+		bTime.setText(dateFormat.format(date));
+		bTime.setOnClickListener(this);
 
 		etNoteText = (EditText) findViewById(R.id.etNoteText);
 		etNoteText.setText(rn.text);
@@ -122,7 +132,7 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 		LocationData locationData = new LocationData();
 		locationDataDB = new LocationDataDB(context);
 		locationData = locationDataDB.selectByNoteId(rid, Note.REMINDER);
-		if(locationData != null){
+		if (locationData != null) {
 			tvLocation.setText(locationData.place);
 			tvLocationLongitude.setText(String.valueOf(locationData.longitude));
 			tvLocationLatitude.setText(String.valueOf(locationData.latitude));
@@ -132,14 +142,17 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 
 	private class SaveNoteThread extends Thread {
 		public void run() {
-			reminderNoteDB.update(rid, bDate.getText().toString(), bTime
-					.getText().toString(), etNoteText.getText().toString(),
+			String t = String.valueOf(ryear) + " " + String.valueOf(rmonth)
+					+ " " + String.valueOf(rday) + " " + String.valueOf(rhour)
+					+ " " + String.valueOf(rminute);
+			reminderNoteDB.update(rid, t, etNoteText.getText().toString(),
 					important);
 			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
-				locationDataDB.update(rid, Double.parseDouble(tvLocationLongitude.getText()
-						.toString()), Double.parseDouble(tvLocationLatitude.getText().toString()),
-						tvLocation.getText().toString());
-			}else{
+				locationDataDB.update(rid, Double
+						.parseDouble(tvLocationLongitude.getText().toString()),
+						Double.parseDouble(tvLocationLatitude.getText()
+								.toString()), tvLocation.getText().toString());
+			} else {
 				locationDataDB.delete(rid, Note.REMINDER);
 			}
 			progressDialog.dismiss();
@@ -230,6 +243,9 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 				int dayOfMonth) {
 			Date date = (new GregorianCalendar(year, monthOfYear, dayOfMonth))
 					.getTime();
+			ryear = year;
+			rmonth = monthOfYear;
+			rday = dayOfMonth;
 			DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy");
 			bDate.setText(dateFormat.format(date).toString());
 
@@ -241,6 +257,8 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 			Calendar c = Calendar.getInstance();
 			Date date = new Date(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
 					c.get(Calendar.DAY_OF_MONTH), hour, minute);
+			rhour = hour;
+			rminute = minute;
 			DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
 			bTime.setText(dateFormat.format(date).toString());
 		}

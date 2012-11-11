@@ -32,7 +32,9 @@
                 <EditText
                     android:id="@+id/etNoteText"
                     style="@style/.EditText"
+                    android:autoLink="all"
                     android:inputType="none"
+                    android:linksClickable="true"
                     android:minLines="6" />
 
                 <ImageButton

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="add_note_options">
+        <item>Multimedia Note</item>
+        <item>List Note</item>
+        <item>Reminder</item>
+    </string-array>
+
+</resources>

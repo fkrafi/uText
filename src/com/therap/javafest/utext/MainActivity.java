@@ -6,8 +6,10 @@ import greendroid.widget.ActionBarItem.Type;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -21,7 +23,6 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.Note;
 import com.therap.javafest.utext.lib.NoteComparator;
@@ -98,8 +99,7 @@ public class MainActivity extends GDActivity {
 					startActivity(intent);
 					finish();
 				} catch (Exception exp) {
-					Toast.makeText(context, exp.getMessage(), Toast.LENGTH_LONG)
-							.show();
+					exp.fillInStackTrace();
 				}
 			}
 		});
@@ -108,25 +108,39 @@ public class MainActivity extends GDActivity {
 
 	private void renderAllReminder() {
 		ArrayList<ReminderNote> reminderNote = reminderNoteDB.selectAll();
-		for (ReminderNote r : reminderNote) {
-			long date1 = NoteComparator.StringToDate(r.rdate + " " + r.rtime)
-					.getTime();
-			long date2 = (new Date()).getTime();
-			long diffTime = date1 - date2;
-			if (diffTime > 0) {
-				Bundle bundle = new Bundle();
-				bundle.putString("TITLE", r.text);
-				Toast.makeText(this,String.valueOf(diffTime), Toast.LENGTH_LONG).show();
-				new AlarmReceiver(this, bundle, (int)diffTime, r.rid);
-			}else{
-				try{
-					Intent intent = new Intent(this, AlarmReceiver.class);
-					PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-			        alarmManager.cancel(pendingIntent);
-				}catch(Exception exp){
-					exp.printStackTrace();
+		for (ReminderNote rn : reminderNote) {
+			try {
+				String str[] = rn.rdate.split(" ");
+				int ryear = Integer.parseInt(str[0]);
+				int rmonth = Integer.parseInt(str[1]);
+				int rday = Integer.parseInt(str[2]);
+				int rhour = Integer.parseInt(str[3]);
+				int rminute = Integer.parseInt(str[4]);
+				Date date1 = (new GregorianCalendar(ryear, rmonth, rday, rhour,
+						rminute, 0)).getTime();
+				Calendar c = Calendar.getInstance();
+				Date date2 = (new GregorianCalendar(c.get(Calendar.YEAR),
+						c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH),
+						c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), 0))
+						.getTime();
+				if (date1.getTime() >= date2.getTime()) {
+					Intent intent = new Intent(context, AlarmReceiver.class);
+					intent.putExtra("text", rn.text);
+					intent.putExtra("rid", String.valueOf(rn.rid));
+					PendingIntent sender = PendingIntent.getBroadcast(this,
+							rn.rid, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+					AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+					am.set(AlarmManager.RTC_WAKEUP, date1.getTime(), sender);
+				} else {
+					PendingIntent pendingIntent = PendingIntent.getBroadcast(
+							getBaseContext(), rn.rid, new Intent(this,
+									AlarmReceiver.class),
+							PendingIntent.FLAG_UPDATE_CURRENT);
+					AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+					alarmManager.cancel(pendingIntent);
 				}
+			} catch (Exception exp) {
+				exp.printStackTrace();
 			}
 		}
 	}
@@ -180,7 +194,7 @@ public class MainActivity extends GDActivity {
 					case 0:
 						startActivity(new Intent(context,
 								AddMultiMediaNoteActivity.class));
-						finish();
+
 						break;
 					case 1:
 						startActivity(new Intent(context,

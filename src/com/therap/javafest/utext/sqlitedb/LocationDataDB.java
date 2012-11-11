@@ -53,7 +53,8 @@ public class LocationDataDB {
 	public void delete(int nid, int ntype) {
 		open();
 		database.delete(DBHelper.DB_TABLE_LOCATION_DATA,
-				DBHelper.LOCATION_DATA_COLUMN_LID + "=? AND " + DBHelper.LOCATION_DATA_COLUMN_NTYPE + "=?",
+				DBHelper.LOCATION_DATA_COLUMN_LID + "=? AND "
+						+ DBHelper.LOCATION_DATA_COLUMN_NTYPE + "=?",
 				new String[] { String.valueOf(nid), String.valueOf(ntype) });
 		close();
 	}
@@ -77,7 +78,7 @@ public class LocationDataDB {
 
 	public LocationData selectByNoteId(int nid, int ntype) {
 		open();
-		LocationData ret = new LocationData();
+		LocationData ret = null;
 		Cursor c = database.query(DBHelper.DB_TABLE_LOCATION_DATA, null,
 				DBHelper.LOCATION_DATA_COLUMN_NID + "=? AND "
 						+ DBHelper.LOCATION_DATA_COLUMN_NTYPE + "=?",
@@ -87,6 +88,7 @@ public class LocationDataDB {
 			c.moveToFirst();
 		}
 		if (c.getCount() > 0) {
+			ret = new LocationData();
 			ret.lid = c.getInt(c
 					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_LID));
 			ret.nid = c.getInt(c
@@ -103,10 +105,21 @@ public class LocationDataDB {
 					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_LATITUDE));
 			ret.place = c.getString(c
 					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_PLACE));
-			close();
-			return ret;
 		}
-		return null;
+		close();
+		return ret;
+	}
+
+	public boolean hasLocation(int nid, int ntype) {
+		open();
+		Cursor c = database.query(DBHelper.DB_TABLE_LOCATION_DATA, null,
+				DBHelper.LOCATION_DATA_COLUMN_NID + "=? AND "
+						+ DBHelper.LOCATION_DATA_COLUMN_NTYPE + "=?",
+				new String[] { String.valueOf(nid), String.valueOf(nid) },
+				null, null, null);
+		int size = c.getCount();
+		close();
+		return (size > 0);
 	}
 
 }

@@ -67,7 +67,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String REMINDER_COLUMN_CREATED = "created";
 	public static final String REMINDER_COLUMN_MODIFIED = "modified";
 	public static final String REMINDER_COLUMN_REMINDER_DATE = "rdate";
-	public static final String REMINDER_COLUMN_REMINDER_TIME = "rtime";
 	public static final String REMINDER_COLUMN_TEXT = "text";
 	public static final String REMINDER_COLUMN_IS_IMPORTANT = "is_important";
 
@@ -150,7 +149,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
 				+ REMINDER_COLUMN_CREATED + " TEXT, "
 				+ REMINDER_COLUMN_REMINDER_DATE + " TEXT, "
-				+ REMINDER_COLUMN_REMINDER_TIME + " TEXT, "
 				+ REMINDER_COLUMN_MODIFIED + " TEXT, " + REMINDER_COLUMN_TEXT
 				+ " TEXT, " + REMINDER_COLUMN_IS_IMPORTANT + " INTEGER(2))");
 	}

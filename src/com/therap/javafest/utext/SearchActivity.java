@@ -4,8 +4,6 @@ import greendroid.app.GDActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -20,7 +18,6 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -135,8 +132,8 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 		for (Note n : allNotes) {
 			String text = n.getText();
 			int count = 0;
-			for(String token : tokens){
-				if(text.contains(token)){
+			for (String token : tokens) {
+				if (text.contains(token)) {
 					count++;
 				}
 			}

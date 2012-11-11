@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -44,6 +45,8 @@ public class ViewReminderActivity extends GDActivity {
 	private Button bDate, bTime;
 	private TextView tvDateTime, tvLocation, tvText;
 
+	private int rmonth, ryear, rday, rhour, rminute;
+
 	private ProgressDialog progressDialog;
 
 	@Override
@@ -52,13 +55,22 @@ public class ViewReminderActivity extends GDActivity {
 		setActionBarContentView(R.layout.activity_view_reminder);
 		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
 		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
-		renderView();
+		try {
+			renderView();
+		} catch (Exception exp) {
+			Toast.makeText(context, exp.getMessage(), Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private void renderView() {
 		context = this;
 		intent = getIntent();
-		rid = Integer.parseInt(intent.getStringExtra("rid"));
+		try {
+			rid = Integer.parseInt(intent.getStringExtra("rid"));
+			Toast.makeText(this, String.valueOf(rid), Toast.LENGTH_LONG).show();
+		} catch (Exception exp) {
+			exp.printStackTrace();
+		}
 
 		ReminderNote rn = new ReminderNote();
 
@@ -72,12 +84,22 @@ public class ViewReminderActivity extends GDActivity {
 		tvDateTime = (TextView) findViewById(R.id.tvDateTime);
 		tvDateTime.setText(dateFormat.format(date).toString());
 
+		String str[] = rn.rdate.split(" ");
+		ryear = Integer.parseInt(str[0]);
+		rmonth = Integer.parseInt(str[1]);
+		rday = Integer.parseInt(str[2]);
+		rhour = Integer.parseInt(str[3]);
+		rminute = Integer.parseInt(str[4]);
+		date = (new GregorianCalendar(ryear, rmonth, rday, rhour, rminute, 0))
+				.getTime();
 		bDate = (Button) findViewById(R.id.bDate);
-		bDate.setText(rn.rdate);
+		dateFormat = new SimpleDateFormat("E, dd M yyyy");
+		bDate.setText(dateFormat.format(date).toString());
 		bDate.setEnabled(false);
 
 		bTime = (Button) findViewById(R.id.bTime);
-		bTime.setText(rn.rtime);
+		dateFormat = new SimpleDateFormat("hh:mm a");
+		bTime.setText(dateFormat.format(date));
 		bTime.setEnabled(false);
 
 		ivImportant = (ImageView) findViewById(R.id.ivImportant);

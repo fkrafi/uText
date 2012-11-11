@@ -117,7 +117,6 @@ public class DBExport {
 			data += "\"" + rn.created + "\",";
 			data += "\"" + rn.modified + "\",";
 			data += "\"" + rn.rdate + "\",";
-			data += "\"" + rn.rtime + "\",";
 			data += "\"" + rn.text + "\",";
 			data += "\"" + String.valueOf(rn.is_important) + "\"\n";
 		}
@@ -245,9 +244,6 @@ public class DBExport {
 			data += "\t\t<column name=\""
 					+ DBHelper.REMINDER_COLUMN_REMINDER_DATE + "\" >"
 					+ rn.rdate + "</column>\n";
-			data += "\t\t<column name=\""
-					+ DBHelper.REMINDER_COLUMN_REMINDER_TIME + "\" >"
-					+ rn.rtime + "</column>\n";
 			data += "\t\t<column name=\"" + DBHelper.REMINDER_COLUMN_MODIFIED
 					+ "\" >" + rn.modified + "</column>\n";
 			data += "\t\t<column name=\"" + DBHelper.REMINDER_COLUMN_TEXT

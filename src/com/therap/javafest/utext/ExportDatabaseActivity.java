@@ -15,8 +15,8 @@ public class ExportDatabaseActivity extends Activity implements
 
 	DBExport dBExport;
 	private ListView lvExportTypes;
-	private static final String[] exportTypes = new String[] { "XML", "CSV",
-			"TXT", "PDF", "DOC" };
+	private static final String[] exportTypes = new String[] { "Export as XML",
+			"Export as CSV", "Cloud System" };
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

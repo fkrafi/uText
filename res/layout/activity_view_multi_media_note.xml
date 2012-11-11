@@ -54,13 +54,14 @@
                     android:id="@+id/tvText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:autoLink="all"
                     android:background="#dedede"
+                    android:linksClickable="true"
                     android:minLines="6"
                     android:paddingBottom="7dp"
                     android:paddingLeft="7dp"
                     android:paddingRight="7dp"
                     android:paddingTop="25dp"
-					android:autoLink="all"
                     android:textColor="#444444"
                     android:textSize="18sp" />
 

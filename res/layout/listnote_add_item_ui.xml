@@ -17,8 +17,12 @@
         <EditText
             android:id="@+id/etText"
             style="@style/.EditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
             android:background="@drawable/edit_text"
-            android:inputType="none" />
+            android:inputType="none"
+            android:linksClickable="true" />
 
         <ImageButton
             android:id="@+id/ibDelete"

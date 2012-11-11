@@ -4,7 +4,6 @@ public class ReminderNote {
 	public int rid;
 	public String created;
 	public String rdate;
-	public String rtime;
 	public String modified;
 	public String text;
 	public int is_important;
