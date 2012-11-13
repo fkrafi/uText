@@ -7,6 +7,7 @@ import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
+import android.text.util.Linkify;
 
 public class SpanableText {
 
@@ -29,7 +30,7 @@ public class SpanableText {
 		emoticons.put(";)", R.drawable.ic_imagespan_winking);
 	}
 
-	public SpannableString putEmoticons(String text) {
+	public SpannableString convertToSpannableString(String text) {
 		SpannableString builder = new SpannableString(text);
 		for (int index = 0; index < builder.length(); index++) {
 			for (Entry<String, Integer> entry : emoticons.entrySet()) {
@@ -46,6 +47,7 @@ public class SpanableText {
 				}
 			}
 		}
+		Linkify.addLinks(builder, Linkify.ALL);
 		return builder;
 	}
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,17 +33,14 @@ public class ImageViewerUI extends LinearLayout implements OnClickListener {
 		super(context);
 		this.context = context;
 		Init();
-	}
-
-	public ImageViewerUI(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		this.context = context;
-		Init();
+		renderView();
 	}
 
 	private void Init() {
 		ip = new ImageProcessing(context);
+	}
 
+	private void renderView() {
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.image_viewer_ui, this);

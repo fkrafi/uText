@@ -24,9 +24,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:autoLink="all"
             android:gravity="right"
-            android:linksClickable="true"
             android:textColor="#777777"
             android:textSize="14sp" />
     </LinearLayout>

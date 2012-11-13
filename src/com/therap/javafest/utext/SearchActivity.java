@@ -52,15 +52,22 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_search);
+		Init();
 		renderView();
+	}
+
+	private void Init() {
+		context = this;
 		mLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
 		if (!mLibrary.load()) {
 			finish();
 		}
+		noteRetriever = new NoteRetriever(context);
+		notes = new ArrayList<Note>();
+		allNotes = new ArrayList<Note>();
 	}
 
 	private void renderView() {
-		context = this;
 		ibASR = (ImageButton) findViewById(R.id.ibASR);
 		ibASR.setOnClickListener(this);
 
@@ -83,11 +90,6 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 		});
 
 		lvNotes = (ListView) findViewById(R.id.lvNotes);
-
-		noteRetriever = new NoteRetriever(context);
-
-		notes = new ArrayList<Note>();
-		allNotes = new ArrayList<Note>();
 
 		allNotes.addAll(noteRetriever.getAll());
 		notes.clear();
@@ -127,10 +129,11 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 	}
 
 	private void Search() {
-		String tokens[] = etSearchFor.getText().toString().trim().split(" ");
+		String tokens[] = etSearchFor.getText().toString().toLowerCase().trim()
+				.split(" ");
 		notes.clear();
 		for (Note n : allNotes) {
-			String text = n.getText();
+			String text = n.getText().toLowerCase();
 			int count = 0;
 			for (String token : tokens) {
 				if (text.contains(token)) {
@@ -166,13 +169,11 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 				intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
 						RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-				// intentASR.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
 				intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
 				startActivityForResult(intentASR, REQUEST_SPEECH);
 			} catch (ActivityNotFoundException e) {
-				Toast.makeText(context, "Speech Recognizer Not Available",
+				Toast.makeText(context, "Google Voice Search Not Installed!",
 						Toast.LENGTH_LONG).show();
-				e.printStackTrace();
 			}
 			break;
 		}
@@ -180,10 +181,8 @@ public class SearchActivity extends GDActivity implements OnClickListener,
 
 	public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
 		ArrayList<Prediction> predictions = mLibrary.recognize(gesture);
-		if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
-			String result = predictions.get(0).name;
-			etSearchFor.setText(etSearchFor.getText().toString() + result);
-			Search();
-		}
+		String result = predictions.get(0).name;
+		etSearchFor.setText(etSearchFor.getText().toString() + result);
+		Search();
 	}
 }

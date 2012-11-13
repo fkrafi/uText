@@ -1,11 +1,18 @@
 package com.therap.javafest.utext;
 
+/**
+ * author          :: Md. Fasihul Kabir
+ * organization    :: AUST_Invincible
+ **/
+
 import greendroid.app.GDActivity;
 import greendroid.widget.ActionBarItem;
 import greendroid.widget.ActionBarItem.Type;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -36,7 +43,10 @@ import com.therap.javafest.utext.sqlitedb.VideoDataDB;
 public class AddMultiMediaNoteActivity extends GDActivity implements
 		OnClickListener {
 
+	/*** ActionBar Item Ids ***/
 	private static final int ACTION_BAR_SAVE = 1;
+
+	/*** startActivityForResult Request Codes ***/
 	private static final int REQUEST_SPEECH = 1111;
 	private static final int REQUEST_AUDIO_RECORDING = 2222;
 	private static final int REQUEST_GALLERY = 3333;
@@ -44,9 +54,9 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	private static final int REQUEST_VIDEO_CAMERA = 5555;
 	private static final int REQUEST_MAP_LOCATION = 10;
 
-	private int important = 0;
-
+	private Context context;
 	private Address address;
+	private int important = 0;
 
 	private Uri bitmapUri;
 	private ImageProcessing ip;
@@ -58,7 +68,7 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	private MultiMediaNoteDB multiMediaNoteDB;
 
 	private EditText etNoteText;
-	private ImageButton ibASR, ibDelete;
+	private ImageButton ibASR, ibLVDelete;
 	private AudioPlayerUI audioPlayerUI;
 	private ImageViewerUI imageViewerUI;
 	private VideoPlayerUI videoPlayerUI;
@@ -74,17 +84,22 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_add_multi_media_note);
-		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
+		Init();
 		renderView();
 	}
 
+	private void Init() {
+		context = this;
+		videoDataDB = new VideoDataDB(context);
+		imageDataDB = new ImageDataDB(context);
+		audioDataDB = new AudioDataDB(context);
+		locationDataDB = new LocationDataDB(context);
+		multiMediaNoteDB = new MultiMediaNoteDB(context);
+		ip = new ImageProcessing(context);
+	}
+
 	private void renderView() {
-		videoDataDB = new VideoDataDB(AddMultiMediaNoteActivity.this);
-		imageDataDB = new ImageDataDB(AddMultiMediaNoteActivity.this);
-		audioDataDB = new AudioDataDB(AddMultiMediaNoteActivity.this);
-		locationDataDB = new LocationDataDB(AddMultiMediaNoteActivity.this);
-		multiMediaNoteDB = new MultiMediaNoteDB(AddMultiMediaNoteActivity.this);
-		ip = new ImageProcessing(AddMultiMediaNoteActivity.this);
+		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
 
 		etNoteText = (EditText) findViewById(R.id.etNoteText);
 
@@ -110,32 +125,36 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
 		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
 		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
-		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
-		ibDelete.setOnClickListener(this);
+		ibLVDelete = (ImageButton) findViewById(R.id.ibLVDelete);
+		ibLVDelete.setOnClickListener(this);
 
 	}
 
 	private class SaveNoteThread extends Thread {
 		public void run() {
-			String text = etNoteText.getText().toString();
-			long mid = multiMediaNoteDB.insert(text, important);
+			long mid = multiMediaNoteDB.insert(etNoteText.getText().toString(),
+					important);
 			int count = llMultimedia.getChildCount();
 			for (int i = 0; i < count; i++) {
 				View view = llMultimedia.getChildAt(i);
 				if (view.getClass() == AudioPlayerUI.class) {
+					// If it is audio file
 					audioPlayerUI = (AudioPlayerUI) view;
 					audioDataDB.insert(mid, audioPlayerUI.getUri().toString());
 				} else if (view.getClass() == ImageViewerUI.class) {
+					// If it is image file
 					imageViewerUI = (ImageViewerUI) view;
 					imageDataDB.insert(mid, imageViewerUI.getBitmapUri()
 							.toString());
 				} else if (view.getClass() == VideoPlayerUI.class) {
+					// If it is video file
 					videoPlayerUI = (VideoPlayerUI) view;
 					videoDataDB.insert(mid, videoPlayerUI.getVideoUri()
 							.toString());
 				}
 			}
 			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
+				// if any location is attached
 				locationDataDB.insert(mid, Note.MULTIMEDIA_NOTE, Double
 						.parseDouble(tvLocationLongitude.getText().toString()),
 						Double.parseDouble(tvLocationLatitude.getText()
@@ -158,22 +177,17 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 				progressDialog.show();
 				progressDialog.setOnDismissListener(new OnDismissListener() {
 					public void onDismiss(DialogInterface di) {
-						Toast.makeText(AddMultiMediaNoteActivity.this,
-								"Saved Successfully!", Toast.LENGTH_LONG)
-								.show();
-						Intent intent = new Intent(
-								AddMultiMediaNoteActivity.this,
-								MainActivity.class);
-						startActivity(intent);
+						Toast.makeText(context, "Saved Successfully!",
+								Toast.LENGTH_LONG).show();
+						startActivity(new Intent(context, MainActivity.class));
 						finish();
 					}
 				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
 			} else {
-				Toast.makeText(AddMultiMediaNoteActivity.this,
-						"Cannot Save Empty Multimedia Note!", Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(context, "Cannot Save Empty Multimedia Note!",
+						Toast.LENGTH_LONG).show();
 			}
 			break;
 		}
@@ -185,16 +199,13 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 		String text = etNoteText.getText().toString();
 		int count = llMultimedia.getChildCount();
 		if (text.length() > 0 || count > 0) {
-			AlertDialog.Builder quitDialog = new AlertDialog.Builder(
-					AddMultiMediaNoteActivity.this);
+			AlertDialog.Builder quitDialog = new AlertDialog.Builder(context);
 			quitDialog.setTitle("Do You Want To Quit Without Saving The Note?");
 			quitDialog.setPositiveButton("Ok, Quit!",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							Intent intent = new Intent(
-									AddMultiMediaNoteActivity.this,
-									MainActivity.class);
-							startActivity(intent);
+							startActivity(new Intent(context,
+									MainActivity.class));
 							finish();
 						}
 
@@ -202,20 +213,18 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			quitDialog.setNegativeButton("No", null);
 			quitDialog.show();
 		} else {
-			Intent intent = new Intent(AddMultiMediaNoteActivity.this,
-					MainActivity.class);
-			startActivity(intent);
+			startActivity(new Intent(context, MainActivity.class));
 			finish();
 		}
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_SPEECH && resultCode == RESULT_OK) {
+			// if speech recognizer result ok
 			String text = etNoteText.getText().toString();
-			String sentence = intent.getStringArrayListExtra(
+			String sentence = data.getStringArrayListExtra(
 					RecognizerIntent.EXTRA_RESULTS).get(0);
 			int index = etNoteText.getSelectionStart();
 			if (index >= 0 && index < text.length()) {
@@ -226,43 +235,58 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			}
 		} else if (requestCode == REQUEST_AUDIO_RECORDING
 				&& resultCode == RESULT_OK) {
-			Uri audioUri = intent.getData();
-			audioPlayerUI = new AudioPlayerUI(AddMultiMediaNoteActivity.this);
+			// if audio recording result ok
+			Uri audioUri = data.getData();
+			audioPlayerUI = new AudioPlayerUI(context);
 			audioPlayerUI.setAudioUri(audioUri);
 			llMultimedia.addView(audioPlayerUI);
 		} else if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
-			bitmapUri = intent.getData();
-			imageViewerUI = new ImageViewerUI(AddMultiMediaNoteActivity.this);
+			// if image selection result ok
+			bitmapUri = data.getData();
+			imageViewerUI = new ImageViewerUI(context);
 			imageViewerUI.setImage(bitmapUri, this.getContentResolver());
 			llMultimedia.addView(imageViewerUI);
 		} else if (requestCode == REQUEST_IMAGE_CAMERA
 				&& resultCode == RESULT_OK) {
-			bitmapUri = ip.saveBitmap((Bitmap) intent.getExtras().get("data"));
-			imageViewerUI = new ImageViewerUI(AddMultiMediaNoteActivity.this);
+			// if camera snap result ok
+			bitmapUri = ip.saveBitmap((Bitmap) data.getExtras().get("data"));
+			imageViewerUI = new ImageViewerUI(context);
 			imageViewerUI.setImage(bitmapUri, this.getContentResolver());
 			llMultimedia.addView(imageViewerUI);
 		} else if (requestCode == REQUEST_VIDEO_CAMERA
 				&& resultCode == RESULT_OK) {
-			Uri videoUri = intent.getData();
-			videoPlayerUI = new VideoPlayerUI(AddMultiMediaNoteActivity.this);
+			// if vedio recording result ok
+			Uri videoUri = data.getData();
+			videoPlayerUI = new VideoPlayerUI(context);
 			videoPlayerUI.setVideoUri(videoUri);
 			llMultimedia.addView(videoPlayerUI);
 		} else if (requestCode == REQUEST_MAP_LOCATION
 				&& resultCode == RESULT_OK) {
-			address = intent.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
-			tvLocation.setText(address.getAddressLine(0).toString() + ", "
-					+ address.getAddressLine(1).toString() + ", "
-					+ address.getCountryCode().toString());
-			tvLocationLongitude.setText(String.valueOf(address.getLongitude()));
-			tvLocationLatitude.setText(String.valueOf(address.getLatitude()));
-			llLocationWrapper.setVisibility(View.VISIBLE);
+			// if google map location result ok
+			try {
+				address = data
+						.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
+				tvLocation.setText(address.getAddressLine(0).toString() + ", "
+						+ address.getAddressLine(1).toString() + ", "
+						+ address.getCountryCode().toString());
+				tvLocationLongitude.setText(String.valueOf(address
+						.getLongitude()));
+				tvLocationLatitude
+						.setText(String.valueOf(address.getLatitude()));
+				llLocationWrapper.setVisibility(View.VISIBLE);
+			} catch (Exception e) {
+				Toast.makeText(context,
+						"Could not locate the address. Please try again!",
+						Toast.LENGTH_LONG).show();
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.bGallery:
-			dialogAddNoteOption = new Dialog(AddMultiMediaNoteActivity.this);
+			dialogAddNoteOption = new Dialog(context);
 			dialogAddNoteOption.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			dialogAddNoteOption.setContentView(R.layout.gallery_dialog_items);
 			bFromGallery = (Button) dialogAddNoteOption
@@ -277,18 +301,27 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			dialogAddNoteOption.show();
 			break;
 		case R.id.ibASR:
-			Intent intentASR = new Intent(
-					RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-			intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			// intentASR.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
-			intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-			startActivityForResult(intentASR, REQUEST_SPEECH);
+			try {
+				Intent intentASR = new Intent(
+						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+				intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+						RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+				intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+				startActivityForResult(intentASR, REQUEST_SPEECH);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Google Voice Search Not Installed!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bAudio:
-			Intent intent = new Intent(
-					MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-			startActivityForResult(intent, REQUEST_AUDIO_RECORDING);
+			try {
+				startActivityForResult(new Intent(
+						MediaStore.Audio.Media.RECORD_SOUND_ACTION),
+						REQUEST_AUDIO_RECORDING);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Sound Recorder Not Found!!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bImportant:
 			if (important == 1) {
@@ -306,26 +339,41 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			break;
 		case R.id.bFromGallery:
 			dialogAddNoteOption.dismiss();
-			Intent intentGallery = new Intent(Intent.ACTION_PICK,
-					MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-			intentGallery.setType("image/*");
-			startActivityForResult(intentGallery, REQUEST_GALLERY);
+			try {
+				Intent intentGallery = new Intent(Intent.ACTION_PICK,
+						MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+				intentGallery.setType("image/*");
+				startActivityForResult(intentGallery, REQUEST_GALLERY);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "External Media Gallery Not Found!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bFromCamera:
 			dialogAddNoteOption.dismiss();
-			Intent intentImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			startActivityForResult(intentImage, REQUEST_IMAGE_CAMERA);
+			try {
+				Intent intentImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				startActivityForResult(intentImage, REQUEST_IMAGE_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Image Camera Not Found!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bFromCamRecorder:
 			dialogAddNoteOption.dismiss();
-			Intent intentVideo = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-			startActivityForResult(intentVideo, REQUEST_VIDEO_CAMERA);
+			try {
+				Intent intentVideo = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+				startActivityForResult(intentVideo, REQUEST_VIDEO_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Video Capture Not Found!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bLocation:
-			Intent i = new Intent(this, AddMapActivity.class);
-			startActivityForResult(i, REQUEST_MAP_LOCATION);
+			startActivityForResult(new Intent(this, AddMapActivity.class),
+					REQUEST_MAP_LOCATION);
 			break;
-		case R.id.ibDelete:
+		case R.id.ibLVDelete:
 			tvLocation.setText("");
 			tvLocationLongitude.setText("");
 			tvLocationLatitude.setText("");
@@ -333,5 +381,4 @@ public class AddMultiMediaNoteActivity extends GDActivity implements
 			break;
 		}
 	}
-
 }

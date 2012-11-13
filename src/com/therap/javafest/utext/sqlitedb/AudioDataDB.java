@@ -52,9 +52,6 @@ public class AudioDataDB {
 		close();
 	}
 
-	public void update(int mid, String text, int important) {
-	}
-
 	public boolean hasAudio(int mid) {
 		open();
 		Cursor c = database.query(DBHelper.DB_TABLE_AUDIO_DATA, null,

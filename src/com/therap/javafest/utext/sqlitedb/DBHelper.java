@@ -1,5 +1,8 @@
 package com.therap.javafest.utext.sqlitedb;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -151,6 +154,44 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ REMINDER_COLUMN_REMINDER_DATE + " TEXT, "
 				+ REMINDER_COLUMN_MODIFIED + " TEXT, " + REMINDER_COLUMN_TEXT
 				+ " TEXT, " + REMINDER_COLUMN_IS_IMPORTANT + " INTEGER(2))");
+
+		Date date = new Date();
+		String curDateTime = (new Timestamp(date.getTime())).toString();
+		String text = "Welcome to uText!\n\nCreate Multi Media Note containing image, video, audio, map.\nUse emoticon to express your emotion.\n\nCreate Reminder with message template or set ringtone mode option.\n\nCreate Checklist to organize your daily work.\n\nHave a nice experince of using uText.\n\nWith Regards,\nuText Team.\n";
+		db.execSQL("INSERT INTO " + DB_TABLE_MULTIMEDIA_NOTE + "("
+				+ MULTIMEDIA_NOTE_COLUMN_CREATED + ", "
+				+ MULTIMEDIA_NOTE_COLUMN_MODIFIED + ", "
+				+ MULTIMEDIA_NOTE_COLUMN_TEXT + ", "
+				+ MULTIMEDIA_NOTE_COLUMN_IS_IMPORTANT + ")VALUES('"
+				+ curDateTime + "', '" + curDateTime + "', '" + text + "', 1)");
+
+		text = "Make a Checklist";
+		db.execSQL("INSERT INTO " + DB_TABLE_LIST_NOTE + "("
+				+ LIST_NOTE_COLUMN_CREATED + ", " + LIST_NOTE_COLUMN_MODIFIED
+				+ ", " + LIST_NOTE_COLUMN_TITLE + ", "
+				+ LIST_NOTE_COLUMN_IS_IMPORTANT + ")VALUES('" + curDateTime
+				+ "', '" + curDateTime + "', '" + text + "', 1)");
+
+		text = "Add as many items as you like.";
+		db.execSQL("INSERT INTO " + DB_TABLE_CHILD_NOTE + "("
+				+ CHILD_NOTE_COLUMN_LSID + ", " + CHILD_NOTE_COLUMN_TEXT + ", "
+				+ CHILD_NOTE_COLUMN_MODIFIED + ", "
+				+ CHILD_NOTE_COLUMN_IS_COMPLETE + ")VALUES(1, '" + text
+				+ "', '" + curDateTime + "', 0)");
+
+		text = "You can check off items as they are completed.";
+		db.execSQL("INSERT INTO " + DB_TABLE_CHILD_NOTE + "("
+				+ CHILD_NOTE_COLUMN_LSID + ", " + CHILD_NOTE_COLUMN_TEXT + ", "
+				+ CHILD_NOTE_COLUMN_MODIFIED + ", "
+				+ CHILD_NOTE_COLUMN_IS_COMPLETE + ")VALUES(1, '" + text
+				+ "', '" + curDateTime + "', 1)");
+
+		text = "You can delete unnecessary items.";
+		db.execSQL("INSERT INTO " + DB_TABLE_CHILD_NOTE + "("
+				+ CHILD_NOTE_COLUMN_LSID + ", " + CHILD_NOTE_COLUMN_TEXT + ", "
+				+ CHILD_NOTE_COLUMN_MODIFIED + ", "
+				+ CHILD_NOTE_COLUMN_IS_COMPLETE + ")VALUES(1, '" + text
+				+ "', '" + curDateTime + "', 0)");
 	}
 
 	@Override

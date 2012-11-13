@@ -20,6 +20,14 @@
             android:src="@drawable/utext_logo_color" />
 
         <EditText
+            android:id="@+id/etFullName"
+            style="@style/.EditText"
+            android:layout_marginBottom="7dp"
+            android:layout_marginTop="7dp"
+            android:hint="@string/et_fullname"
+            android:inputType="none" />
+
+        <EditText
             android:id="@+id/etEmail"
             style="@style/.EditText"
             android:layout_marginBottom="7dp"
@@ -35,21 +43,11 @@
             android:hint="@string/et_password"
             android:inputType="textPassword" />
 
-        <TextView
-            android:id="@+id/tvForgetYourPassword"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:gravity="right"
-            android:text="@string/tv_forget_your_password"
-            android:textColor="#666666"
-            android:textSize="14sp" />
-
         <Button
-            android:id="@+id/bLogIn"
+            android:id="@+id/bRegister"
             style="@style/.Button"
             android:background="@drawable/log_in_button"
-            android:text="@string/b_log_in"
+            android:text="@string/b_register"
             android:textColor="#ffffff" />
 
         <TextView

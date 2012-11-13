@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -66,7 +67,7 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 	private MultiMediaNoteDB multiMediaNoteDB;
 
 	private EditText etNoteText;
-	private ImageButton ibASR, ibDelete;
+	private ImageButton ibASR, ibLVDelete;
 	private AudioPlayerUI audioPlayerUI;
 	private ImageViewerUI imageViewerUI;
 	private VideoPlayerUI videoPlayerUI;
@@ -89,31 +90,30 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_edit_multi_media_note);
-		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
+		Init();
 		renderView();
 	}
 
-	@Override
-	public void onBackPressed() {
-		Intent intent = new Intent(context, ViewMultiMediaNoteActivity.class);
-		intent.putExtra("mid", String.valueOf(mid));
-		startActivity(intent);
-		finish();
-	}
-
-	private void renderView() {
+	private void Init() {
 		context = this;
 		intent = getIntent();
 		mid = Integer.parseInt(intent.getStringExtra("mid"));
-
-		MultiMediaNote data = new MultiMediaNote();
 
 		videoDataDB = new VideoDataDB(context);
 		imageDataDB = new ImageDataDB(context);
 		audioDataDB = new AudioDataDB(context);
 		multiMediaNoteDB = new MultiMediaNoteDB(context);
+
 		ip = new ImageProcessing(context);
 
+		audioDataDB = new AudioDataDB(context);
+		imageDataDB = new ImageDataDB(context);
+		videoDataDB = new VideoDataDB(context);
+		multiMediaNoteDB = new MultiMediaNoteDB(context);
+	}
+
+	private void renderView() {
+		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
 		ibASR = (ImageButton) findViewById(R.id.ibASR);
 		ibASR.setOnClickListener(this);
 		bGallery = (Button) findViewById(R.id.bGallery);
@@ -123,12 +123,7 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 		bLocation = (Button) findViewById(R.id.bLocation);
 		bLocation.setOnClickListener(this);
 
-		audioDataDB = new AudioDataDB(context);
-		imageDataDB = new ImageDataDB(context);
-		videoDataDB = new VideoDataDB(context);
-		multiMediaNoteDB = new MultiMediaNoteDB(context);
-
-		data = multiMediaNoteDB.selectByMid(mid);
+		MultiMediaNote data = multiMediaNoteDB.selectByMid(mid);
 
 		etNoteText = (EditText) findViewById(R.id.etNoteText);
 		etNoteText.setText(data.text);
@@ -173,18 +168,31 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
 		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
 		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
-		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
-		ibDelete.setOnClickListener(this);
+
+		ibLVDelete = (ImageButton) findViewById(R.id.ibLVDelete);
+		ibLVDelete.setOnClickListener(this);
 
 		LocationData locationData = new LocationData();
 		locationDataDB = new LocationDataDB(context);
 		locationData = locationDataDB.selectByNoteId(mid, Note.MULTIMEDIA_NOTE);
-		if(locationData != null){
+		if (locationData != null) {
 			tvLocation.setText(locationData.place);
 			tvLocationLongitude.setText(String.valueOf(locationData.longitude));
 			tvLocationLatitude.setText(String.valueOf(locationData.latitude));
 			llLocationWrapper.setVisibility(View.VISIBLE);
 		}
+	}
+
+	private void backward() {
+		Intent intent = new Intent(context, ViewMultiMediaNoteActivity.class);
+		intent.putExtra("mid", String.valueOf(mid));
+		startActivity(intent);
+		finish();
+	}
+
+	@Override
+	public void onBackPressed() {
+		backward();
 	}
 
 	private class SaveNoteThread extends Thread {
@@ -211,10 +219,11 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 				}
 			}
 			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
-				locationDataDB.update(mid, Double.parseDouble(tvLocationLongitude.getText()
-						.toString()), Double.parseDouble(tvLocationLatitude.getText().toString()),
-						tvLocation.getText().toString());
-			}else{
+				locationDataDB.update(mid, Double
+						.parseDouble(tvLocationLongitude.getText().toString()),
+						Double.parseDouble(tvLocationLatitude.getText()
+								.toString()), tvLocation.getText().toString());
+			} else {
 				locationDataDB.delete(mid, Note.MULTIMEDIA_NOTE);
 			}
 			progressDialog.dismiss();
@@ -233,13 +242,9 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 				progressDialog.setMessage("Saving Your Multimedia Note");
 				progressDialog.setOnDismissListener(new OnDismissListener() {
 					public void onDismiss(DialogInterface di) {
+						backward();
 						Toast.makeText(context, "Saved Successfully!",
 								Toast.LENGTH_LONG).show();
-						Intent intent = new Intent(context,
-								ViewMultiMediaNoteActivity.class);
-						intent.putExtra("mid", String.valueOf(mid));
-						startActivity(intent);
-						finish();
 					}
 				});
 				progressDialog.show();
@@ -258,7 +263,6 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-
 		if (requestCode == REQUEST_SPEECH && resultCode == RESULT_OK) {
 			String text = etNoteText.getText().toString();
 			String sentence = intent.getStringArrayListExtra(
@@ -323,18 +327,27 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 			dialogAddNoteOption.show();
 			break;
 		case R.id.ibASR:
-			Intent intentASR = new Intent(
-					RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-			intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			// intentASR.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
-			intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-			startActivityForResult(intentASR, REQUEST_SPEECH);
+			try {
+				Intent intentASR = new Intent(
+						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+				intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+						RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+				intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+				startActivityForResult(intentASR, REQUEST_SPEECH);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Google Voice Search Not Installed!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bAudio:
-			Intent intent = new Intent(
-					MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-			startActivityForResult(intent, REQUEST_AUDIO_RECORDING);
+			try {
+				startActivityForResult(new Intent(
+						MediaStore.Audio.Media.RECORD_SOUND_ACTION),
+						REQUEST_AUDIO_RECORDING);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Sound Recorder Not Found!!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bImportant:
 			if (important == 1) {
@@ -352,26 +365,41 @@ public class EditMultiMediaNoteActivity extends GDActivity implements
 			break;
 		case R.id.bFromGallery:
 			dialogAddNoteOption.dismiss();
-			Intent intentGallery = new Intent(Intent.ACTION_PICK,
-					MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-			intentGallery.setType("image/*");
-			startActivityForResult(intentGallery, REQUEST_GALLERY);
+			try {
+				Intent intentGallery = new Intent(Intent.ACTION_PICK,
+						MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+				intentGallery.setType("image/*");
+				startActivityForResult(intentGallery, REQUEST_GALLERY);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "External Media Gallery Not Found!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bFromCamera:
 			dialogAddNoteOption.dismiss();
-			Intent intentImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			startActivityForResult(intentImage, REQUEST_IMAGE_CAMERA);
+			try {
+				startActivityForResult(new Intent(
+						MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_IMAGE_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Image Camera Not Found!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bFromCamRecorder:
-			dialogAddNoteOption.dismiss();
-			Intent intentVideo = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-			startActivityForResult(intentVideo, REQUEST_VIDEO_CAMERA);
+			try {
+				dialogAddNoteOption.dismiss();
+				startActivityForResult(new Intent(
+						MediaStore.ACTION_VIDEO_CAPTURE), REQUEST_VIDEO_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Video Capture Not Found!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bLocation:
-			Intent i = new Intent(this, AddMapActivity.class);
-			startActivityForResult(i, REQUEST_MAP_LOCATION);
+			startActivityForResult(new Intent(this, AddMapActivity.class),
+					REQUEST_MAP_LOCATION);
 			break;
-		case R.id.ibDelete:
+		case R.id.ibLVDelete:
 			tvLocation.setText("");
 			tvLocationLongitude.setText("");
 			tvLocationLatitude.setText("");

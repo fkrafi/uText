@@ -23,7 +23,6 @@ public class VideoPlayerUI extends LinearLayout implements OnClickListener {
 	public VideoPlayerUI(Context context) {
 		super(context);
 		this.context = context;
-
 		Init();
 	}
 
@@ -40,7 +39,6 @@ public class VideoPlayerUI extends LinearLayout implements OnClickListener {
 
 		tvMediaType = (TextView) findViewById(R.id.tvMediaType);
 		tvMediaType.setText("3");
-
 	}
 
 	public void setVideoUri(Uri videoUri) {

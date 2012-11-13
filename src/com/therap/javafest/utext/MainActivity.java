@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -51,21 +52,30 @@ public class MainActivity extends GDActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_main);
-		addActionBarItem(Type.Share, ACTION_BAR_SYNC);
-		addActionBarItem(Type.Search, ACTION_BAR_SEARCH);
-		addActionBarItem(Type.Add, ACTION_BAR_ADD);
+		Init();
 		renderView();
 		createFolders();
 		renderAllReminder();
 	}
 
-	private void renderView() {
+	private void Init() {
 		context = MainActivity.this;
 		reminderNoteDB = new ReminderNoteDB(context);
+		noteRetriever = new NoteRetriever(context);
+
+		if (android.os.Build.VERSION.SDK_INT > 9) {
+			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+					.permitAll().build();
+			StrictMode.setThreadPolicy(policy);
+		}
+	}
+
+	private void renderView() {
+		addActionBarItem(Type.Share, ACTION_BAR_SYNC);
+		addActionBarItem(Type.Search, ACTION_BAR_SEARCH);
+		addActionBarItem(Type.Add, ACTION_BAR_ADD);
 
 		lvNotes = (ListView) findViewById(R.id.lvNotes);
-
-		noteRetriever = new NoteRetriever(context);
 
 		notes = new ArrayList<Note>();
 		allNotes = new ArrayList<Note>();
@@ -95,12 +105,8 @@ public class MainActivity extends GDActivity {
 					intent = new Intent(context, ViewReminderActivity.class);
 					intent.putExtra("rid", item.getId());
 				}
-				try {
-					startActivity(intent);
-					finish();
-				} catch (Exception exp) {
-					exp.fillInStackTrace();
-				}
+				startActivity(intent);
+				finish();
 			}
 		});
 
@@ -173,7 +179,7 @@ public class MainActivity extends GDActivity {
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch (item.getItemId()) {
 		case ACTION_BAR_SYNC:
-			startActivity(new Intent(this, ExportDatabaseActivity.class));
+			startActivity(new Intent(this, BackUpActivity.class));
 			finish();
 			break;
 		case ACTION_BAR_SEARCH:

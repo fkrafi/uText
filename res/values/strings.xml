@@ -40,6 +40,13 @@
     <string name="title_activity_export_database">ExportDatabaseActivity</string>
     <string name="b_map_search">Search</string>
     <string name="b_map_done">Add Map</string>
-    <string name="et_map_hint">Location, ex: Dhaka, Bangladesh</string>
+    <string name="et_map_hint">Dhaka, Bangladesh</string>
+    <string name="b_register">Register</string>
+    <string name="et_fullname">Full Name</string>
+    <string name="b_export_as_xml">Export As XML</string>
+    <string name="b_export_as_csv">Export As CSV</string>
+    <string name="b_export_as_txt">Export As TXT</string>
+    <string name="b_upload">Back Up</string>
+    <string name="b_download">Restore</string>
 
 </resources>

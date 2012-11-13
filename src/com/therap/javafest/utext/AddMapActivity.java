@@ -28,11 +28,8 @@ public class AddMapActivity extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_layout);
-		try {
-			createViews();
-		} catch (Exception exp) {
-			Toast.makeText(this, exp.getMessage(), Toast.LENGTH_LONG).show();
-		}
+
+		createViews();
 	}
 
 	private void createViews() {

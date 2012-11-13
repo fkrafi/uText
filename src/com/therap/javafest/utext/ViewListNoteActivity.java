@@ -18,12 +18,11 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.text.util.Linkify;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.BufferType;
+import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.ChildNote;
 import com.therap.javafest.utext.lib.ListNote;
@@ -56,21 +55,24 @@ public class ViewListNoteActivity extends GDActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_view_list_note);
-		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
-		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
+		Init();
 		renderView();
 	}
 
-	private void renderView() {
+	private void Init() {
 		context = this;
 		intent = getIntent();
 		st = new SpanableText(context);
 		lsid = Integer.parseInt(intent.getStringExtra("lsid"));
 
-		ListNote ln = new ListNote();
 		listNoteDB = new ListNoteDB(context);
-		ln = listNoteDB.selectByLsid(lsid);
+	}
 
+	private void renderView() {
+		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
+		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
+
+		ListNote ln = listNoteDB.selectByLsid(lsid);
 		ivImportant = (ImageView) findViewById(R.id.ivImportant);
 		if (ln.is_important == 1) {
 			ivImportant.setImageResource(R.drawable.ic_imageview_star_yellow);
@@ -83,8 +85,7 @@ public class ViewListNoteActivity extends GDActivity {
 		tvDateTime.setText(dateFormat.format(date).toString());
 
 		tvTitle = (TextView) findViewById(R.id.tvTitle);
-		SpannableString ss = st.putEmoticons(ln.title);
-		Linkify.addLinks(ss, Linkify.ALL);
+		SpannableString ss = st.convertToSpannableString(ln.title);
 		tvTitle.setText(ss, BufferType.SPANNABLE);
 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
@@ -99,13 +100,11 @@ public class ViewListNoteActivity extends GDActivity {
 		llListNoteItemsWrapper = (LinearLayout) findViewById(R.id.llListNoteItemsWrapper);
 
 		ArrayList<ChildNote> cd = new ArrayList<ChildNote>();
-
 		childNoteDB = new ChildNoteDB(context);
 		cd = childNoteDB.selectByLsid(lsid);
 		for (ChildNote c : cd) {
 			ListNoteItemUI item = new ListNoteItemUI(context);
-			ss = st.putEmoticons(c.text);
-			Linkify.addLinks(ss, Linkify.ALL);
+			ss = st.convertToSpannableString(c.text);
 			item.setText(ss);
 			item.setId(c.cid);
 			item.setDone(c.is_complete);
@@ -119,8 +118,7 @@ public class ViewListNoteActivity extends GDActivity {
 
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent(context, MainActivity.class);
-		startActivity(intent);
+		startActivity(new Intent(context, MainActivity.class));
 		finish();
 	}
 
@@ -155,13 +153,13 @@ public class ViewListNoteActivity extends GDActivity {
 							progressDialog
 									.setOnDismissListener(new OnDismissListener() {
 										public void onDismiss(DialogInterface di) {
-											Toast.makeText(context,
-													"Deleted Successfully!",
-													Toast.LENGTH_LONG).show();
 											Intent intent = new Intent(context,
 													MainActivity.class);
 											startActivity(intent);
 											finish();
+											Toast.makeText(context,
+													"Deleted Successfully!",
+													Toast.LENGTH_LONG).show();
 										}
 									});
 							DeleteNoteThread deleteNoteThread = new DeleteNoteThread();

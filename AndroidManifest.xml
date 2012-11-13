@@ -24,9 +24,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.uText" >
+        <uses-library android:name="com.google.android.maps" />
+
         <receiver android:name=".AlarmReceiver" />
 
-        <activity android:name=".ShowNotification" />
         <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity" />
-        <activity android:name=".SignInActivity" />
+        <activity android:name=".LogInActivity" />
         <activity
             android:name=".AddMultiMediaNoteActivity"
             android:screenOrientation="portrait" />
@@ -47,10 +48,12 @@
         <activity android:name=".EditMultiMediaNoteActivity" />
         <activity android:name=".EditListNoteActivity" />
         <activity android:name=".EditReminderActivity" />
-        <activity android:name=".ExportDatabaseActivity" />
+        <activity android:name=".DatabaseBackUpActivity" />
         <activity android:name=".AddMapActivity" />
-
-        <uses-library android:name="com.google.android.maps" />
+        <activity android:name=".UserHomeActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".BackUpActivity" />
+        <activity android:name=".ShowNotification" />
     </application>
 
 </manifest>

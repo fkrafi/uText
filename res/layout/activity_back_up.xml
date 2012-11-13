@@ -1,0 +1,37 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#efefef" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp" >
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="5dp"
+            android:contentDescription="@string/iv_cd_logo"
+            android:src="@drawable/utext_logo_color" />
+
+        <Button
+            android:id="@+id/bLogIn"
+            style="@style/.Button"
+            android:background="@drawable/log_in_button"
+            android:text="@string/b_log_in"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/bRegister"
+            style="@style/.Button"
+            android:background="@drawable/log_in_button"
+            android:text="@string/b_register"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+</ScrollView>

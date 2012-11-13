@@ -22,16 +22,16 @@ public class NoteComparator implements Comparator<Note> {
 	}
 
 	private int defaultCompare(Note n1, Note n2) {
-		long date1 = (Timestamp.valueOf(n1.getDateTime())).getTime();
-		long date2 = (Timestamp.valueOf(n1.getDateTime())).getTime();
-		return (date1 < date2) ? 1 : ((date1 == date2) ? 0 : -1);
+		Date date1 = new Date((Timestamp.valueOf(n1.getDateTime())).getTime());
+		Date date2 = new Date((Timestamp.valueOf(n2.getDateTime())).getTime());
+		return date2.compareTo(date1);
 	}
 
 	private int searchCompare(Note n1, Note n2) {
 		Integer count1 = Integer.valueOf(n1.getCount());
 		Integer count2 = Integer.valueOf(n2.getCount());
 		Date date1 = new Date((Timestamp.valueOf(n1.getDateTime())).getTime());
-		Date date2 = new Date((Timestamp.valueOf(n1.getDateTime()).getTime()));
+		Date date2 = new Date((Timestamp.valueOf(n2.getDateTime())).getTime());
 		Integer type1 = Integer.valueOf(n1.getType());
 		Integer type2 = Integer.valueOf(n2.getType());
 		Integer imp1 = Integer.valueOf(n1.getImportant());
@@ -49,7 +49,7 @@ public class NoteComparator implements Comparator<Note> {
 				if (date1.equals(date2)) {
 					return imp2.compareTo(imp1);
 				}
-				return date1.compareTo(date2);
+				return date2.compareTo(date1);
 			}
 			return type2.compareTo(type1);
 		}

@@ -15,7 +15,7 @@
 
     <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/tvId"
@@ -44,11 +44,11 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textColor="#444444"
+            android:textColor="#777777"
             android:textSize="18sp" />
 
         <ImageButton
-            android:id="@+id/ibDelete"
+            android:id="@+id/ibLVDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"

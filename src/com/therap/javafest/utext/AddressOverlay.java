@@ -23,7 +23,6 @@ public class AddressOverlay extends Overlay {
 		Double convertedLatitude = address.getLatitude() * 1E6;
 		setGeopoint(new GeoPoint(convertedLatitude.intValue(),
 				convertedLongitude.intValue()));
-
 	}
 
 	@Override
@@ -35,9 +34,7 @@ public class AddressOverlay extends Overlay {
 		Paint paint = new Paint();
 		paint.setAntiAlias(true);
 		paint.setColor(Color.RED);
-
 		canvas.drawCircle(locationPoint.x, locationPoint.y, 4, paint);
-
 	}
 
 	private void setGeopoint(GeoPoint geoPoint) {

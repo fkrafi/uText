@@ -18,12 +18,11 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.text.util.Linkify;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.BufferType;
+import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.LocationData;
 import com.therap.javafest.utext.lib.Note;
@@ -58,27 +57,26 @@ public class ViewReminderActivity extends GDActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_view_reminder);
-		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
-		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
-		try {
-			renderView();
-		} catch (Exception exp) {
-			Toast.makeText(context, exp.getMessage(), Toast.LENGTH_LONG).show();
-		}
+		Init();
+		renderView();
+
 	}
 
-	private void renderView() {
+	private void Init() {
 		context = this;
 		intent = getIntent();
 		st = new SpanableText(context);
 
 		rid = Integer.parseInt(intent.getStringExtra("rid"));
+		reminderNoteDB = new ReminderNoteDB(context);
+		locationDataDB = new LocationDataDB(context);
+	}
 
-		ReminderNote rn = new ReminderNote();
+	private void renderView() {
+		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
+		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
 
-		reminderNoteDB = new ReminderNoteDB(ViewReminderActivity.this);
-
-		rn = reminderNoteDB.selectByLsid(rid);
+		ReminderNote rn = reminderNoteDB.selectByLsid(rid);
 
 		Timestamp ts = Timestamp.valueOf(rn.modified);
 		Date date = new Date(ts.getTime());
@@ -110,17 +108,15 @@ public class ViewReminderActivity extends GDActivity {
 		}
 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
-		LocationData locationData = new LocationData();
-		locationDataDB = new LocationDataDB(context);
-		locationData = locationDataDB.selectByNoteId(rid, Note.REMINDER);
+		LocationData locationData = locationDataDB.selectByNoteId(rid,
+				Note.REMINDER);
 		tvLocation.setText("");
 		if (locationData != null) {
 			tvLocation.setText(locationData.place);
 		}
 
 		tvText = (TextView) findViewById(R.id.tvText);
-		SpannableString ss = st.putEmoticons(rn.text);
-		Linkify.addLinks(ss, Linkify.ALL);
+		SpannableString ss = st.convertToSpannableString(rn.text);
 		tvText.setText(ss, BufferType.SPANNABLE);
 	}
 
@@ -132,12 +128,16 @@ public class ViewReminderActivity extends GDActivity {
 		}
 	}
 
-	@Override
-	public void onBackPressed() {
-		Intent intent = new Intent(ViewReminderActivity.this,
+	private void backward() {
+		Intent intent = new Intent(context,
 				MainActivity.class);
 		startActivity(intent);
 		finish();
+	}
+
+	@Override
+	public void onBackPressed() {
+		backward();
 	}
 
 	@Override
@@ -145,13 +145,13 @@ public class ViewReminderActivity extends GDActivity {
 		switch (item.getItemId()) {
 		case ACTION_BAR_DELETE:
 			AlertDialog.Builder quitDialog = new AlertDialog.Builder(
-					ViewReminderActivity.this);
+					context);
 			quitDialog.setTitle("Do you want to delete the reminder?");
 			quitDialog.setPositiveButton("Yes",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							progressDialog = new ProgressDialog(
-									ViewReminderActivity.this);
+									context);
 							progressDialog
 									.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 							progressDialog.setMessage("Deleting Your Reminder");
@@ -159,15 +159,11 @@ public class ViewReminderActivity extends GDActivity {
 							progressDialog
 									.setOnDismissListener(new OnDismissListener() {
 										public void onDismiss(DialogInterface di) {
+											backward();
 											Toast.makeText(
-													ViewReminderActivity.this,
+													context,
 													"Deleted Successfully!",
 													Toast.LENGTH_LONG).show();
-											Intent intent = new Intent(
-													ViewReminderActivity.this,
-													MainActivity.class);
-											startActivity(intent);
-											finish();
 										}
 									});
 							DeleteNoteThread deleteNoteThread = new DeleteNoteThread();
@@ -179,10 +175,10 @@ public class ViewReminderActivity extends GDActivity {
 			quitDialog.show();
 			break;
 		case ACTION_BAR_EDIT:
-			intent = new Intent(ViewReminderActivity.this,
+			Intent intentEdit = new Intent(context,
 					EditReminderActivity.class);
-			intent.putExtra("rid", String.valueOf(rid));
-			startActivity(intent);
+			intentEdit.putExtra("rid", String.valueOf(rid));
+			startActivity(intentEdit);
 			finish();
 			break;
 		}

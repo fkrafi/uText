@@ -13,15 +13,18 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TextView.BufferType;
 
 import com.therap.javafest.utext.lib.Note;
 
 public class NoteListViewItemAdapter extends BaseAdapter {
+	private SpanableText sp;
 	private ArrayList<Note> data;
 	private static LayoutInflater inflater = null;
 
 	public NoteListViewItemAdapter(Context context, ArrayList<Note> data) {
 		this.data = data;
+		sp = new SpanableText(context);
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -59,8 +62,19 @@ public class NoteListViewItemAdapter extends BaseAdapter {
 
 			tvId.setText(item.getId());
 			tvType.setText(String.valueOf(item.getType()));
-			tvText.setText(item.getText());
 
+			String text = item.getText();
+			String tokens[] = text.split("\n");
+			if (tokens.length > 0) {
+				text = tokens[0];
+			}
+			int len = text.length();
+			if (len > 32) {
+				len = 32;
+			}
+			text = text.substring(0, len);
+			tvText.setText(sp.convertToSpannableString(text),
+					BufferType.SPANNABLE);
 			Timestamp ts = Timestamp.valueOf(item.getDateTime());
 			Date date = new Date(ts.getTime());
 			DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");

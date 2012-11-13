@@ -16,6 +16,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -45,15 +47,17 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	private static final int TIME_PICKER_ID = 2020;
 	private static final int REQUEST_MAP_LOCATION = 10;
 
+	private Context context;
 	private Address address;
 
 	int important = 0;
+	private Date date;
 
 	private ReminderNoteDB reminderNoteDB;
 	private LocationDataDB locationDataDB;
 
 	private EditText etNoteText;
-	private ImageButton ibASR, ibDelete;
+	private ImageButton ibASR, ibLVDelete;
 	private Button bDate, bTime, bImportant, bLocation;
 	private LinearLayout llLocationWrapper;
 	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
@@ -66,12 +70,14 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_add_reminder);
-		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
 		Init();
+		renderView();
 	}
 
 	private void Init() {
-		Date date = (new GregorianCalendar()).getTime();
+		context = this;
+
+		date = (new GregorianCalendar()).getTime();
 		Calendar c = Calendar.getInstance();
 		rmonth = c.get(Calendar.MONTH);
 		ryear = c.get(Calendar.YEAR);
@@ -79,8 +85,12 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 		rhour = c.get(Calendar.HOUR_OF_DAY);
 		rminute = c.get(Calendar.MINUTE);
 
-		reminderNoteDB = new ReminderNoteDB(AddReminderActivity.this);
-		locationDataDB = new LocationDataDB(AddReminderActivity.this);
+		reminderNoteDB = new ReminderNoteDB(context);
+		locationDataDB = new LocationDataDB(context);
+	}
+
+	private void renderView() {
+		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
 
 		bDate = (Button) findViewById(R.id.bDate);
 		DateFormat dateFormat = new SimpleDateFormat("E, dd M yyyy");
@@ -107,8 +117,8 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
 		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
 		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
-		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
-		ibDelete.setOnClickListener(this);
+		ibLVDelete = (ImageButton) findViewById(R.id.ibLVDelete);
+		ibLVDelete.setOnClickListener(this);
 
 	}
 
@@ -120,7 +130,7 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 			long rid = reminderNoteDB.insert(t,
 					etNoteText.getText().toString(), important);
 			if (llLocationWrapper.getVisibility() == View.VISIBLE) {
-				locationDataDB.insert(rid, Note.LIST_NOTE, Double
+				locationDataDB.insert(rid, Note.REMINDER, Double
 						.parseDouble(tvLocationLongitude.getText().toString()),
 						Double.parseDouble(tvLocationLatitude.getText()
 								.toString()), tvLocation.getText().toString());
@@ -141,21 +151,17 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 				progressDialog.show();
 				progressDialog.setOnDismissListener(new OnDismissListener() {
 					public void onDismiss(DialogInterface di) {
-						Toast.makeText(AddReminderActivity.this,
-								"Saved Successfully!", Toast.LENGTH_LONG)
-								.show();
-						Intent intent = new Intent(AddReminderActivity.this,
-								MainActivity.class);
-						startActivity(intent);
+						startActivity(new Intent(context, MainActivity.class));
 						finish();
+						Toast.makeText(context, "Saved Successfully!",
+								Toast.LENGTH_LONG).show();
 					}
 				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
 				saveNoteThread.start();
 			} else {
-				Toast.makeText(AddReminderActivity.this,
-						"Cannot Save Empty Reminder Note!", Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(context, "Cannot Save Empty Reminder Note!",
+						Toast.LENGTH_LONG).show();
 			}
 			break;
 		}
@@ -165,7 +171,6 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
 		if (requestCode == REQUEST_SPEECH && resultCode == RESULT_OK) {
 			String text = etNoteText.getText().toString();
 			String sentence = data.getStringArrayListExtra(
@@ -193,13 +198,12 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 	protected Dialog onCreateDialog(int id) {
 		Calendar c = Calendar.getInstance();
 		if (id == DATE_PICKER_ID) {
-			return (new DatePickerDialog(AddReminderActivity.this,
-					datePickerListener, c.get(Calendar.YEAR),
-					c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)));
+			return (new DatePickerDialog(context, datePickerListener,
+					c.get(Calendar.YEAR), c.get(Calendar.MONTH),
+					c.get(Calendar.DAY_OF_MONTH)));
 		} else if (id == TIME_PICKER_ID) {
-			return (new TimePickerDialog(AddReminderActivity.this,
-					timePickerListener, c.get(Calendar.HOUR_OF_DAY),
-					c.get(Calendar.MINUTE), false));
+			return (new TimePickerDialog(context, timePickerListener,
+					c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), false));
 		}
 		return super.onCreateDialog(id);
 	}
@@ -253,19 +257,23 @@ public class AddReminderActivity extends GDActivity implements OnClickListener {
 			}
 			break;
 		case R.id.ibASR:
-			Intent intentASR = new Intent(
-					RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-			intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			// intentASR.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
-			intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-			startActivityForResult(intentASR, REQUEST_SPEECH);
+			try {
+				Intent intentASR = new Intent(
+						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+				intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+						RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+				intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+				startActivityForResult(intentASR, REQUEST_SPEECH);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Google Voice Search Not Installed!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bLocation:
 			Intent i = new Intent(this, AddMapActivity.class);
 			startActivityForResult(i, REQUEST_MAP_LOCATION);
 			break;
-		case R.id.ibDelete:
+		case R.id.ibLVDelete:
 			tvLocation.setText("");
 			tvLocationLongitude.setText("");
 			tvLocationLatitude.setText("");

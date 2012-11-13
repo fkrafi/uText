@@ -5,7 +5,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Handler;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +20,7 @@ public class AudioPlayerUI extends LinearLayout implements OnClickListener,
 
 	private Context context;
 
-	Uri audioUri = null;
+	private Uri audioUri = null;
 	private boolean playing = false;
 
 	private TextView tvMediaType;
@@ -35,17 +34,10 @@ public class AudioPlayerUI extends LinearLayout implements OnClickListener,
 	public AudioPlayerUI(Context context) {
 		super(context);
 		this.context = context;
-
-		Init();
+		renderView();
 	}
 
-	public AudioPlayerUI(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		this.context = context;
-		Init();
-	}
-
-	private void Init() {
+	private void renderView() {
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.audio_player_ui, this);
@@ -120,7 +112,8 @@ public class AudioPlayerUI extends LinearLayout implements OnClickListener,
 					totalDuration));
 			sbProgressBar.setProgress(progress);
 			// Running this thread after 1000 milliseconds
-			handler.postDelayed(this, 1000);
+			if (progress < 100)
+				handler.postDelayed(this, 1000);
 		}
 	};
 

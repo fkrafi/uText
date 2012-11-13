@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#cdcdcd"
+    android:orientation="horizontal"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp" >
+
+    <Button
+        android:id="@+id/bAsXML"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:background="#dedede"
+        android:drawableTop="@drawable/ic_menu_xml"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/b_export_as_xml"
+        android:textColor="#444444" />
+
+    <Button
+        android:id="@+id/bAsCSV"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:background="#dedede"
+        android:drawableTop="@drawable/ic_menu_csv"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/b_export_as_csv"
+        android:textColor="#444444" />
+
+    <Button
+        android:id="@+id/bAsTXT"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:background="#dedede"
+        android:drawableTop="@drawable/ic_menu_txt"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/b_export_as_txt"
+        android:textColor="#444444" />
+
+</LinearLayout>

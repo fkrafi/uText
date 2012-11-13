@@ -18,12 +18,11 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.text.util.Linkify;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.BufferType;
+import android.widget.Toast;
 
 import com.therap.javafest.utext.lib.AudioData;
 import com.therap.javafest.utext.lib.ImageData;
@@ -71,12 +70,11 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_view_multi_media_note);
-		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
-		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
+		Init();
 		renderView();
 	}
 
-	private void renderView() {
+	private void Init() {
 		context = this;
 		intent = getIntent();
 		st = new SpanableText(context);
@@ -85,10 +83,15 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 		audioDataDB = new AudioDataDB(context);
 		imageDataDB = new ImageDataDB(context);
 		videoDataDB = new VideoDataDB(context);
+		locationDataDB = new LocationDataDB(context);
 		multiMediaNoteDB = new MultiMediaNoteDB(context);
+	}
 
-		MultiMediaNote data = new MultiMediaNote();
-		data = multiMediaNoteDB.selectByMid(mid);
+	private void renderView() {
+		addActionBarItem(Type.Trashcan, ACTION_BAR_DELETE);
+		addActionBarItem(Type.Edit, ACTION_BAR_EDIT);
+
+		MultiMediaNote data = multiMediaNoteDB.selectByMid(mid);
 
 		tvDateTime = (TextView) findViewById(R.id.tvDateTime);
 		DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
@@ -97,8 +100,7 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 				.toString());
 
 		tvText = (TextView) findViewById(R.id.tvText);
-		SpannableString ss = st.putEmoticons(data.text);
-		Linkify.addLinks(ss, Linkify.ALL);
+		SpannableString ss = st.convertToSpannableString(data.text);
 		tvText.setText(ss, BufferType.SPANNABLE);
 
 		ivImportant = (ImageView) findViewById(R.id.ivImportant);
@@ -107,9 +109,8 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 		}
 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
-		LocationData locationData = new LocationData();
-		locationDataDB = new LocationDataDB(context);
-		locationData = locationDataDB.selectByNoteId(mid, Note.MULTIMEDIA_NOTE);
+		LocationData locationData = locationDataDB.selectByNoteId(mid,
+				Note.MULTIMEDIA_NOTE);
 		tvLocation.setText("");
 		if (locationData != null) {
 			tvLocation.setText(locationData.place);
@@ -162,11 +163,15 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 		}
 	}
 
-	@Override
-	public void onBackPressed() {
+	private void backward() {
 		Intent intent = new Intent(context, MainActivity.class);
 		startActivity(intent);
 		finish();
+	}
+
+	@Override
+	public void onBackPressed() {
+		backward();
 	}
 
 	@Override
@@ -187,13 +192,10 @@ public class ViewMultiMediaNoteActivity extends GDActivity {
 							progressDialog
 									.setOnDismissListener(new OnDismissListener() {
 										public void onDismiss(DialogInterface di) {
+											backward();
 											Toast.makeText(context,
 													"Deleted Successfully!",
 													Toast.LENGTH_LONG).show();
-											Intent intent = new Intent(context,
-													MainActivity.class);
-											startActivity(intent);
-											finish();
 										}
 									});
 							DeleteNoteThread deleteNoteThread = new DeleteNoteThread();

@@ -16,6 +16,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -23,6 +24,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -42,6 +44,7 @@ import com.therap.javafest.utext.sqlitedb.ReminderNoteDB;
 
 public class EditReminderActivity extends GDActivity implements OnClickListener {
 	private static final int ACTION_BAR_SAVE = 1;
+
 	private static final int REQUEST_SPEECH = 1111;
 	private static final int DATE_PICKER_ID = 1010;
 	private static final int TIME_PICKER_ID = 2020;
@@ -53,18 +56,18 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 	private Address address;
 
 	private EditText etNoteText;
-	private ImageButton ibASR, ibDelete;
+	private ImageButton ibASR, ibLVDelete;
 	private LinearLayout llLocationWrapper;
 	private Button bDate, bTime, bImportant, bLocation;
 	private TextView tvLocation, tvLocationLongitude, tvLocationLatitude;
 
 	private ProgressDialog progressDialog;
-	private LocationDataDB locationDataDB;
 
 	private int rid;
 	private Intent intent;
 
 	private ReminderNoteDB reminderNoteDB;
+	private LocationDataDB locationDataDB;
 
 	private int rmonth, ryear, rday, rhour, rminute;
 
@@ -72,17 +75,22 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setActionBarContentView(R.layout.activity_edit_reminder);
-		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
+		Init();
 		renderView();
 	}
 
-	private void renderView() {
+	private void Init() {
 		context = this;
 		intent = getIntent();
 		rid = Integer.parseInt(intent.getStringExtra("rid"));
+		reminderNoteDB = new ReminderNoteDB(context);
+		locationDataDB = new LocationDataDB(context);
+	}
+
+	private void renderView() {
+		addActionBarItem(Type.Save, ACTION_BAR_SAVE);
 
 		ReminderNote rn = new ReminderNote();
-		reminderNoteDB = new ReminderNoteDB(context);
 		rn = reminderNoteDB.selectByLsid(rid);
 
 		String str[] = rn.rdate.split(" ");
@@ -126,12 +134,12 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 		tvLocation = (TextView) findViewById(R.id.tvLocation);
 		tvLocationLongitude = (TextView) findViewById(R.id.tvLocationLongitude);
 		tvLocationLatitude = (TextView) findViewById(R.id.tvLocationLatitude);
-		ibDelete = (ImageButton) findViewById(R.id.ibDelete);
-		ibDelete.setOnClickListener(this);
 
-		LocationData locationData = new LocationData();
-		locationDataDB = new LocationDataDB(context);
-		locationData = locationDataDB.selectByNoteId(rid, Note.REMINDER);
+		ibLVDelete = (ImageButton) findViewById(R.id.ibLVDelete);
+		ibLVDelete.setOnClickListener(this);
+
+		LocationData locationData = locationDataDB.selectByNoteId(rid,
+				Note.REMINDER);
 		if (locationData != null) {
 			tvLocation.setText(locationData.place);
 			tvLocationLongitude.setText(String.valueOf(locationData.longitude));
@@ -159,6 +167,13 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 		}
 	}
 
+	private void backward() {
+		Intent intent = new Intent(context, ViewReminderActivity.class);
+		intent.putExtra("rid", String.valueOf(rid));
+		startActivity(intent);
+		finish();
+	}
+
 	@Override
 	public boolean onHandleActionBarItemClick(ActionBarItem item, int position) {
 		switch (item.getItemId()) {
@@ -171,13 +186,9 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 				progressDialog.show();
 				progressDialog.setOnDismissListener(new OnDismissListener() {
 					public void onDismiss(DialogInterface di) {
+						backward();
 						Toast.makeText(context, "Saved Successfully!",
 								Toast.LENGTH_LONG).show();
-						Intent intent = new Intent(context,
-								ViewReminderActivity.class);
-						intent.putExtra("rid", String.valueOf(rid));
-						startActivity(intent);
-						finish();
 					}
 				});
 				SaveNoteThread saveNoteThread = new SaveNoteThread();
@@ -193,9 +204,7 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent(context, ViewReminderActivity.class);
-		intent.putExtra("rid", String.valueOf(rid));
-		finish();
+		backward();
 	}
 
 	@Override
@@ -214,13 +223,20 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 			}
 		} else if (requestCode == REQUEST_MAP_LOCATION
 				&& resultCode == RESULT_OK) {
-			address = intent.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
-			tvLocation.setText(address.getAddressLine(0).toString() + ", "
-					+ address.getAddressLine(1).toString() + ", "
-					+ address.getCountryCode().toString());
-			tvLocationLongitude.setText(String.valueOf(address.getLongitude()));
-			tvLocationLatitude.setText(String.valueOf(address.getLatitude()));
-			llLocationWrapper.setVisibility(View.VISIBLE);
+			try {
+				address = data
+						.getParcelableExtra(AddMapActivity.RESULT_ADDRESS);
+				tvLocation.setText(address.getAddressLine(0).toString() + ", "
+						+ address.getAddressLine(1).toString() + ", "
+						+ address.getCountryCode().toString());
+				tvLocationLongitude.setText(String.valueOf(address
+						.getLongitude()));
+				tvLocationLatitude
+						.setText(String.valueOf(address.getLatitude()));
+				llLocationWrapper.setVisibility(View.VISIBLE);
+			} catch (Exception exp) {
+				Log.d("utext", "map :: " + exp.getMessage());
+			}
 		}
 	}
 
@@ -287,19 +303,23 @@ public class EditReminderActivity extends GDActivity implements OnClickListener 
 			}
 			break;
 		case R.id.ibASR:
-			Intent intentASR = new Intent(
-					RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-			intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			// intentASR.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
-			intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-			startActivityForResult(intentASR, REQUEST_SPEECH);
+			try {
+				Intent intentASR = new Intent(
+						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+				intentASR.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+						RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+				intentASR.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+				startActivityForResult(intentASR, REQUEST_SPEECH);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, "Google Voice Search Not Installed!",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.bLocation:
 			Intent i = new Intent(this, AddMapActivity.class);
 			startActivityForResult(i, REQUEST_MAP_LOCATION);
 			break;
-		case R.id.ibDelete:
+		case R.id.ibLVDelete:
 			tvLocation.setText("");
 			tvLocationLongitude.setText("");
 			tvLocationLatitude.setText("");

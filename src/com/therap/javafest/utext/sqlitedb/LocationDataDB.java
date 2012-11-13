@@ -1,6 +1,7 @@
 package com.therap.javafest.utext.sqlitedb;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.content.ContentValues;
@@ -53,7 +54,7 @@ public class LocationDataDB {
 	public void delete(int nid, int ntype) {
 		open();
 		database.delete(DBHelper.DB_TABLE_LOCATION_DATA,
-				DBHelper.LOCATION_DATA_COLUMN_LID + "=? AND "
+				DBHelper.LOCATION_DATA_COLUMN_NID + "=? AND "
 						+ DBHelper.LOCATION_DATA_COLUMN_NTYPE + "=?",
 				new String[] { String.valueOf(nid), String.valueOf(ntype) });
 		close();
@@ -112,14 +113,44 @@ public class LocationDataDB {
 
 	public boolean hasLocation(int nid, int ntype) {
 		open();
+
 		Cursor c = database.query(DBHelper.DB_TABLE_LOCATION_DATA, null,
 				DBHelper.LOCATION_DATA_COLUMN_NID + "=? AND "
 						+ DBHelper.LOCATION_DATA_COLUMN_NTYPE + "=?",
-				new String[] { String.valueOf(nid), String.valueOf(nid) },
+				new String[] { String.valueOf(nid), String.valueOf(ntype) },
 				null, null, null);
 		int size = c.getCount();
 		close();
 		return (size > 0);
 	}
 
+	public ArrayList<LocationData> selectAll() {
+		open();
+		ArrayList<LocationData> ret = new ArrayList<LocationData>();
+		Cursor c = database.query(DBHelper.DB_TABLE_LOCATION_DATA, null, null,
+				null, null, null, null);
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			LocationData temp = new LocationData();
+			temp.lid = c.getInt(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_LID));
+			temp.nid = c.getInt(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_NID));
+			temp.ntype = c.getInt(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_NTYPE));
+			temp.created = c.getString(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_CREATED));
+			temp.modified = c.getString(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_MODIFIED));
+			temp.longitude = c.getDouble(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_LONGITUDE));
+			temp.latitude = c.getDouble(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_LATITUDE));
+			temp.place = c.getString(c
+					.getColumnIndex(DBHelper.LOCATION_DATA_COLUMN_PLACE));
+			ret.add(temp);
+		}
+		close();
+		return ret;
+
+	}
 }
