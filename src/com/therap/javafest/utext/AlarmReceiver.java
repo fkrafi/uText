@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -36,6 +37,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 			mNotificationManager.notify(SIMPLE_NOTFICATION_ID, notifyDetails);
 
 			isMessage(context, text);
+			isRingerModeChange(context, text);
 
 			Uri uri = RingtoneManager
 					.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
@@ -63,6 +65,22 @@ public class AlarmReceiver extends BroadcastReceiver {
 				Log.d("sms", "set");
 				SmsManager sm = SmsManager.getDefault();
 				sm.sendTextMessage(phoneNumber, null, message, null, null);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void isRingerModeChange(Context context, String text) {
+		try {
+			AudioManager am = (AudioManager) context
+					.getSystemService(Context.AUDIO_SERVICE);
+			if (text.toLowerCase().indexOf("ringer(normal)") >= 0) {
+				am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+			} else if (text.toLowerCase().indexOf("ringer(silent)") >= 0) {
+				am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+			} else if (text.toLowerCase().indexOf("ringer(vibrate)") >= 0) {
+				am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
